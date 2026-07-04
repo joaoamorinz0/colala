@@ -6,8 +6,8 @@ export type PublicLayoutProps = {
 
 export function PublicLayout({ children }: PublicLayoutProps) {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <main className="mx-auto flex min-h-dvh w-full max-w-screen-sm flex-col px-page-x py-page-y">
+    <div className="bg-background text-foreground min-h-dvh">
+      <main className="px-page-x py-page-y mx-auto flex min-h-dvh w-full max-w-screen-sm flex-col">
         {children}
       </main>
     </div>

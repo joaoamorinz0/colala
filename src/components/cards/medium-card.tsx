@@ -19,17 +19,17 @@ export function MediumCard({
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-lg border border-border bg-card shadow-card",
+        "border-border bg-card shadow-card overflow-hidden rounded-lg border",
         className,
       )}
     >
-      {media ? <div className="aspect-[4/3] bg-muted">{media}</div> : null}
+      {media ? <div className="bg-muted aspect-[4/3]">{media}</div> : null}
       <div className="p-3">
-        <h3 className="line-clamp-1 text-base font-semibold text-card-foreground">
+        <h3 className="text-card-foreground line-clamp-1 text-base font-semibold">
           {title}
         </h3>
         {description ? (
-          <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+          <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
             {description}
           </p>
         ) : null}

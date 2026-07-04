@@ -15,7 +15,7 @@ export function Navbar({ className }: NavbarProps) {
   return (
     <nav
       className={cn(
-        "sticky bottom-0 z-20 border-t border-border bg-background/95 px-3 py-2 backdrop-blur",
+        "border-border bg-background/95 sticky bottom-0 z-20 border-t px-3 py-2 backdrop-blur",
         className,
       )}
       aria-label="Primary navigation"
@@ -29,7 +29,7 @@ export function Navbar({ className }: NavbarProps) {
             <li key={item.href}>
               <Link
                 className={cn(
-                  "flex h-12 flex-col items-center justify-center gap-1 rounded-md text-xs font-medium text-muted-foreground transition-colors",
+                  "text-muted-foreground flex h-12 flex-col items-center justify-center gap-1 rounded-md text-xs font-medium transition-colors",
                   isActive && "bg-muted text-foreground",
                 )}
                 href={item.href}

@@ -1,9 +1,10 @@
+@import "@fontsource-variable/inter";
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
 
   --color-background: hsl(40 33% 98%);
   --color-foreground: hsl(222 24% 11%);

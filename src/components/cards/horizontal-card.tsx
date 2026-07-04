@@ -19,21 +19,21 @@ export function HorizontalCard({
   return (
     <article
       className={cn(
-        "flex items-center gap-3 rounded-lg border border-border bg-card p-3 shadow-card",
+        "border-border bg-card shadow-card flex items-center gap-3 rounded-lg border p-3",
         className,
       )}
     >
       {media ? (
-        <div className="size-20 shrink-0 overflow-hidden rounded-md bg-muted">
+        <div className="bg-muted size-20 shrink-0 overflow-hidden rounded-md">
           {media}
         </div>
       ) : null}
       <div className="min-w-0 flex-1">
-        <h3 className="line-clamp-1 text-base font-semibold text-card-foreground">
+        <h3 className="text-card-foreground line-clamp-1 text-base font-semibold">
           {title}
         </h3>
         {description ? (
-          <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+          <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
             {description}
           </p>
         ) : null}

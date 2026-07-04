@@ -7,9 +7,9 @@ export type MainLayoutProps = {
 
 export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
+    <div className="bg-background text-foreground min-h-dvh">
       <div className="mx-auto flex min-h-dvh w-full max-w-screen-sm flex-col">
-        <main className="flex-1 px-page-x py-page-y">{children}</main>
+        <main className="px-page-x py-page-y flex-1">{children}</main>
         <Navbar />
       </div>
     </div>

@@ -19,15 +19,15 @@ export function HeroCard({
   return (
     <article
       className={cn(
-        "overflow-hidden rounded-lg border border-border bg-card shadow-card",
+        "border-border bg-card shadow-card overflow-hidden rounded-lg border",
         className,
       )}
     >
-      {media ? <div className="aspect-[16/10] bg-muted">{media}</div> : null}
+      {media ? <div className="bg-muted aspect-[16/10]">{media}</div> : null}
       <div className="p-4">
-        <h2 className="text-xl font-semibold text-card-foreground">{title}</h2>
+        <h2 className="text-card-foreground text-xl font-semibold">{title}</h2>
         {description ? (
-          <p className="mt-2 text-sm text-muted-foreground">{description}</p>
+          <p className="text-muted-foreground mt-2 text-sm">{description}</p>
         ) : null}
         {action ? <div className="mt-4">{action}</div> : null}
       </div>
