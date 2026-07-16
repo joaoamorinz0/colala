@@ -9,7 +9,7 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <div className="bg-background text-foreground min-h-dvh">
       <div className="mx-auto flex min-h-dvh w-full max-w-screen-sm flex-col">
-        <main className="px-page-x py-page-y flex-1">{children}</main>
+        <main className="flex-1 px-5 pt-10 pb-32">{children}</main>
         <Navbar />
       </div>
     </div>

@@ -6,25 +6,25 @@
 @theme {
   --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
 
-  --color-background: hsl(40 33% 98%);
-  --color-foreground: hsl(222 24% 11%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(222 24% 11%);
-  --color-popover: hsl(0 0% 100%);
-  --color-popover-foreground: hsl(222 24% 11%);
-  --color-primary: hsl(11 74% 48%);
+  --color-background: #f8f7f4;
+  --color-foreground: #222222;
+  --color-card: #eadfcf;
+  --color-card-foreground: #222222;
+  --color-popover: #f8f7f4;
+  --color-popover-foreground: #222222;
+  --color-primary: #d97757;
   --color-primary-foreground: hsl(0 0% 100%);
-  --color-secondary: hsl(155 24% 88%);
-  --color-secondary-foreground: hsl(172 35% 17%);
-  --color-muted: hsl(38 22% 92%);
-  --color-muted-foreground: hsl(225 8% 43%);
-  --color-accent: hsl(207 65% 91%);
-  --color-accent-foreground: hsl(211 53% 22%);
+  --color-secondary: #7a9e7e;
+  --color-secondary-foreground: #f8f7f4;
+  --color-muted: #f0ebe4;
+  --color-muted-foreground: hsl(0 0% 43%);
+  --color-accent: #7a9e7e;
+  --color-accent-foreground: #f8f7f4;
   --color-destructive: hsl(0 72% 51%);
   --color-destructive-foreground: hsl(0 0% 100%);
-  --color-border: hsl(35 18% 84%);
-  --color-input: hsl(35 18% 84%);
-  --color-ring: hsl(11 74% 48%);
+  --color-border: hsl(34 31% 80%);
+  --color-input: hsl(34 31% 80%);
+  --color-ring: #d97757;
 
   --spacing-page-x: 1rem;
   --spacing-page-y: 1.5rem;
@@ -35,8 +35,8 @@
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
 
-  --shadow-soft: 0 12px 40px hsl(222 24% 11% / 0.08);
-  --shadow-card: 0 8px 24px hsl(222 24% 11% / 0.06);
+  --shadow-soft: 0 12px 40px hsl(0 0% 13% / 0.1);
+  --shadow-card: 0 8px 24px hsl(0 0% 13% / 0.06);
 }
 
 :root {
@@ -45,23 +45,23 @@
 
 .dark {
   color-scheme: dark;
-  --color-background: hsl(222 24% 8%);
+  --color-background: #222222;
   --color-foreground: hsl(40 33% 98%);
-  --color-card: hsl(222 24% 11%);
+  --color-card: hsl(0 0% 16%);
   --color-card-foreground: hsl(40 33% 98%);
-  --color-popover: hsl(222 24% 11%);
+  --color-popover: hsl(0 0% 16%);
   --color-popover-foreground: hsl(40 33% 98%);
-  --color-primary: hsl(11 74% 58%);
+  --color-primary: #d97757;
   --color-primary-foreground: hsl(0 0% 100%);
-  --color-secondary: hsl(172 35% 17%);
-  --color-secondary-foreground: hsl(155 24% 88%);
-  --color-muted: hsl(222 18% 16%);
+  --color-secondary: #7a9e7e;
+  --color-secondary-foreground: #f8f7f4;
+  --color-muted: hsl(0 0% 20%);
   --color-muted-foreground: hsl(220 9% 70%);
-  --color-accent: hsl(211 53% 22%);
-  --color-accent-foreground: hsl(207 65% 91%);
-  --color-border: hsl(222 16% 24%);
-  --color-input: hsl(222 16% 24%);
-  --color-ring: hsl(11 74% 58%);
+  --color-accent: #7a9e7e;
+  --color-accent-foreground: #f8f7f4;
+  --color-border: hsl(0 0% 28%);
+  --color-input: hsl(0 0% 28%);
+  --color-ring: #d97757;
 }
 
 * {

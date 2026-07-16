@@ -13,34 +13,39 @@ export function Navbar({ className }: NavbarProps) {
   const pathname = usePathname();
 
   return (
-    <nav
-      className={cn(
-        "border-border bg-background/95 sticky bottom-0 z-20 border-t px-3 py-2 backdrop-blur",
-        className,
-      )}
-      aria-label="Primary navigation"
-    >
-      <ul className="grid grid-cols-4 gap-1">
-        {MAIN_NAVIGATION_ITEMS.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
+    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-30 mx-auto w-full max-w-screen-sm px-5">
+      <nav
+        className={cn(
+          "border-border/80 bg-background/92 pointer-events-auto rounded-[2rem] border p-1.5 shadow-[0_16px_36px_hsl(0_0%_13%/0.12)] backdrop-blur-xl",
+          className,
+        )}
+        aria-label="Primary navigation"
+      >
+        <ul className="grid grid-cols-4 gap-1">
+          {MAIN_NAVIGATION_ITEMS.map((item) => {
+            const Icon = item.icon;
+            const isActive =
+              pathname === item.href ||
+              (item.href === "/home" && pathname === "/");
 
-          return (
-            <li key={item.href}>
-              <Link
-                className={cn(
-                  "text-muted-foreground flex h-12 flex-col items-center justify-center gap-1 rounded-md text-xs font-medium transition-colors",
-                  isActive && "bg-muted text-foreground",
-                )}
-                href={item.href}
-              >
-                {Icon ? <Icon className="size-5" /> : null}
-                <span>{item.label}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+            return (
+              <li key={item.href}>
+                <Link
+                  className={cn(
+                    "text-foreground/68 hover:bg-secondary/12 hover:text-foreground font-sm flex h-18 flex-col items-center justify-center gap-1 rounded-[1.55rem] text-sm transition-all duration-200 ease-out",
+                    isActive &&
+                      "bg-primary/12 text-primary shadow-[inset_0_0_0_1px_hsl(15_64%_60%/0.12)]",
+                  )}
+                  href={item.href}
+                >
+                  {Icon ? <Icon className="size-7 stroke-[2.2]" /> : null}
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </div>
   );
 }
