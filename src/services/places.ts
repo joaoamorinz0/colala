@@ -16,6 +16,9 @@ export async function fetchPlaces({
   const supabase = createSupabaseServerClient();
 
   if (!supabase) {
+    console.warn(
+      "[places] Supabase não configurado: defina NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY.",
+    );
     return [];
   }
 
@@ -40,10 +43,13 @@ export async function fetchPlaces({
     request = request.limit(limit);
   }
 
-  const { data, error } = await request;
+  const { data, error, status, statusText } = await request;
+
+  console.log("[places] fetch status:", status, statusText);
+  console.log("[places] fetch data:", data);
 
   if (error) {
-    console.error("Failed to load places:", {
+    console.error("[places] fetch error:", {
       message: error.message,
       code: error.code,
       details: error.details,
