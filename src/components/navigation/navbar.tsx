@@ -13,7 +13,11 @@ export function Navbar({ className }: NavbarProps) {
   const pathname = usePathname();
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-30 mx-auto w-full max-w-screen-sm px-5">
+    <div className="pointer-events-none fixed inset-x-0 z-30 mx-auto w-full max-w-screen-sm" style={{
+      bottom: "var(--spacing-navbar-bottom)",
+      paddingLeft: "var(--spacing-page-x)",
+      paddingRight: "var(--spacing-page-x)",
+    }}>
       <nav
         className={cn(
           "border-border/80 bg-background/92 pointer-events-auto rounded-[2rem] border p-1.5 shadow-[0_16px_36px_hsl(0_0%_13%/0.12)] backdrop-blur-xl",
@@ -32,7 +36,7 @@ export function Navbar({ className }: NavbarProps) {
               <li key={item.href}>
                 <Link
                   className={cn(
-                    "text-foreground/68 hover:bg-secondary/12 hover:text-foreground font-sm flex h-18 flex-col items-center justify-center gap-1 rounded-[1.55rem] text-sm transition-all duration-200 ease-out",
+                    "text-foreground/68 hover:bg-secondary/12 hover:text-foreground font-sm flex h-18 flex-col items-center justify-center gap-1 rounded-[1.55rem] text-sm transition-all duration-200",
                     isActive &&
                       "bg-primary/12 text-primary shadow-[inset_0_0_0_1px_hsl(15_64%_60%/0.12)]",
                   )}

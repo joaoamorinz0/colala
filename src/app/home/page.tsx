@@ -11,35 +11,36 @@ export default async function HomePage() {
 
   return (
     <AuthLayout>
-      <div className="space-y-8 overflow-hidden">
-        <header className="flex items-start justify-between">
-          <div>
-            <p className="text-muted-foreground text-xl">Boa tarde</p>
-            <p className="text-foreground mt-2 text-3xl font-bold">João 👋</p>
+      <div className="space-y-6 sm:space-y-8 overflow-hidden">
+        <header className="flex items-start justify-between gap-3">
+          <div className="flex-1">
+            <p className="text-muted-foreground text-lg sm:text-xl">Boa tarde</p>
+            <p className="text-foreground mt-1 sm:mt-2 text-2xl sm:text-3xl font-bold line-clamp-1">João 👋</p>
           </div>
           <button
-            className="border-primary bg-primary/8 text-primary flex size-16 items-center justify-center rounded-full border-4 text-2xl font-bold"
+            className="border-primary bg-primary/8 text-primary flex size-14 sm:size-16 shrink-0 items-center justify-center rounded-full border-4 text-xl sm:text-2xl font-bold"
             type="button"
+            aria-label="Profile"
           >
             J
           </button>
         </header>
 
-        <h1 className="text-foreground max-w-sm text-5xl leading-[1.08] font-extrabold tracking-tight">
+        <h1 className="text-foreground max-w-sm text-4xl sm:text-5xl leading-[1.08] font-extrabold tracking-tight">
           Onde você quer ir hoje?
         </h1>
 
         <LargeSearchBox placeholder="Buscar lugares..." showFilter />
 
-        <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1">
+        <div className="-mx-[var(--spacing-page-x)] flex gap-3 overflow-x-auto px-[var(--spacing-page-x)] pb-1">
           {chips.map((category, index) => {
             const Icon = category.icon;
 
             return (
               <CategoryChip
                 active={index === 0}
-                className="h-14 shrink-0 rounded-full px-6 text-lg"
-                icon={<Icon className="size-5" />}
+                className="h-12 sm:h-14 shrink-0 rounded-full px-5 sm:px-6 text-base sm:text-lg"
+                icon={<Icon className="size-4 sm:size-5" />}
                 key={category.id}
               >
                 {category.label}
@@ -48,13 +49,13 @@ export default async function HomePage() {
           })}
         </div>
 
-        <section className="space-y-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-foreground text-3xl font-extrabold">
+        <section className="space-y-4 sm:space-y-5">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-foreground text-2xl sm:text-3xl font-extrabold">
               🔥 Em alta hoje
             </h2>
             <button
-              className="text-primary text-lg font-semibold"
+              className="text-primary text-sm sm:text-lg font-semibold shrink-0"
               type="button"
             >
               Ver tudo
@@ -69,13 +70,13 @@ export default async function HomePage() {
           )}
         </section>
 
-        <section className="space-y-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-foreground text-3xl font-extrabold">
+        <section className="space-y-4 sm:space-y-5">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-foreground text-2xl sm:text-3xl font-extrabold">
               Mais lugares
             </h2>
             <button
-              className="text-primary text-lg font-semibold"
+              className="text-primary text-sm sm:text-lg font-semibold shrink-0"
               type="button"
             >
               Ver tudo
