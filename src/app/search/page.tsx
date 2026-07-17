@@ -1,34 +1,60 @@
 import { AuthLayout } from "@/components/layout";
-import { CategoryCard, LargeSearchBox } from "@/components/search";
-import { EXPERIENCE_CATEGORIES, RECENT_SEARCHES } from "@/features/places";
-import { Clock3 } from "lucide-react";
+import { PlaceCard } from "@/components/place";
+import { CategoryCard, SearchBar } from "@/components/search";
+import { EXPERIENCE_CATEGORIES } from "@/features/places";
+import { fetchPlaces } from "@/services/places";
 
-export default function SearchPage() {
+type SearchPageProps = {
+  searchParams: Promise<{
+    q?: string;
+  }>;
+};
+
+export default async function SearchPage({ searchParams }: SearchPageProps) {
+  const { q } = await searchParams;
   const categories = EXPERIENCE_CATEGORIES.filter(
     (category) => category.id !== "all",
   );
+  const places = await fetchPlaces({
+    query: q,
+    limit: 12,
+  });
 
   return (
     <AuthLayout>
       <div className="space-y-14">
-        <LargeSearchBox />
+        <section className="space-y-4">
+          <form action="/search" method="GET" className="space-y-4">
+            <SearchBar
+              aria-label="Pesquisar locais"
+              autoComplete="off"
+              defaultValue={q}
+              name="q"
+              placeholder="Buscar por nome, cidade ou descrição"
+            />
+          </form>
+          <p className="text-muted-foreground text-sm">
+            {q
+              ? `Mostrando resultados para "${q}"`
+              : "Busque por nome, cidade ou descrição para encontrar locais."}
+          </p>
+        </section>
 
         <section>
           <h1 className="text-foreground mb-8 text-3xl font-extrabold">
-            Buscas recentes
+            Resultados
           </h1>
-          <div className="divide-border divide-y">
-            {RECENT_SEARCHES.map((search) => (
-              <button
-                className="text-foreground flex h-20 w-full items-center gap-5 text-left text-2xl"
-                key={search}
-                type="button"
-              >
-                <Clock3 className="text-muted-foreground size-6" />
-                {search}
-              </button>
-            ))}
-          </div>
+          {places.length > 0 ? (
+            <div className="space-y-4">
+              {places.map((place) => (
+                <PlaceCard key={place.id} place={place} />
+              ))}
+            </div>
+          ) : (
+            <div className="border-border bg-card text-muted-foreground rounded-[1.75rem] border p-6 text-lg">
+              Nenhum local encontrado para essa busca.
+            </div>
+          )}
         </section>
 
         <section>

@@ -1,11 +1,12 @@
 import { AuthLayout } from "@/components/layout";
-import { FeaturedPlaceCard } from "@/components/place";
+import { PlaceCard } from "@/components/place";
 import { CategoryChip } from "@/components/search/category-chip";
 import { LargeSearchBox } from "@/components/search/large-search-box";
-import { EXPERIENCE_CATEGORIES, MOCK_EXPERIENCES } from "@/features/places";
+import { EXPERIENCE_CATEGORIES } from "@/features/places";
+import { fetchPlaces } from "@/services/places";
 
-export default function HomePage() {
-  const featured = MOCK_EXPERIENCES[0];
+export default async function HomePage() {
+  const [featuredPlace, ...morePlaces] = await fetchPlaces({ limit: 4 });
   const chips = EXPERIENCE_CATEGORIES.slice(0, 4);
 
   return (
@@ -59,13 +60,19 @@ export default function HomePage() {
               Ver tudo
             </button>
           </div>
-          {featured ? <FeaturedPlaceCard experience={featured} /> : null}
+          {featuredPlace ? (
+            <PlaceCard place={featuredPlace} />
+          ) : (
+            <div className="border-border bg-card text-muted-foreground rounded-[1.75rem] border p-6 text-lg">
+              Nenhum local encontrado. Verifique a conexão com o Supabase.
+            </div>
+          )}
         </section>
 
-        <section className="space-y-5 opacity-40">
+        <section className="space-y-5">
           <div className="flex items-center justify-between">
             <h2 className="text-foreground text-3xl font-extrabold">
-              ☕ Cafés para trabalhar
+              Mais lugares
             </h2>
             <button
               className="text-primary text-lg font-semibold"
@@ -73,6 +80,11 @@ export default function HomePage() {
             >
               Ver tudo
             </button>
+          </div>
+          <div className="space-y-4">
+            {morePlaces.map((place) => (
+              <PlaceCard key={place.id} place={place} />
+            ))}
           </div>
         </section>
       </div>

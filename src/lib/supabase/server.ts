@@ -1,4 +1,6 @@
-import { createBrowserClient } from "@supabase/ssr";
+import "server-only";
+
+import { createClient } from "@supabase/supabase-js";
 
 function normalizeSupabaseUrl(url: string) {
   return url.replace(/\/rest\/v1\/?$/, "");
@@ -12,7 +14,7 @@ function getSupabaseKey() {
   );
 }
 
-export function createSupabaseBrowserClient() {
+export function createSupabaseServerClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = getSupabaseKey();
 
@@ -20,5 +22,5 @@ export function createSupabaseBrowserClient() {
     return null;
   }
 
-  return createBrowserClient(normalizeSupabaseUrl(supabaseUrl), supabaseKey);
+  return createClient(normalizeSupabaseUrl(supabaseUrl), supabaseKey);
 }
