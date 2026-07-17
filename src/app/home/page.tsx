@@ -1,4 +1,5 @@
 import { AuthLayout } from "@/components/layout";
+<<<<<<< HEAD
 import { PlaceCard } from "@/components/place";
 import { CategoryChip } from "@/components/search/category-chip";
 import { LargeSearchBox } from "@/components/search/large-search-box";
@@ -7,6 +8,13 @@ import { fetchPlaces } from "@/services/places";
 
 export default async function HomePage() {
   const [featuredPlace, ...morePlaces] = await fetchPlaces({ limit: 4 });
+=======
+import { CategoryChip } from "@/components/search/category-chip";
+import { LargeSearchBox } from "@/components/search/large-search-box";
+import { EXPERIENCE_CATEGORIES, FeaturedPlaces } from "@/features/places";
+
+export default function HomePage() {
+>>>>>>> origin/devin/1784247793-supabase-places-integration
   const chips = EXPERIENCE_CATEGORIES.slice(0, 4);
 
   return (
@@ -60,6 +68,7 @@ export default async function HomePage() {
               Ver tudo
             </button>
           </div>
+<<<<<<< HEAD
           {featuredPlace ? (
             <PlaceCard place={featuredPlace} />
           ) : (
@@ -67,6 +76,9 @@ export default async function HomePage() {
               Nenhum local encontrado. Verifique a conexão com o Supabase.
             </div>
           )}
+=======
+          <FeaturedPlaces />
+>>>>>>> origin/devin/1784247793-supabase-places-integration
         </section>
 
         <section className="space-y-5">

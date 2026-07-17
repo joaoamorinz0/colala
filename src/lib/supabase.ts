@@ -1,24 +1,12 @@
 import { createBrowserClient } from "@supabase/ssr";
 
-function normalizeSupabaseUrl(url: string) {
-  return url.replace(/\/rest\/v1\/?$/, "");
-}
-
-function getSupabaseKey() {
-  return (
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-    null
-  );
-}
-
 export function createSupabaseBrowserClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = getSupabaseKey();
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
     return null;
   }
 
-  return createBrowserClient(normalizeSupabaseUrl(supabaseUrl), supabaseKey);
+  return createBrowserClient(supabaseUrl, supabaseKey);
 }
