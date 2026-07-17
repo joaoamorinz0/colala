@@ -1,11 +1,9 @@
 import { AuthLayout } from "@/components/layout";
-import { FeaturedPlaceCard } from "@/components/place";
 import { CategoryChip } from "@/components/search/category-chip";
 import { LargeSearchBox } from "@/components/search/large-search-box";
-import { EXPERIENCE_CATEGORIES, MOCK_EXPERIENCES } from "@/features/places";
+import { EXPERIENCE_CATEGORIES, FeaturedPlaces } from "@/features/places";
 
 export default function HomePage() {
-  const featured = MOCK_EXPERIENCES[0];
   const chips = EXPERIENCE_CATEGORIES.slice(0, 4);
 
   return (
@@ -59,7 +57,7 @@ export default function HomePage() {
               Ver tudo
             </button>
           </div>
-          {featured ? <FeaturedPlaceCard experience={featured} /> : null}
+          <FeaturedPlaces />
         </section>
 
         <section className="space-y-5 opacity-40">
