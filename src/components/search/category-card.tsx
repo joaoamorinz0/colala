@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { CARD_SURFACE } from "@/constants/design";
 import { cn } from "@/lib/utils";
 
 export type CategoryCardProps = {
@@ -13,13 +14,16 @@ export function CategoryCard({ icon, label, className }: CategoryCardProps) {
   return (
     <button
       className={cn(
-        "border-border bg-card shadow-card flex aspect-[1.65] flex-col items-start justify-center rounded-3xl border px-7 text-left transition-transform active:scale-[0.98]",
+        CARD_SURFACE,
+        "px-card flex aspect-[1.55] w-full flex-col items-start justify-center text-left transition-transform active:scale-[0.98]",
         className,
       )}
       type="button"
     >
-      <Icon className="text-primary size-8" />
-      <span className="text-foreground mt-5 text-2xl font-bold">{label}</span>
+      <Icon className="text-primary size-6" />
+      <span className="text-foreground mt-stack-sm text-base font-bold">
+        {label}
+      </span>
     </button>
   );
 }

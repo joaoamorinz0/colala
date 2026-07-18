@@ -1,4 +1,5 @@
 import { Heart, Star } from "lucide-react";
+import { HORIZONTAL_CARD_HEIGHT, MEDIA_COVER } from "@/constants/design";
 import type { Experience } from "@/features/places";
 import { cn } from "@/lib/utils";
 
@@ -7,41 +8,48 @@ export type FavoritePlaceRowProps = {
   className?: string;
 };
 
+/** Horizontal row with consistent height (Airbnb-style list item). */
 export function FavoritePlaceRow({
   experience,
   className,
 }: FavoritePlaceRowProps) {
   return (
-    <article className={cn("flex gap-5", className)}>
-      <div
-        className="bg-muted h-36 w-40 shrink-0 rounded-2xl"
-        style={{
-          backgroundImage: `url(${experience.imageUrl})`,
-          backgroundPosition: "center",
-          backgroundSize: "cover",
-        }}
-      />
-      <div className="min-w-0 flex-1 py-2">
-        <p className="text-muted-foreground text-base">
+    <article
+      className={cn(
+        HORIZONTAL_CARD_HEIGHT,
+        "gap-stack-md flex w-full items-center",
+        className,
+      )}
+    >
+      <div className="bg-muted size-[5.5rem] shrink-0 overflow-hidden rounded-xl">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          alt={experience.title}
+          className={MEDIA_COVER}
+          src={experience.imageUrl}
+        />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-muted-foreground text-xs font-medium">
           {experience.category === "Café" ? "☕" : "🌇"} {experience.category}
         </p>
-        <h2 className="text-foreground mt-2 line-clamp-1 text-2xl font-bold">
+        <h2 className="text-foreground mt-0.5 line-clamp-1 text-base font-bold tracking-tight">
           {experience.title}
         </h2>
-        <p className="text-muted-foreground mt-1 text-lg">
+        <p className="text-muted-foreground mt-0.5 truncate text-sm">
           {experience.neighborhood} · {experience.distance}
         </p>
-        <div className="mt-3 flex items-center gap-2 text-lg font-bold">
-          <Star className="size-5 fill-yellow-300 text-yellow-300" />
+        <div className="mt-1 flex items-center gap-1.5 text-sm font-semibold">
+          <Star className="size-3.5 fill-yellow-300 text-yellow-300" />
           {experience.rating}
           <span className="text-muted-foreground font-medium">
             ({experience.reviewCount})
           </span>
-          <span className="text-muted-foreground ml-2">{experience.price}</span>
+          <span className="text-muted-foreground ml-1">{experience.price}</span>
         </div>
       </div>
-      <button className="text-primary pt-6" type="button">
-        <Heart className="size-8" />
+      <button className="text-primary shrink-0 self-start pt-1" type="button">
+        <Heart className="size-5" />
       </button>
     </article>
   );

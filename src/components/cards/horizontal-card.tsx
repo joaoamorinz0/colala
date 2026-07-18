@@ -1,4 +1,9 @@
 import type { ReactNode } from "react";
+import {
+  CARD_SURFACE,
+  HORIZONTAL_CARD_HEIGHT,
+  MEDIA_COVER,
+} from "@/constants/design";
 import { cn } from "@/lib/utils";
 
 export type HorizontalCardProps = {
@@ -9,6 +14,10 @@ export type HorizontalCardProps = {
   className?: string;
 };
 
+/**
+ * Horizontal list row with fixed height and square thumbnail.
+ * Keeps consistent alignment across favorites and result lists.
+ */
 export function HorizontalCard({
   title,
   description,
@@ -19,21 +28,23 @@ export function HorizontalCard({
   return (
     <article
       className={cn(
-        "border-border bg-card shadow-card flex items-center gap-3 rounded-lg border p-3",
+        CARD_SURFACE,
+        HORIZONTAL_CARD_HEIGHT,
+        "gap-stack-md p-card-sm flex w-full items-center",
         className,
       )}
     >
       {media ? (
-        <div className="bg-muted size-20 shrink-0 overflow-hidden rounded-md">
-          {media}
+        <div className="bg-muted size-[4.75rem] shrink-0 overflow-hidden rounded-md">
+          <div className={MEDIA_COVER}>{media}</div>
         </div>
       ) : null}
       <div className="min-w-0 flex-1">
-        <h3 className="text-card-foreground line-clamp-1 text-base font-semibold">
+        <h3 className="text-card-foreground line-clamp-1 text-sm font-semibold">
           {title}
         </h3>
         {description ? (
-          <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
+          <p className="text-muted-foreground mt-0.5 line-clamp-2 text-xs leading-relaxed">
             {description}
           </p>
         ) : null}

@@ -1,20 +1,24 @@
 import { AuthLayout } from "@/components/layout";
 import { ProfileMenuSection } from "@/components/profile/profile-menu-section";
+import { CARD_SURFACE, SECTION_STACK } from "@/constants/design";
 import { Bell, Lock, MapPin, Share2, Star, User } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function ProfilePage() {
   return (
     <AuthLayout>
-      <div className="space-y-12 pt-12">
+      <div className={SECTION_STACK}>
         <header className="text-center">
-          <div className="border-primary bg-primary/8 text-primary mx-auto flex size-36 items-center justify-center rounded-full border-4 text-5xl font-bold">
+          <div className="border-primary bg-primary/10 text-primary mx-auto flex size-24 items-center justify-center rounded-full border-[3px] text-3xl font-bold">
             J
           </div>
-          <h1 className="text-foreground mt-8 text-4xl font-extrabold">João</h1>
-          <p className="text-muted-foreground mt-2 text-2xl">João</p>
+          <h1 className="text-foreground mt-stack-md text-2xl font-extrabold tracking-tight">
+            João
+          </h1>
+          <p className="text-muted-foreground mt-1 text-base">João</p>
         </header>
 
-        <section className="bg-card shadow-card grid grid-cols-3 rounded-3xl py-7">
+        <section className={cn(CARD_SURFACE, "py-stack-lg grid grid-cols-3")}>
           {[
             ["2", "Favoritos"],
             ["6", "Visitados"],
@@ -26,8 +30,8 @@ export default function ProfilePage() {
               }
               key={label}
             >
-              <p className="text-foreground text-4xl font-extrabold">{value}</p>
-              <p className="text-muted-foreground mt-2 text-lg">{label}</p>
+              <p className="text-foreground text-2xl font-extrabold">{value}</p>
+              <p className="text-muted-foreground mt-1 text-xs">{label}</p>
             </div>
           ))}
         </section>

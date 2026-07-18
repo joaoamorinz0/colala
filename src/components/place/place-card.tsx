@@ -1,43 +1,45 @@
 import Link from "next/link";
-import { Heart, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { CARD_SURFACE_LG, MEDIA_COVER } from "@/constants/design";
 import type { Place } from "@/types/place";
 import { cn } from "@/lib/utils";
-import { PriceLevelBadge } from "./price-level-badge";
 import { InstagramButton } from "./instagram-button";
+import { PriceLevelBadge } from "./price-level-badge";
 
 export type PlaceCardProps = {
   place: Place;
   className?: string;
 };
 
+/**
+ * Medium vertical card — full column width on lists/grids.
+ * For fixed-width carousels, prefer `components/cards/medium-card`.
+ */
 export function PlaceCard({ place, className }: PlaceCardProps) {
   return (
-    <article
-      className={cn(
-        "bg-card shadow-card overflow-hidden rounded-2xl border border-border/50 transition-all duration-300 hover:shadow-soft",
-        className,
-      )}
-    >
-      <Link href={`/place/${place.id}`} className="block group">
-        <div
-          className="bg-muted aspect-video w-full"
-          style={{
-            backgroundImage: place.cover_image
-              ? `url(${place.cover_image})`
-              : undefined,
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-          }}
-        />
+    <article className={cn(CARD_SURFACE_LG, "w-full", className)}>
+      <Link href={`/place/${place.id}`} className="block">
+        <div className="bg-muted aspect-[16/11] w-full overflow-hidden">
+          {place.cover_image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              alt={place.name}
+              className={MEDIA_COVER}
+              src={place.cover_image}
+            />
+          ) : (
+            <div className="bg-muted size-full" />
+          )}
+        </div>
 
-        <div className="space-y-2 p-3 sm:p-4">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <h3 className="text-card-foreground line-clamp-1 text-base sm:text-lg font-bold">
+        <div className="space-y-stack-sm p-card">
+          <div className="gap-stack-sm flex items-start justify-between">
+            <div className="min-w-0">
+              <h3 className="text-card-foreground line-clamp-1 text-lg font-bold tracking-tight">
                 {place.name}
               </h3>
-              <p className="text-muted-foreground mt-0.5 flex items-center gap-1 text-xs sm:text-sm">
-                <MapPin className="size-3.5 sm:size-4 shrink-0" />
+              <p className="text-muted-foreground mt-1 flex items-center gap-1 text-sm">
+                <MapPin className="size-3.5 shrink-0" />
                 <span className="truncate">
                   {place.city ?? "Cidade não informada"}
                 </span>
@@ -50,19 +52,19 @@ export function PlaceCard({ place, className }: PlaceCardProps) {
           </div>
 
           {place.description ? (
-            <p className="text-muted-foreground line-clamp-2 text-xs sm:text-sm leading-relaxed">
+            <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
               {place.description}
             </p>
           ) : null}
 
-          <div className="flex items-center justify-between pt-1">
-            <button className="text-primary hover:bg-primary/10 p-1.5 rounded-lg transition-colors" type="button">
-              <Heart className="size-4 sm:size-5" />
-            </button>
-            {place.instagram ? (
+          {place.instagram ? (
+            <div className="flex items-center gap-1">
               <InstagramButton instagram={place.instagram} />
-            ) : null}
-          </div>
+              <span className="text-foreground/70 truncate text-sm font-medium">
+                {place.instagram}
+              </span>
+            </div>
+          ) : null}
         </div>
       </Link>
     </article>

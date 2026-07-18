@@ -17,7 +17,7 @@ export function FeaturedPlaces() {
   }
 
   if (isLoading) {
-    return <SkeletonCard className="min-h-[34rem]" lines={3} />;
+    return <SkeletonCard className="aspect-[3/4] min-h-[22rem]" lines={3} />;
   }
 
   if (isError) {

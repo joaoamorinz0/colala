@@ -1,19 +1,20 @@
 import { AuthLayout } from "@/components/layout";
+import { SECTION_STACK } from "@/constants/design";
 import { FavoritePlaces } from "@/features/places";
 
 export default function FavoritesPage() {
   return (
     <AuthLayout>
-      <div className="space-y-12 pt-10">
+      <div className={SECTION_STACK}>
         <header>
-          <h1 className="text-foreground text-5xl font-extrabold tracking-tight">
+          <h1 className="text-foreground text-[2rem] font-extrabold tracking-tight">
             Favoritos
           </h1>
-          <p className="text-muted-foreground mt-3 text-2xl">Seus lugares</p>
+          <p className="text-muted-foreground mt-1 text-base">Seus lugares</p>
         </header>
 
-        <section>
-          <h2 className="text-muted-foreground mb-7 text-xl font-semibold tracking-[0.18em] uppercase">
+        <section className="space-y-stack-md">
+          <h2 className="text-muted-foreground text-xs font-semibold tracking-[0.14em] uppercase">
             Seus lugares salvos
           </h2>
           <FavoritePlaces />

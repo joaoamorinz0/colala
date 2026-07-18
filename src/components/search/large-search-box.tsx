@@ -1,4 +1,5 @@
 import { SlidersHorizontal, Search } from "lucide-react";
+import { CONTROL_HEIGHT } from "@/constants/design";
 import { cn } from "@/lib/utils";
 
 export type LargeSearchBoxProps = {
@@ -15,16 +16,17 @@ export function LargeSearchBox({
   return (
     <div
       className={cn(
-        "border-border bg-card flex h-16 items-center gap-4 rounded-3xl border px-5 shadow-[inset_0_1px_0_hsl(0_0%_100%/0.8)]",
+        CONTROL_HEIGHT,
+        "border-border bg-card shadow-card gap-stack-md rounded-control px-card flex w-full items-center border",
         className,
       )}
     >
-      <Search className="text-muted-foreground size-7 shrink-0" />
-      <span className="text-muted-foreground min-w-0 flex-1 truncate text-xl">
+      <Search className="text-muted-foreground size-5 shrink-0" />
+      <span className="text-muted-foreground min-w-0 flex-1 truncate text-base">
         {placeholder}
       </span>
       {showFilter ? (
-        <SlidersHorizontal className="text-primary size-6 shrink-0" />
+        <SlidersHorizontal className="text-primary size-5 shrink-0" />
       ) : null}
     </div>
   );

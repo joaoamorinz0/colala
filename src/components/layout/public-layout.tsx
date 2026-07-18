@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { APP_SHELL, PAGE_X } from "@/constants/design";
+import { cn } from "@/lib/utils";
 
 export type PublicLayoutProps = {
   children: ReactNode;
@@ -7,7 +9,9 @@ export type PublicLayoutProps = {
 export function PublicLayout({ children }: PublicLayoutProps) {
   return (
     <div className="bg-background text-foreground min-h-dvh">
-      <main className="mx-auto flex min-h-dvh w-full max-w-screen-sm flex-col px-5 py-10">
+      <main
+        className={cn(APP_SHELL, PAGE_X, "py-page-y flex min-h-dvh flex-col")}
+      >
         {children}
       </main>
     </div>

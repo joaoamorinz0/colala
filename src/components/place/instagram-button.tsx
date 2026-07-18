@@ -9,7 +9,11 @@ export type InstagramButtonProps = {
   className?: string;
 };
 
-export function InstagramButton({ instagram, size = "md", className }: InstagramButtonProps) {
+export function InstagramButton({
+  instagram,
+  size = "md",
+  className,
+}: InstagramButtonProps) {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -17,21 +21,21 @@ export function InstagramButton({ instagram, size = "md", className }: Instagram
     window.open(`https://instagram.com/${username}`, "_blank");
   };
 
-  const sizeClasses = size === "sm" ? "size-3.5 sm:size-4" : "size-5";
-  const buttonClasses = size === "sm" ? "p-1 rounded" : "p-1.5 rounded-lg";
+  const iconSize = size === "sm" ? "size-3.5" : "size-4";
+  const buttonSize = size === "sm" ? "p-1 rounded-md" : "p-1.5 rounded-lg";
 
   return (
     <button
       type="button"
       onClick={handleClick}
       className={cn(
-        "text-foreground/60 hover:text-primary hover:bg-primary/10 transition-all duration-200",
-        buttonClasses,
+        "text-foreground/60 hover:text-primary hover:bg-primary/10 transition-colors duration-200",
+        buttonSize,
         className,
       )}
-      aria-label={`Visit ${instagram} on Instagram`}
+      aria-label={`Abrir ${instagram} no Instagram`}
     >
-      <Instagram className={sizeClasses} />
+      <Instagram className={iconSize} />
     </button>
   );
 }

@@ -6,11 +6,12 @@
 @theme {
   --font-sans: "Inter Variable", Inter, ui-sans-serif, system-ui, sans-serif;
 
+  /* ── Brand colors (warm, Airbnb-adjacent) ── */
   --color-background: #f8f7f4;
   --color-foreground: #222222;
-  --color-card: #eadfcf;
+  --color-card: #ffffff;
   --color-card-foreground: #222222;
-  --color-popover: #f8f7f4;
+  --color-popover: #ffffff;
   --color-popover-foreground: #222222;
   --color-primary: #d97757;
   --color-primary-foreground: hsl(0 0% 100%);
@@ -22,22 +23,44 @@
   --color-accent-foreground: #f8f7f4;
   --color-destructive: hsl(0 72% 51%);
   --color-destructive-foreground: hsl(0 0% 100%);
-  --color-border: hsl(34 31% 80%);
-  --color-input: hsl(34 31% 80%);
+  --color-border: hsl(34 20% 88%);
+  --color-input: hsl(34 20% 88%);
   --color-ring: #d97757;
 
-  --spacing-page-x: clamp(1rem, 4vw, 1.5rem);
-  --spacing-page-y: clamp(1.5rem, 6vw, 2rem);
-  --spacing-section: clamp(1.5rem, 5vw, 2rem);
-  --spacing-navbar-bottom: clamp(1rem, 3vw, 1.5rem);
+  /* ── Layout (mobile-first 390×844, cap ~430) ── */
+  --max-width-app: 26.875rem; /* 430px */
+  --width-medium-card: 10.5rem; /* 168px fixed carousel card */
+  --height-horizontal-card: 6.5rem; /* 104px consistent row */
+  --height-control: 3.5rem; /* 56px search / auth fields */
+  --height-nav-item: 4rem; /* 64px tab hit area */
 
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
+  /* ── Spacing scale ── */
+  --spacing-page-x: 1.25rem; /* 20px gutters */
+  --spacing-page-y: 1.25rem; /* 20px top */
+  --spacing-section: 1.75rem; /* 28px between sections */
+  --spacing-stack-xs: 0.5rem; /* 8px */
+  --spacing-stack-sm: 0.75rem; /* 12px */
+  --spacing-stack-md: 1rem; /* 16px */
+  --spacing-stack-lg: 1.25rem; /* 20px */
+  --spacing-card: 1rem; /* 16px card padding */
+  --spacing-card-sm: 0.75rem; /* 12px compact card padding */
+  --spacing-navbar: 7.5rem; /* clearance for floating tab bar */
+  --spacing-nav-bottom: 1.25rem; /* tab bar offset from screen bottom */
 
+  /* ── Radii (iOS-like) ── */
+  --radius-sm: 0.5rem; /* 8px */
+  --radius-md: 0.75rem; /* 12px */
+  --radius-lg: 1rem; /* 16px */
+  --radius-xl: 1.25rem; /* 20px */
+  --radius-card: 1.25rem; /* 20px standard cards */
+  --radius-card-lg: 1.5rem; /* 24px hero / featured */
+  --radius-nav: 1.75rem; /* 28px floating navbar */
+  --radius-control: 1rem; /* 16px inputs / search */
+
+  /* ── Shadows ── */
   --shadow-soft: 0 12px 40px hsl(0 0% 13% / 0.1);
-  --shadow-card: 0 8px 24px hsl(0 0% 13% / 0.06);
+  --shadow-card: 0 4px 16px hsl(0 0% 13% / 0.06);
+  --shadow-nav: 0 12px 32px hsl(0 0% 13% / 0.12);
 }
 
 :root {
@@ -72,6 +95,7 @@
 html {
   min-height: 100%;
   background: var(--color-background);
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -80,6 +104,7 @@ body {
   color: var(--color-foreground);
   font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
@@ -87,4 +112,14 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+/* Hide scrollbar on horizontal carousels (Apple-like). */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }

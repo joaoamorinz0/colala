@@ -3,16 +3,18 @@
 import { EmptyState } from "@/components/layout";
 import { FavoritePlaceRow } from "@/components/place";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
+import { LIST_STACK } from "@/constants/design";
 import { MOCK_EXPERIENCES } from "@/features/places/constants";
 import { usePlaces } from "@/features/places/hooks/use-places";
 import { placeToExperience } from "@/features/places/utils/place-to-experience";
+import { cn } from "@/lib/utils";
 
 export function FavoritePlaces() {
   const { data, isLoading, isError, error, clientStatus } = usePlaces();
 
   if (clientStatus === "not-configured") {
     return (
-      <div className="space-y-6">
+      <div className={cn(LIST_STACK)}>
         {MOCK_EXPERIENCES.slice(0, 2).map((experience) => (
           <FavoritePlaceRow experience={experience} key={experience.id} />
         ))}
@@ -22,7 +24,7 @@ export function FavoritePlaces() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className={cn(LIST_STACK)}>
         <SkeletonCard lines={2} />
         <SkeletonCard lines={2} />
       </div>
@@ -52,7 +54,7 @@ export function FavoritePlaces() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className={cn(LIST_STACK)}>
       {places.map((place) => (
         <FavoritePlaceRow
           experience={placeToExperience(place)}

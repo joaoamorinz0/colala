@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { APP_SHELL, PAGE_X } from "@/constants/design";
 import { MAIN_NAVIGATION_ITEMS } from "@/constants/navigation";
 import { cn } from "@/lib/utils";
 
@@ -13,19 +14,21 @@ export function Navbar({ className }: NavbarProps) {
   const pathname = usePathname();
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 z-30 mx-auto w-full max-w-screen-sm" style={{
-      bottom: "var(--spacing-navbar-bottom)",
-      paddingLeft: "var(--spacing-page-x)",
-      paddingRight: "var(--spacing-page-x)",
-    }}>
+    <div
+      className={cn(
+        "bottom-nav-bottom pointer-events-none fixed inset-x-0 z-30",
+        APP_SHELL,
+        PAGE_X,
+      )}
+    >
       <nav
         className={cn(
-          "border-border/80 bg-background/92 pointer-events-auto rounded-[2rem] border p-1.5 shadow-[0_16px_36px_hsl(0_0%_13%/0.12)] backdrop-blur-xl",
+          "border-border/70 bg-background/90 rounded-nav shadow-nav pointer-events-auto border p-1.5 backdrop-blur-xl",
           className,
         )}
         aria-label="Primary navigation"
       >
-        <ul className="grid grid-cols-4 gap-1">
+        <ul className="grid grid-cols-4 gap-0.5">
           {MAIN_NAVIGATION_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive =
@@ -36,13 +39,13 @@ export function Navbar({ className }: NavbarProps) {
               <li key={item.href}>
                 <Link
                   className={cn(
-                    "text-foreground/68 hover:bg-secondary/12 hover:text-foreground font-sm flex h-18 flex-col items-center justify-center gap-1 rounded-[1.55rem] text-sm transition-all duration-200",
+                    "text-foreground/55 hover:text-foreground h-nav-item rounded-nav flex flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-all duration-200 ease-out",
                     isActive &&
                       "bg-primary/12 text-primary shadow-[inset_0_0_0_1px_hsl(15_64%_60%/0.12)]",
                   )}
                   href={item.href}
                 >
-                  {Icon ? <Icon className="size-7 stroke-[2.2]" /> : null}
+                  {Icon ? <Icon className="size-5 stroke-[2.1]" /> : null}
                   <span>{item.label}</span>
                 </Link>
               </li>

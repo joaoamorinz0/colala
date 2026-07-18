@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Heart, MapPin, Star } from "lucide-react";
+import { Heart, MapPin } from "lucide-react";
+import { CARD_SURFACE_SOFT, MEDIA_COVER } from "@/constants/design";
 import type { Place } from "@/types/place";
 import { cn } from "@/lib/utils";
-import { PriceLevelBadge } from "./price-level-badge";
 import { InstagramButton } from "./instagram-button";
 
 export type HeroCardProps = {
@@ -10,66 +10,90 @@ export type HeroCardProps = {
   className?: string;
 };
 
+/**
+ * Full-width hero for featured places.
+ * Nearly fills the app column (max ~430px).
+ */
 export function HeroCard({ place, className }: HeroCardProps) {
   return (
     <article
       className={cn(
-        "relative overflow-hidden rounded-3xl shadow-soft min-h-80 sm:min-h-96 group",
+        CARD_SURFACE_SOFT,
+        "relative aspect-[4/5] max-h-[32rem] min-h-[20rem] w-full",
         className,
       )}
-      style={{
-        backgroundImage: `linear-gradient(180deg, hsl(0 0% 0% / 0) 40%, hsl(0 0% 0% / 0.7) 100%), url(${place.cover_image})`,
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-      }}
     >
-      <Link href={`/place/${place.id}`} className="absolute inset-0" />
+      {place.cover_image ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          alt={place.name}
+          className={cn(MEDIA_COVER, "absolute inset-0")}
+          src={place.cover_image}
+        />
+      ) : (
+        <div className="bg-muted absolute inset-0" />
+      )}
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-linear-to-b from-black/5 via-transparent to-black/75"
+      />
 
-      <div className="absolute inset-x-0 top-0 p-3 sm:p-4 flex items-start justify-between">
-        <div className="bg-background/80 backdrop-blur-md inline-flex items-center gap-2 rounded-2xl px-3 py-2 text-sm font-semibold text-foreground">
-          <MapPin className="text-primary size-4" />
+      <Link
+        aria-label={place.name}
+        className="absolute inset-0 z-0"
+        href={`/place/${place.id}`}
+      />
+
+      <div className="p-card absolute inset-x-0 top-0 z-10 flex items-start justify-between">
+        <div className="bg-background/85 text-foreground shadow-card inline-flex max-w-[70%] items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold backdrop-blur-md">
+          <MapPin className="text-primary size-3.5 shrink-0" />
           <span className="truncate">{place.city ?? "Local"}</span>
         </div>
         <button
-          className="bg-background/80 backdrop-blur-md text-primary hover:bg-background flex size-11 items-center justify-center rounded-full transition-colors relative z-10"
+          className="bg-background/85 text-primary shadow-card hover:bg-background relative z-10 flex size-10 items-center justify-center rounded-full backdrop-blur-md transition-colors"
           type="button"
-          onClick={(e) => e.preventDefault()}
         >
           <Heart className="size-5" />
         </button>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 text-white space-y-3">
-        <div className="inline-flex items-center gap-1 bg-black/40 rounded-full px-3 py-1.5 text-xs sm:text-sm font-medium backdrop-blur">
+      <div className="space-y-stack-sm p-card absolute inset-x-0 bottom-0 z-10 text-white">
+        <div className="inline-flex items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-xs font-medium backdrop-blur-sm">
           <span>📍</span>
-          {place.city}
+          {place.city ?? "Local"}
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-extrabold line-clamp-2 leading-tight">
+        <h2 className="line-clamp-2 text-2xl leading-tight font-extrabold tracking-tight">
           {place.name}
         </h2>
 
-        {place.description && (
-          <p className="text-white/85 text-xs sm:text-sm line-clamp-1">
+        {place.description ? (
+          <p className="line-clamp-1 text-sm text-white/85">
             {place.description}
           </p>
-        )}
+        ) : null}
 
-        <div className="flex items-center justify-between pt-2">
-          <div className="flex items-center gap-3 flex-wrap">
-            {place.price_level && (
-              <div className="inline-flex items-center gap-1 text-white font-semibold">
-                {Array.from({ length: place.price_level }, (_, i) => (
+        <div className="gap-stack-sm flex items-center justify-between pt-0.5">
+          {place.price_level ? (
+            <div className="inline-flex items-center gap-0.5 text-sm font-semibold">
+              {Array.from(
+                { length: Math.min(Math.max(place.price_level, 1), 4) },
+                (_, i) => (
                   <span key={i}>$</span>
-                ))}
-              </div>
-            )}
-          </div>
-          {place.instagram && (
-            <div className="relative z-20">
-              <InstagramButton instagram={place.instagram} />
+                ),
+              )}
             </div>
+          ) : (
+            <span />
           )}
+          {place.instagram ? (
+            <div className="relative z-20">
+              <InstagramButton
+                className="text-white/90 hover:bg-white/15 hover:text-white"
+                instagram={place.instagram}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
     </article>

@@ -16,7 +16,7 @@ export function CategoryChip({
   return (
     <button
       className={cn(
-        "inline-flex h-9 items-center gap-2 rounded-full border px-3 text-sm font-medium transition-colors",
+        "inline-flex h-10 shrink-0 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors",
         active
           ? "border-primary bg-primary text-primary-foreground"
           : "border-border bg-card text-card-foreground hover:bg-muted",

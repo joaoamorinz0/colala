@@ -1,4 +1,9 @@
 import type { ReactNode } from "react";
+import {
+  CARD_SURFACE,
+  MEDIA_COVER,
+  MEDIUM_CARD_WIDTH,
+} from "@/constants/design";
 import { cn } from "@/lib/utils";
 
 export type MediumCardProps = {
@@ -9,6 +14,10 @@ export type MediumCardProps = {
   className?: string;
 };
 
+/**
+ * Fixed-width medium card for horizontal carousels.
+ * Width is locked via `w-medium-card` so cards never stretch.
+ */
 export function MediumCard({
   title,
   description,
@@ -17,23 +26,22 @@ export function MediumCard({
   className,
 }: MediumCardProps) {
   return (
-    <article
-      className={cn(
-        "border-border bg-card shadow-card overflow-hidden rounded-lg border",
-        className,
-      )}
-    >
-      {media ? <div className="bg-muted aspect-[4/3]">{media}</div> : null}
-      <div className="p-3">
-        <h3 className="text-card-foreground line-clamp-1 text-base font-semibold">
+    <article className={cn(CARD_SURFACE, MEDIUM_CARD_WIDTH, className)}>
+      {media ? (
+        <div className="bg-muted aspect-[4/3] w-full overflow-hidden">
+          <div className={MEDIA_COVER}>{media}</div>
+        </div>
+      ) : null}
+      <div className="space-y-stack-xs p-card-sm">
+        <h3 className="text-card-foreground line-clamp-1 text-sm font-semibold">
           {title}
         </h3>
         {description ? (
-          <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
+          <p className="text-muted-foreground line-clamp-2 text-xs leading-relaxed">
             {description}
           </p>
         ) : null}
-        {metadata ? <div className="mt-3">{metadata}</div> : null}
+        {metadata ? <div className="pt-0.5">{metadata}</div> : null}
       </div>
     </article>
   );

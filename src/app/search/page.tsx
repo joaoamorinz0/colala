@@ -1,8 +1,10 @@
 import { AuthLayout } from "@/components/layout";
 import { PlaceCard } from "@/components/place";
 import { CategoryCard, SearchBar } from "@/components/search";
+import { LIST_STACK, SECTION_GAP, SECTION_STACK } from "@/constants/design";
 import { EXPERIENCE_CATEGORIES } from "@/features/places";
 import { fetchPlaces } from "@/services/places";
+import { cn } from "@/lib/utils";
 
 type SearchPageProps = {
   searchParams: Promise<{
@@ -22,9 +24,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <AuthLayout>
-      <div className="space-y-14">
-        <section className="space-y-4">
-          <form action="/search" method="GET" className="space-y-4">
+      <div className={SECTION_STACK}>
+        <section className={SECTION_GAP}>
+          <form action="/search" method="GET">
             <SearchBar
               aria-label="Pesquisar locais"
               autoComplete="off"
@@ -40,28 +42,28 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </p>
         </section>
 
-        <section>
-          <h1 className="text-foreground mb-8 text-3xl font-extrabold">
+        <section className={SECTION_GAP}>
+          <h1 className="text-foreground text-xl font-extrabold tracking-tight">
             Resultados
           </h1>
           {places.length > 0 ? (
-            <div className="space-y-4">
+            <div className={LIST_STACK}>
               {places.map((place) => (
                 <PlaceCard key={place.id} place={place} />
               ))}
             </div>
           ) : (
-            <div className="border-border bg-card text-muted-foreground rounded-[1.75rem] border p-6 text-lg">
+            <div className="border-border bg-card text-muted-foreground rounded-card-lg p-card border text-sm">
               Nenhum local encontrado para essa busca.
             </div>
           )}
         </section>
 
-        <section>
-          <h2 className="text-foreground mb-8 text-3xl font-extrabold">
+        <section className={SECTION_GAP}>
+          <h2 className="text-foreground text-xl font-extrabold tracking-tight">
             Explorar por categoria
           </h2>
-          <div className="grid grid-cols-2 gap-5">
+          <div className={cn("gap-stack-md grid grid-cols-2")}>
             {categories.map((category) => (
               <CategoryCard
                 icon={category.icon}
