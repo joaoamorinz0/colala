@@ -3,7 +3,7 @@ export type Place = {
   name: string;
   description: string | null;
   city: string | null;
-  price_level: number | null;
+  price_level: string | number | null;
   instagram: string | null;
   cover_image: string | null;
   created_at: string;
