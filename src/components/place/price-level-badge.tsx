@@ -1,11 +1,14 @@
 import { cn } from "@/lib/utils";
 
 export type PriceLevelBadgeProps = {
-  level: number;
+  level: number | string;
   className?: string;
 };
 
 export function PriceLevelBadge({ level, className }: PriceLevelBadgeProps) {
+  const numLevel =
+    typeof level === "number" ? level : parseInt(String(level), 10) || 1;
+
   return (
     <span
       className={cn(
@@ -13,7 +16,7 @@ export function PriceLevelBadge({ level, className }: PriceLevelBadgeProps) {
         className,
       )}
     >
-      {Array.from({ length: Math.min(Math.max(level, 1), 4) }, (_, i) => (
+      {Array.from({ length: Math.min(Math.max(numLevel, 1), 4) }, (_, i) => (
         <span key={i}>$</span>
       ))}
     </span>

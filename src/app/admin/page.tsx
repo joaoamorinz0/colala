@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { AdminLayout, PageHeader } from '@/components/admin';
-import { BarChart3, MapPin, Tags, ArrowRight } from 'lucide-react';
+import Link from "next/link";
+import { AdminLayout, PageHeader } from "@/components/admin";
+import { MapPin, Tags, ArrowRight } from "lucide-react";
 
 export default function AdminDashboard() {
   const stats = [
     {
-      title: 'Locais',
+      title: "Locais",
       count: 0,
-      description: 'Locais cadastrados',
+      description: "Locais cadastrados",
       icon: MapPin,
-      href: '/admin/places',
+      href: "/admin/places",
     },
     {
-      title: 'Categorias',
+      title: "Categorias",
       count: 0,
-      description: 'Categorias ativas',
+      description: "Categorias ativas",
       icon: Tags,
-      href: '/admin/categories',
+      href: "/admin/categories",
     },
   ];
 
@@ -33,9 +33,9 @@ export default function AdminDashboard() {
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
-              <Link
-                key={stat.href}
-                href={stat.href as never}
+            <Link
+              key={stat.href}
+              href={stat.href as never}
               className="group rounded-lg bg-white p-6 shadow-sm transition-all hover:shadow-md"
             >
               <div className="flex items-start justify-between">
@@ -51,7 +51,7 @@ export default function AdminDashboard() {
                   <Icon size={24} />
                 </div>
               </div>
-              <div className="mt-4 flex items-center text-blue-600 group-hover:translate-x-1 transition-transform">
+              <div className="mt-4 flex items-center text-blue-600 transition-transform group-hover:translate-x-1">
                 <span className="text-sm font-medium">Gerenciar</span>
                 <ArrowRight size={16} className="ml-2" />
               </div>
@@ -64,13 +64,13 @@ export default function AdminDashboard() {
         <h2 className="text-lg font-bold text-gray-900">Atalhos rápidos</h2>
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           <Link
-            href={'/admin/places/new' as never}
+            href={"/admin/places/new" as never}
             className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center transition-colors hover:border-blue-500 hover:bg-blue-50"
           >
             <p className="font-medium text-gray-900">Adicionar novo local</p>
           </Link>
           <Link
-            href={'/admin/categories' as never}
+            href={"/admin/categories" as never}
             className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center transition-colors hover:border-blue-500 hover:bg-blue-50"
           >
             <p className="font-medium text-gray-900">Gerenciar categorias</p>

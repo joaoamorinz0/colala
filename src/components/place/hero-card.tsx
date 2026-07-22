@@ -77,7 +77,17 @@ export function HeroCard({ place, className }: HeroCardProps) {
           {place.price_level ? (
             <div className="inline-flex items-center gap-0.5 text-sm font-semibold">
               {Array.from(
-                { length: Math.min(Math.max(place.price_level, 1), 4) },
+                {
+                  length: Math.min(
+                    Math.max(
+                      typeof place.price_level === "number"
+                        ? place.price_level
+                        : parseInt(String(place.price_level), 10) || 1,
+                      1,
+                    ),
+                    4,
+                  ),
+                },
                 (_, i) => (
                   <span key={i}>$</span>
                 ),

@@ -10,12 +10,12 @@ export default function ProfilePage() {
       <div className={SECTION_STACK}>
         <header className="text-center">
           <div className="border-primary bg-primary/10 text-primary mx-auto flex size-24 items-center justify-center rounded-full border-[3px] text-3xl font-bold">
-            J
+            JO
           </div>
           <h1 className="text-foreground mt-stack-md text-2xl font-extrabold tracking-tight">
-            João
+            João Victor
           </h1>
-          <p className="text-muted-foreground mt-1 text-base">João</p>
+          <p className="text-muted-foreground mt-1 text-base">joaoamorinz</p>
         </header>
 
         <section className={cn(CARD_SURFACE, "py-stack-lg grid grid-cols-3")}>

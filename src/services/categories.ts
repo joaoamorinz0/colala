@@ -1,34 +1,37 @@
-import { createClient } from '@/lib/supabase/client';
-import { Category } from '@/types/admin';
+import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { Category } from "@/types/category";
 
-const CATEGORIES_TABLE = 'categories';
+const CATEGORIES_TABLE = "categories";
 
 export const categoriesService = {
   async getAll(): Promise<Category[]> {
-    const supabase = createClient();
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) return [];
     const { data, error } = await supabase
       .from(CATEGORIES_TABLE)
-      .select('*')
-      .order('name', { ascending: true });
+      .select("*")
+      .order("name", { ascending: true });
 
     if (error) throw error;
     return data || [];
   },
 
-  async getById(id: string): Promise<Category> {
-    const supabase = createClient();
+  async getById(id: string): Promise<Category | null> {
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) return null;
     const { data, error } = await supabase
       .from(CATEGORIES_TABLE)
-      .select('*')
-      .eq('id', id)
+      .select("*")
+      .eq("id", id)
       .single();
 
     if (error) throw error;
     return data;
   },
 
-  async create(name: string, description?: string): Promise<Category> {
-    const supabase = createClient();
+  async create(name: string, description?: string): Promise<Category | null> {
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) throw new Error("Supabase client not initialized");
     const { data, error } = await supabase
       .from(CATEGORIES_TABLE)
       .insert([
@@ -46,8 +49,13 @@ export const categoriesService = {
     return data;
   },
 
-  async update(id: string, name: string, description?: string): Promise<Category> {
-    const supabase = createClient();
+  async update(
+    id: string,
+    name: string,
+    description?: string,
+  ): Promise<Category | null> {
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) throw new Error("Supabase client not initialized");
     const { data, error } = await supabase
       .from(CATEGORIES_TABLE)
       .update({
@@ -55,7 +63,7 @@ export const categoriesService = {
         description,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', id)
+      .eq("id", id)
       .select()
       .single();
 
@@ -64,11 +72,12 @@ export const categoriesService = {
   },
 
   async delete(id: string): Promise<void> {
-    const supabase = createClient();
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) throw new Error("Supabase client not initialized");
     const { error } = await supabase
       .from(CATEGORIES_TABLE)
       .delete()
-      .eq('id', id);
+      .eq("id", id);
 
     if (error) throw error;
   },

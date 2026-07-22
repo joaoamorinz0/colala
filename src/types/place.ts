@@ -3,9 +3,28 @@ export type Place = {
   name: string;
   description: string | null;
   city: string | null;
+  neighborhood: string | null;
+  address: string | null;
   price_level: string | number | null;
   instagram: string | null;
+  phone: string | null;
+  website: string | null;
   cover_image: string | null;
+  gallery: string[] | null;
   created_at: string;
   category_id: string | number | null;
+  category?: {
+    id: string | number;
+    name: string;
+    icon: string | null;
+  } | null;
+  rating: number | null;
+  latitude: number | null;
+  longitude: number | null;
+  opening_hours: string | null;
+  featured: boolean | null;
+  work_friendly: boolean | null;
+  pet_friendly: boolean | null;
+  wifi: boolean | null;
+  sunset: boolean | null;
 };

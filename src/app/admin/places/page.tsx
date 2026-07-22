@@ -1,30 +1,30 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { AdminLayout, PageHeader, LoadingSpinner } from '@/components/admin';
-import { createSupabaseBrowserClient } from '@/lib/supabase';
-import { getAllPlaces, deletePlace } from '@/services/admin.service';
-import type { Place } from '@/types/place';
-import { Edit2, Trash2, Plus } from 'lucide-react';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { AdminLayout, PageHeader, LoadingSpinner } from "@/components/admin";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { getAllPlaces, deletePlace } from "@/services/admin.service";
+import type { Place } from "@/types/place";
+import { Edit2, Trash2, Plus } from "lucide-react";
 
 export default function PlacesPage() {
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     const loadPlaces = async () => {
       try {
         const client = createSupabaseBrowserClient();
-        if (!client) throw new Error('Supabase não configurado');
+        if (!client) throw new Error("Supabase não configurado");
 
         const data = await getAllPlaces(client);
         setPlaces(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Erro ao carregar locais');
+        setError(
+          err instanceof Error ? err.message : "Erro ao carregar locais",
+        );
       } finally {
         setLoading(false);
       }
@@ -34,16 +34,16 @@ export default function PlacesPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja deletar este local?')) return;
+    if (!confirm("Tem certeza que deseja deletar este local?")) return;
 
     try {
       const client = createSupabaseBrowserClient();
-      if (!client) throw new Error('Supabase não configurado');
+      if (!client) throw new Error("Supabase não configurado");
 
       await deletePlace(client, id);
       setPlaces(places.filter((place) => place.id !== id));
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erro ao deletar local');
+      alert(err instanceof Error ? err.message : "Erro ao deletar local");
     }
   };
 
@@ -55,7 +55,7 @@ export default function PlacesPage() {
         action={
           <Link
             href="/admin/places/new"
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700"
           >
             <Plus size={20} />
             Novo Local
@@ -76,13 +76,13 @@ export default function PlacesPage() {
           <p className="text-gray-600">Nenhum local cadastrado ainda</p>
           <Link
             href="/admin/places/new"
-            className="mt-4 inline-block rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 transition-colors"
+            className="mt-4 inline-block rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700"
           >
             Criar primeiro local
           </Link>
         </div>
       ) : (
-        <div className="rounded-lg bg-white shadow-sm overflow-hidden">
+        <div className="overflow-hidden rounded-lg bg-white shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="border-b border-gray-200 bg-gray-50">
@@ -108,31 +108,31 @@ export default function PlacesPage() {
                 {places.map((place) => (
                   <tr
                     key={place.id}
-                    className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                    className="border-b border-gray-200 transition-colors hover:bg-gray-50"
                   >
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                       {place.name}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      {place.city || '-'}
+                      {place.city || "-"}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      {place.category_id ? `ID: ${place.category_id}` : '-'}
+                      {place.category_id ? `ID: ${place.category_id}` : "-"}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      {place.price_level ? `${place.price_level}$` : '-'}
+                      {place.price_level ? `${place.price_level}$` : "-"}
                     </td>
                     <td className="px-6 py-4 text-right text-sm font-medium">
                       <div className="flex items-center justify-end gap-3">
                         <Link
                           href={`/admin/places/${place.id}/edit`}
-                          className="text-blue-600 hover:text-blue-700 transition-colors"
+                          className="text-blue-600 transition-colors hover:text-blue-700"
                         >
                           <Edit2 size={18} />
                         </Link>
                         <button
                           onClick={() => handleDelete(place.id)}
-                          className="text-red-600 hover:text-red-700 transition-colors"
+                          className="text-red-600 transition-colors hover:text-red-700"
                         >
                           <Trash2 size={18} />
                         </button>

@@ -22,7 +22,6 @@ export function FavoritePlaceRow({
       )}
     >
       <div className="bg-muted size-[5.5rem] shrink-0 overflow-hidden rounded-xl">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           alt={experience.title}
           className={MEDIA_COVER}
@@ -31,7 +30,7 @@ export function FavoritePlaceRow({
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-muted-foreground text-xs font-medium">
-          {experience.category === "Café" ? "☕" : "🌇"} {experience.category}
+          {experience.category === "Café" ? "☕" : ""} {experience.category}
         </p>
         <h2 className="text-foreground mt-0.5 line-clamp-1 text-base font-bold tracking-tight">
           {experience.title}

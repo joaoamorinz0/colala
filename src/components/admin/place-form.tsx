@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { FormField, LoadingSpinner } from '@/components/admin';
-import { createSupabaseBrowserClient } from '@/lib/supabase';
-import { uploadImage } from '@/services/admin.service';
-import type { Place } from '@/types/place';
-import type { Category } from '@/types/category';
-import { getAllCategories } from '@/services/admin.service';
-import { Upload, X } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { FormField, LoadingSpinner } from "@/components/admin";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { uploadImage } from "@/services/admin.service";
+import type { Place } from "@/types/place";
+import type { Category } from "@/types/category";
+import { getAllCategories } from "@/services/admin.service";
+import { Upload, X } from "lucide-react";
 
 interface PlaceFormProps {
   initialData?: Place;
-  onSubmit: (data: Omit<Place, 'id' | 'created_at'>) => Promise<void>;
+  onSubmit: (data: Omit<Place, "id" | "created_at">) => Promise<void>;
   isLoading?: boolean;
 }
 
@@ -21,12 +21,12 @@ export function PlaceForm({
   isLoading,
 }: PlaceFormProps) {
   const [formData, setFormData] = useState({
-    name: initialData?.name || '',
-    description: initialData?.description || '',
-    city: initialData?.city || '',
-    price_level: initialData?.price_level?.toString() || '',
-    instagram: initialData?.instagram || '',
-    category_id: initialData?.category_id?.toString() || '',
+    name: initialData?.name || "",
+    description: initialData?.description || "",
+    city: initialData?.city || "",
+    price_level: initialData?.price_level?.toString() || "",
+    instagram: initialData?.instagram || "",
+    category_id: initialData?.category_id?.toString() || "",
   });
 
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -41,11 +41,11 @@ export function PlaceForm({
     const loadCategories = async () => {
       try {
         const client = createSupabaseBrowserClient();
-        if (!client) throw new Error('Supabase não configurado');
+        if (!client) throw new Error("Supabase não configurado");
         const data = await getAllCategories(client);
         setCategories(data);
       } catch (err) {
-        console.error('Erro ao carregar categorias:', err);
+        console.error("Erro ao carregar categorias:", err);
       }
     };
 
@@ -65,7 +65,9 @@ export function PlaceForm({
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -84,23 +86,43 @@ export function PlaceForm({
       if (coverImage) {
         setUploadingImage(true);
         const client = createSupabaseBrowserClient();
-        if (!client) throw new Error('Supabase não configurado');
+        if (!client) throw new Error("Supabase não configurado");
         coverImageUrl = await uploadImage(client, coverImage);
       }
 
-      const submitData: Omit<Place, 'id' | 'created_at'> = {
+      const submitData: Omit<Place, "id" | "created_at"> = {
         name: formData.name,
         description: formData.description || null,
         city: formData.city || null,
-        price_level: formData.price_level ? parseInt(formData.price_level) : null,
+        neighborhood: null,
+        address: null,
+        price_level: formData.price_level
+          ? parseInt(formData.price_level)
+          : null,
         instagram: formData.instagram || null,
+        phone: null,
+        website: null,
         cover_image: coverImageUrl || null,
-        category_id: formData.category_id ? parseInt(formData.category_id) : null,
+        gallery: null,
+        category_id: formData.category_id
+          ? parseInt(formData.category_id)
+          : null,
+        rating: null,
+        latitude: null,
+        longitude: null,
+        opening_hours: null,
+        featured: null,
+        work_friendly: null,
+        pet_friendly: null,
+        wifi: null,
+        sunset: null,
       };
 
       await onSubmit(submitData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao processar formulário');
+      setError(
+        err instanceof Error ? err.message : "Erro ao processar formulário",
+      );
     } finally {
       setUploadingImage(false);
     }
@@ -133,7 +155,7 @@ export function PlaceForm({
                   setCoverImage(null);
                   setImagePreview(null);
                 }}
-                className="absolute -right-2 -top-2 rounded-full bg-red-600 p-1 text-white hover:bg-red-700"
+                className="absolute -top-2 -right-2 rounded-full bg-red-600 p-1 text-white hover:bg-red-700"
               >
                 <X size={16} />
               </button>
@@ -143,7 +165,7 @@ export function PlaceForm({
             <Upload size={20} className="text-gray-400" />
             <div>
               <p className="text-sm font-medium text-gray-900">
-                {coverImage ? coverImage.name : 'Clique para fazer upload'}
+                {coverImage ? coverImage.name : "Clique para fazer upload"}
               </p>
               <p className="text-xs text-gray-500">PNG, JPG até 5MB</p>
             </div>
@@ -178,7 +200,7 @@ export function PlaceForm({
             onChange={handleChange}
             placeholder="Digite a descrição do local"
             rows={4}
-            className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
           />
         </div>
 
@@ -200,7 +222,7 @@ export function PlaceForm({
             name="category_id"
             value={formData.category_id}
             onChange={handleChange}
-            className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
           >
             <option value="">Selecione uma categoria</option>
             {categories.map((cat) => (
@@ -237,7 +259,7 @@ export function PlaceForm({
           <button
             type="submit"
             disabled={isLoading || uploadingImage}
-            className="rounded-lg bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading || uploadingImage ? (
               <>
@@ -245,7 +267,7 @@ export function PlaceForm({
                 Processando...
               </>
             ) : (
-              'Salvar Local'
+              "Salvar Local"
             )}
           </button>
         </div>
