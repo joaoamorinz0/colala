@@ -26,7 +26,7 @@ export default function AdminDashboard() {
     <AdminLayout>
       <PageHeader
         title="Dashboard"
-        description="Bem-vindo ao painel administrativo de COLALÁ"
+        description="Bem-vindo ao painel administrativo"
       />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -36,22 +36,22 @@ export default function AdminDashboard() {
             <Link
               key={stat.href}
               href={stat.href as never}
-              className="group rounded-lg bg-white p-6 shadow-sm transition-all hover:shadow-md"
+              className="border-border bg-card hover:shadow-soft group rounded-lg border p-6 shadow-sm transition-all"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">
+                  <p className="text-muted-foreground text-sm font-medium">
                     {stat.description}
                   </p>
-                  <p className="mt-2 text-3xl font-bold text-gray-900">
+                  <p className="text-foreground mt-2 text-3xl font-bold">
                     {stat.count}
                   </p>
                 </div>
-                <div className="rounded-lg bg-blue-100 p-3 text-blue-600">
+                <div className="bg-primary/10 text-primary rounded-lg p-3">
                   <Icon size={24} />
                 </div>
               </div>
-              <div className="mt-4 flex items-center text-blue-600 transition-transform group-hover:translate-x-1">
+              <div className="text-primary mt-4 flex items-center transition-transform group-hover:translate-x-1">
                 <span className="text-sm font-medium">Gerenciar</span>
                 <ArrowRight size={16} className="ml-2" />
               </div>
@@ -60,20 +60,20 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      <div className="mt-12 rounded-lg bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-bold text-gray-900">Atalhos rápidos</h2>
+      <div className="border-border bg-card mt-12 rounded-lg border p-6 shadow-sm">
+        <h2 className="text-foreground text-lg font-bold">Atalhos rápidos</h2>
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
           <Link
             href={"/admin/places/new" as never}
-            className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center transition-colors hover:border-blue-500 hover:bg-blue-50"
+            className="border-muted-foreground/25 hover:border-primary hover:bg-primary/5 rounded-lg border-2 border-dashed p-4 text-center transition-colors"
           >
-            <p className="font-medium text-gray-900">Adicionar novo local</p>
+            <p className="text-foreground font-medium">Adicionar novo local</p>
           </Link>
           <Link
             href={"/admin/categories" as never}
-            className="rounded-lg border-2 border-dashed border-gray-300 p-4 text-center transition-colors hover:border-blue-500 hover:bg-blue-50"
+            className="border-muted-foreground/25 hover:border-primary hover:bg-primary/5 rounded-lg border-2 border-dashed p-4 text-center transition-colors"
           >
-            <p className="font-medium text-gray-900">Gerenciar categorias</p>
+            <p className="text-foreground font-medium">Gerenciar categorias</p>
           </Link>
         </div>
       </div>

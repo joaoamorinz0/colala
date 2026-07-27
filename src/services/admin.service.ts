@@ -1,6 +1,6 @@
-import type { createSupabaseBrowserClient } from '@/lib/supabase';
-import type { Place } from '@/types/place';
-import type { Category } from '@/types/category';
+import type { createSupabaseBrowserClient } from "@/lib/supabase";
+import type { Place, PlaceStatus } from "@/types/place";
+import type { Category } from "@/types/category";
 
 type SupabaseBrowserClient = NonNullable<
   ReturnType<typeof createSupabaseBrowserClient>
@@ -9,10 +9,10 @@ type SupabaseBrowserClient = NonNullable<
 // PLACES MANAGEMENT
 export async function createPlace(
   client: SupabaseBrowserClient,
-  place: Omit<Place, 'id' | 'created_at'>,
+  place: Omit<Place, "id" | "created_at">,
 ): Promise<Place> {
   const { data, error } = await client
-    .from('places')
+    .from("places")
     .insert([place])
     .select()
     .single();
@@ -27,12 +27,12 @@ export async function createPlace(
 export async function updatePlace(
   client: SupabaseBrowserClient,
   id: string,
-  place: Partial<Omit<Place, 'id' | 'created_at'>>,
+  place: Partial<Omit<Place, "id" | "created_at">>,
 ): Promise<Place> {
   const { data, error } = await client
-    .from('places')
+    .from("places")
     .update(place)
-    .eq('id', id)
+    .eq("id", id)
     .select()
     .single();
 
@@ -47,7 +47,7 @@ export async function deletePlace(
   client: SupabaseBrowserClient,
   id: string,
 ): Promise<void> {
-  const { error } = await client.from('places').delete().eq('id', id);
+  const { error } = await client.from("places").delete().eq("id", id);
 
   if (error) {
     throw new Error(`Erro ao deletar local: ${error.message}`);
@@ -59,9 +59,9 @@ export async function getPlaceById(
   id: string,
 ): Promise<Place> {
   const { data, error } = await client
-    .from('places')
-    .select('*')
-    .eq('id', id)
+    .from("places")
+    .select("*")
+    .eq("id", id)
     .single();
 
   if (error) {
@@ -75,9 +75,9 @@ export async function getAllPlaces(
   client: SupabaseBrowserClient,
 ): Promise<Place[]> {
   const { data, error } = await client
-    .from('places')
-    .select('*')
-    .order('created_at', { ascending: false });
+    .from("places")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (error) {
     throw new Error(`Erro ao buscar locais: ${error.message}`);
@@ -89,10 +89,10 @@ export async function getAllPlaces(
 // CATEGORIES MANAGEMENT
 export async function createCategory(
   client: SupabaseBrowserClient,
-  category: Omit<Category, 'id' | 'created_at'>,
+  category: Omit<Category, "id" | "created_at">,
 ): Promise<Category> {
   const { data, error } = await client
-    .from('categories')
+    .from("categories")
     .insert([category])
     .select()
     .single();
@@ -107,12 +107,12 @@ export async function createCategory(
 export async function updateCategory(
   client: SupabaseBrowserClient,
   id: string | number,
-  category: Partial<Omit<Category, 'id' | 'created_at'>>,
+  category: Partial<Omit<Category, "id" | "created_at">>,
 ): Promise<Category> {
   const { data, error } = await client
-    .from('categories')
+    .from("categories")
     .update(category)
-    .eq('id', id)
+    .eq("id", id)
     .select()
     .single();
 
@@ -127,7 +127,7 @@ export async function deleteCategory(
   client: SupabaseBrowserClient,
   id: string | number,
 ): Promise<void> {
-  const { error } = await client.from('categories').delete().eq('id', id);
+  const { error } = await client.from("categories").delete().eq("id", id);
 
   if (error) {
     throw new Error(`Erro ao deletar categoria: ${error.message}`);
@@ -139,9 +139,9 @@ export async function getCategoryById(
   id: string | number,
 ): Promise<Category> {
   const { data, error } = await client
-    .from('categories')
-    .select('*')
-    .eq('id', id)
+    .from("categories")
+    .select("*")
+    .eq("id", id)
     .single();
 
   if (error) {
@@ -155,9 +155,9 @@ export async function getAllCategories(
   client: SupabaseBrowserClient,
 ): Promise<Category[]> {
   const { data, error } = await client
-    .from('categories')
-    .select('*')
-    .order('created_at', { ascending: false });
+    .from("categories")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   if (error) {
     throw new Error(`Erro ao buscar categorias: ${error.message}`);
@@ -170,7 +170,7 @@ export async function getAllCategories(
 export async function uploadImage(
   client: SupabaseBrowserClient,
   file: File,
-  bucket: string = 'places',
+  bucket: string = "places",
 ): Promise<string> {
   const fileName = `${Date.now()}-${file.name}`;
   const { error, data } = await client.storage
@@ -191,7 +191,7 @@ export async function uploadImage(
 export async function deleteImage(
   client: SupabaseBrowserClient,
   filePath: string,
-  bucket: string = 'places',
+  bucket: string = "places",
 ): Promise<void> {
   const { error } = await client.storage.from(bucket).remove([filePath]);
 

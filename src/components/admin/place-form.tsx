@@ -7,7 +7,19 @@ import { uploadImage } from "@/services/admin.service";
 import type { Place } from "@/types/place";
 import type { Category } from "@/types/category";
 import { getAllCategories } from "@/services/admin.service";
-import { Upload, X } from "lucide-react";
+import { Loader2, MapPin, Upload, X } from "lucide-react";
+
+type ExtractedData = {
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  lat: number;
+  lng: number;
+  phone: string;
+  website: string;
+  opening_hours: Record<string, string[]> | null;
+};
 
 interface PlaceFormProps {
   initialData?: Place;
@@ -29,6 +41,16 @@ export function PlaceForm({
     category_id: initialData?.category_id?.toString() || "",
   });
 
+  const [extraData, setExtraData] = useState({
+    address: initialData?.address || "",
+    phone: initialData?.phone || "",
+    website: initialData?.website || "",
+    latitude: initialData?.latitude?.toString() || "",
+    longitude: initialData?.longitude?.toString() || "",
+    opening_hours: initialData?.opening_hours || "",
+    neighborhood: initialData?.neighborhood || "",
+  });
+
   const [coverImage, setCoverImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
     initialData?.cover_image || null,
@@ -36,6 +58,17 @@ export function PlaceForm({
   const [categories, setCategories] = useState<Category[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Google Maps import state
+  const [mapsUrl, setMapsUrl] = useState("");
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [showExtraFields, setShowExtraFields] = useState(
+    !!initialData?.address ||
+      !!initialData?.phone ||
+      !!initialData?.website ||
+      !!initialData?.latitude,
+  );
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -76,6 +109,68 @@ export function PlaceForm({
     }));
   };
 
+  const handleExtraChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setExtraData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleImportFromMaps = async () => {
+    if (!mapsUrl.trim()) {
+      setImportError("Cole um link do Google Maps primeiro.");
+      return;
+    }
+
+    setImporting(true);
+    setImportError(null);
+
+    try {
+      const resp = await fetch("/api/admin/extract-place-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: mapsUrl.trim() }),
+      });
+
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        throw new Error(data.error || "Erro ao extrair dados do Google Maps.");
+      }
+
+      const extracted = data as ExtractedData;
+
+      setFormData((prev) => ({
+        ...prev,
+        name: extracted.name || prev.name,
+        city: extracted.city || prev.city,
+      }));
+
+      setExtraData((prev) => ({
+        ...prev,
+        address: extracted.address || prev.address,
+        phone: extracted.phone || prev.phone,
+        website: extracted.website || prev.website,
+        latitude: extracted.lat ? extracted.lat.toString() : prev.latitude,
+        longitude: extracted.lng ? extracted.lng.toString() : prev.longitude,
+        opening_hours: extracted.opening_hours
+          ? JSON.stringify(extracted.opening_hours)
+          : prev.opening_hours,
+      }));
+
+      setShowExtraFields(true);
+    } catch (err) {
+      setImportError(
+        err instanceof Error ? err.message : "Erro ao importar do Google Maps.",
+      );
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -90,32 +185,43 @@ export function PlaceForm({
         coverImageUrl = await uploadImage(client, coverImage);
       }
 
+      let parsedOpeningHours: string | null = extraData.opening_hours;
+      if (extraData.opening_hours) {
+        try {
+          const parsed = JSON.parse(extraData.opening_hours);
+          parsedOpeningHours = JSON.stringify(parsed);
+        } catch {
+          parsedOpeningHours = extraData.opening_hours;
+        }
+      }
+
       const submitData: Omit<Place, "id" | "created_at"> = {
         name: formData.name,
         description: formData.description || null,
         city: formData.city || null,
-        neighborhood: null,
-        address: null,
+        neighborhood: extraData.neighborhood || null,
+        address: extraData.address || null,
         price_level: formData.price_level
           ? parseInt(formData.price_level)
           : null,
         instagram: formData.instagram || null,
-        phone: null,
-        website: null,
+        phone: extraData.phone || null,
+        website: extraData.website || null,
         cover_image: coverImageUrl || null,
         gallery: null,
         category_id: formData.category_id
           ? parseInt(formData.category_id)
           : null,
         rating: null,
-        latitude: null,
-        longitude: null,
-        opening_hours: null,
+        latitude: extraData.latitude ? parseFloat(extraData.latitude) : null,
+        longitude: extraData.longitude ? parseFloat(extraData.longitude) : null,
+        opening_hours: parsedOpeningHours,
         featured: null,
         work_friendly: null,
         pet_friendly: null,
         wifi: null,
         sunset: null,
+        status: null,
       };
 
       await onSubmit(submitData);
@@ -131,15 +237,63 @@ export function PlaceForm({
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl">
       {error && (
-        <div className="mb-6 rounded-lg bg-red-50 p-4 text-red-700">
+        <div className="mb-6 rounded-lg bg-red-50 p-4 text-sm text-red-700">
           {error}
         </div>
       )}
 
-      <div className="rounded-lg bg-white p-6 shadow-sm">
+      {/* Google Maps Import */}
+      <div className="border-primary/20 bg-primary/5 mb-8 rounded-lg border-2 border-dashed p-6">
+        <h3 className="text-primary mb-2 flex items-center gap-2 text-base font-semibold">
+          <MapPin className="size-5" />
+          Importar do Google Maps
+        </h3>
+        <p className="text-foreground/70 mb-4 text-sm">
+          Cole o link do Google Maps para preencher automaticamente os dados do
+          local.
+        </p>
+        <div className="flex gap-2">
+          <input
+            type="url"
+            value={mapsUrl}
+            onChange={(e) => {
+              setMapsUrl(e.target.value);
+              setImportError(null);
+            }}
+            placeholder="https://maps.app.goo.gl/... ou google.com/maps/place/..."
+            className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex-1 rounded-lg border px-4 py-2.5 text-sm focus-visible:ring-2 focus-visible:outline-none"
+          />
+          <button
+            type="button"
+            onClick={handleImportFromMaps}
+            disabled={importing}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 flex shrink-0 items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {importing ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Importando...
+              </>
+            ) : (
+              "Extrair Dados"
+            )}
+          </button>
+        </div>
+        {importError && (
+          <p className="mt-2 text-sm text-red-600">{importError}</p>
+        )}
+        {importing && (
+          <div className="text-primary mt-3 flex items-center gap-2 text-sm">
+            <Loader2 className="size-4 animate-spin" />
+            Buscando dados do local...
+          </div>
+        )}
+      </div>
+
+      <div className="border-border bg-card rounded-lg border p-6 shadow-sm">
         {/* Image Upload */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="text-foreground block text-sm font-medium">
             Imagem de Capa
           </label>
           {imagePreview && (
@@ -155,19 +309,19 @@ export function PlaceForm({
                   setCoverImage(null);
                   setImagePreview(null);
                 }}
-                className="absolute -top-2 -right-2 rounded-full bg-red-600 p-1 text-white hover:bg-red-700"
+                className="bg-destructive text-destructive-foreground absolute -top-2 -right-2 rounded-full p-1 transition-colors hover:opacity-90"
               >
                 <X size={16} />
               </button>
             </div>
           )}
-          <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-6 py-8 transition-colors hover:border-blue-500 hover:bg-blue-50">
-            <Upload size={20} className="text-gray-400" />
+          <label className="border-muted-foreground/25 hover:border-primary hover:bg-primary/5 flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed px-6 py-8 transition-colors">
+            <Upload size={20} className="text-muted-foreground" />
             <div>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-foreground text-sm font-medium">
                 {coverImage ? coverImage.name : "Clique para fazer upload"}
               </p>
-              <p className="text-xs text-gray-500">PNG, JPG até 5MB</p>
+              <p className="text-muted-foreground text-xs">PNG, JPG até 5MB</p>
             </div>
             <input
               type="file"
@@ -191,7 +345,7 @@ export function PlaceForm({
 
         {/* Description */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="text-foreground block text-sm font-medium">
             Descrição
           </label>
           <textarea
@@ -200,7 +354,7 @@ export function PlaceForm({
             onChange={handleChange}
             placeholder="Digite a descrição do local"
             rows={4}
-            className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+            className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring mt-2 w-full rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
           />
         </div>
 
@@ -215,14 +369,14 @@ export function PlaceForm({
 
         {/* Category */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="text-foreground block text-sm font-medium">
             Categoria
           </label>
           <select
             name="category_id"
             value={formData.category_id}
             onChange={handleChange}
-            className="mt-2 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+            className="border-input bg-background text-foreground focus-visible:ring-ring mt-2 w-full rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
           >
             <option value="">Selecione uma categoria</option>
             {categories.map((cat) => (
@@ -254,12 +408,96 @@ export function PlaceForm({
           placeholder="@usuario_instagram"
         />
 
+        {/* Toggle extra fields */}
+        <button
+          type="button"
+          onClick={() => setShowExtraFields(!showExtraFields)}
+          className="text-primary hover:text-primary/80 mt-4 mb-2 text-sm font-medium"
+        >
+          {showExtraFields
+            ? "Ocultar campos extras"
+            : "Mostrar campos extras (endereço, telefone, site, etc.)"}
+        </button>
+
+        {showExtraFields && (
+          <div className="border-border mt-4 space-y-4 border-t pt-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                label="Endereço"
+                name="address"
+                value={extraData.address}
+                onChange={handleExtraChange}
+                placeholder="Endereço completo"
+              />
+              <FormField
+                label="Bairro"
+                name="neighborhood"
+                value={extraData.neighborhood}
+                onChange={handleExtraChange}
+                placeholder="Bairro"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                label="Telefone"
+                name="phone"
+                value={extraData.phone}
+                onChange={handleExtraChange}
+                placeholder="(XX) XXXXX-XXXX"
+              />
+              <FormField
+                label="Website"
+                name="website"
+                value={extraData.website}
+                onChange={handleExtraChange}
+                placeholder="https://..."
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormField
+                label="Latitude"
+                name="latitude"
+                type="number"
+                step="any"
+                value={extraData.latitude}
+                onChange={handleExtraChange}
+                placeholder="-23.5505"
+              />
+              <FormField
+                label="Longitude"
+                name="longitude"
+                type="number"
+                step="any"
+                value={extraData.longitude}
+                onChange={handleExtraChange}
+                placeholder="-46.6333"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="text-foreground block text-sm font-medium">
+                Horários de Funcionamento (JSON)
+              </label>
+              <textarea
+                name="opening_hours"
+                value={extraData.opening_hours}
+                onChange={handleExtraChange}
+                placeholder='{"weekdays": ["Seg: 08:00–18:00", "Ter: 08:00–18:00"]}'
+                rows={3}
+                className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring mt-2 w-full rounded-lg border px-4 py-2 font-mono text-sm focus-visible:ring-2 focus-visible:outline-none"
+              />
+            </div>
+          </div>
+        )}
+
         {/* Submit Button */}
         <div className="mt-8 flex gap-3">
           <button
             type="submit"
             disabled={isLoading || uploadingImage}
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2 rounded-lg px-6 py-3 font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading || uploadingImage ? (
               <>

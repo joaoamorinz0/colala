@@ -14,13 +14,22 @@ export async function GET(request: Request) {
       process.env.NEXT_PUBLIC_SUPABASE_KEY;
 
     if (supabaseUrl && supabaseKey) {
-      const cookieStore = new Map<string, string>();
+      const cookies = new Map<string, string>();
       const response = NextResponse.redirect(`${origin}${next}`);
+
+      // Parse cookies from the request header
+      const cookieHeader = (request as Request).headers.get("cookie") ?? "";
+      for (const cookie of cookieHeader.split(";")) {
+        const [name, ...rest] = cookie.split("=");
+        if (name?.trim()) {
+          cookies.set(name.trim(), rest.join("=").trim());
+        }
+      }
 
       const supabase = createServerClient(supabaseUrl, supabaseKey, {
         cookies: {
           getAll() {
-            return Array.from(cookieStore.entries()).map(([name, value]) => ({
+            return Array.from(cookies.entries()).map(([name, value]) => ({
               name,
               value,
             }));
@@ -29,6 +38,7 @@ export async function GET(request: Request) {
             cookiesToSet: { name: string; value: string; options?: unknown }[],
           ) {
             cookiesToSet.forEach(({ name, value, options }) => {
+              cookies.set(name, value);
               response.cookies.set(
                 name,
                 value,
@@ -46,6 +56,6 @@ export async function GET(request: Request) {
     }
   }
 
-  // Redireciona para página de login caso ocorra erro
+  // Redirect to login on error
   return NextResponse.redirect(`${origin}/login?error=auth-callback-failed`);
 }

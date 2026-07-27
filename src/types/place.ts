@@ -1,3 +1,5 @@
+export type PlaceStatus = "published" | "pending" | "rejected";
+
 export type Place = {
   id: string;
   name: string;
@@ -27,4 +29,5 @@ export type Place = {
   pet_friendly: boolean | null;
   wifi: boolean | null;
   sunset: boolean | null;
+  status: PlaceStatus | null;
 };

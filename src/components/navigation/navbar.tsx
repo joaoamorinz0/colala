@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { APP_SHELL, PAGE_X } from "@/constants/design";
 import { MAIN_NAVIGATION_ITEMS } from "@/constants/navigation";
 import { cn } from "@/lib/utils";
+import { useSupabase } from "@/providers";
 
 export type NavbarProps = {
   className?: string;
@@ -12,6 +13,7 @@ export type NavbarProps = {
 
 export function Navbar({ className }: NavbarProps) {
   const pathname = usePathname();
+  const { user } = useSupabase();
 
   return (
     <div
@@ -35,6 +37,9 @@ export function Navbar({ className }: NavbarProps) {
               pathname === item.href ||
               (item.href === "/home" && pathname === "/");
 
+            // Profile tab shows avatar when authenticated
+            const isProfileTab = item.href === "/profile";
+
             return (
               <li key={item.href}>
                 <Link
@@ -43,10 +48,21 @@ export function Navbar({ className }: NavbarProps) {
                     isActive &&
                       "bg-primary/12 text-primary shadow-[inset_0_0_0_1px_hsl(15_64%_60%/0.12)]",
                   )}
-                  href={item.href}
+                  href={isProfileTab && !user ? "/login" : item.href}
                 >
-                  {Icon ? <Icon className="size-5 stroke-[2.1]" /> : null}
-                  <span>{item.label}</span>
+                  {isProfileTab && user?.user_metadata?.avatar_url ? (
+                    <img
+                      src={user.user_metadata.avatar_url}
+                      alt=""
+                      className={cn(
+                        "size-5 rounded-full object-cover",
+                        isActive && "ring-primary ring-2",
+                      )}
+                    />
+                  ) : Icon ? (
+                    <Icon className="size-5 stroke-[2.1]" />
+                  ) : null}
+                  <span>{isProfileTab && !user ? "Entrar" : item.label}</span>
                 </Link>
               </li>
             );

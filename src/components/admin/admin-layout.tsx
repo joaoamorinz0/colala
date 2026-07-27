@@ -1,25 +1,25 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { LayoutGrid, MapPin, Tags, LogOut } from 'lucide-react';
-import { useSupabase } from '@/providers';
-import { signOut } from '@/services/auth.service';
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { LayoutGrid, MapPin, Tags, LogOut } from "lucide-react";
+import { useSupabase } from "@/providers";
+import { signOut } from "@/services/auth.service";
 
 const adminMenuItems = [
   {
-    label: 'Dashboard',
-    href: '/admin',
+    label: "Dashboard",
+    href: "/admin",
     icon: LayoutGrid,
   },
   {
-    label: 'Locais',
-    href: '/admin/places',
+    label: "Locais",
+    href: "/admin/places",
     icon: MapPin,
   },
   {
-    label: 'Categorias',
-    href: '/admin/categories',
+    label: "Categorias",
+    href: "/admin/categories",
     icon: Tags,
   },
 ];
@@ -34,42 +34,47 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
     try {
       await signOut(client);
-    } catch (error) {
-      console.error('Erro ao sair:', error);
+    } catch {
+      // session may already be gone
     } finally {
-      router.push('/login');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      router.push("/login" as any);
     }
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="bg-background flex h-screen">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md">
+      <div className="border-border bg-card w-64 border-r shadow-sm">
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-gray-800">COLALÁ Admin</h1>
-          <p className="mt-2 text-sm text-gray-500">
-            {user?.email ?? 'Administrador'}
+          <h1 className="text-foreground text-2xl font-bold tracking-tight">
+            colalá{" "}
+            <span className="text-primary text-sm font-semibold">Admin</span>
+          </h1>
+          <p className="text-muted-foreground mt-2 truncate text-sm">
+            {user?.email ?? "Administrador"}
           </p>
         </div>
 
         {/* Menu */}
-        <nav className="mt-8 space-y-2 px-4">
+        <nav className="mt-8 space-y-1 px-3">
           {adminMenuItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+            const isActive =
+              pathname === item.href || pathname.startsWith(item.href + "/");
 
             return (
               <Link
                 key={item.href}
                 href={item.href as never}
-                className={`flex items-center gap-3 rounded-lg px-4 py-3 transition-colors ${
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-blue-50 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? "bg-primary/12 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
                 <Icon size={20} />
-                <span className="font-medium">{item.label}</span>
+                <span>{item.label}</span>
               </Link>
             );
           })}
@@ -79,19 +84,17 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <div className="absolute bottom-8 left-4 w-56">
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-lg bg-red-50 px-4 py-3 text-red-700 transition-colors hover:bg-red-100"
+            className="text-destructive hover:bg-destructive/10 flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors"
           >
             <LogOut size={20} />
-            <span className="font-medium">Sair</span>
+            <span>Sair</span>
           </button>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        <div className="min-h-screen bg-gray-100 p-8">
-          {children}
-        </div>
+        <div className="bg-background min-h-screen p-8">{children}</div>
       </div>
     </div>
   );

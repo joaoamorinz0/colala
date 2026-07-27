@@ -1,8 +1,21 @@
-import { type NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+import { type NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+
+const PROTECTED_ROUTES = ["/admin", "/profile", "/favorites"];
+
+function isProtectedRoute(pathname: string): boolean {
+  return PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
+}
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
+  const { pathname } = request.nextUrl;
+
+  // Skip middleware for non-protected routes early
+  if (!isProtectedRoute(pathname)) {
+    return NextResponse.next();
+  }
+
+  const response = NextResponse.next({
     request: {
       headers: request.headers,
     },
@@ -26,37 +39,46 @@ export async function middleware(request: NextRequest) {
           value: cookie.value,
         }));
       },
-      setAll(cookiesToSet: any[]) {
-        cookiesToSet.forEach(({ name, value, options }: any) =>
-          response.cookies.set(name, value, options),
+      setAll(
+        cookiesToSet: { name: string; value: string; options?: unknown }[],
+      ) {
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(
+            name,
+            value,
+            options as Parameters<typeof response.cookies.set>[2],
+          ),
         );
       },
     },
   });
 
-  // Check if user is authenticated
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protect /admin routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (!user) {
-      // Redirect to login if not authenticated
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
-
-    // TODO: Add role checking if you have admin role in your user metadata
-    // Example:
-    // const isAdmin = user.user_metadata?.role === 'admin';
-    // if (!isAdmin) {
-    //   return NextResponse.redirect(new URL('/', request.url));
-    // }
+  // Redirect unauthenticated users to login
+  if (!user) {
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirectTo", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: [
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder files
+     * - auth callback (handled separately)
+     * - login, register (public)
+     * - api routes (handled separately)
+     */
+    "/((?!_next/static|_next/image|favicon.ico|auth/callback|login|register|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
 };

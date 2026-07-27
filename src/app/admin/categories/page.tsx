@@ -122,7 +122,7 @@ export default function CategoriesPage() {
         action={
           <button
             onClick={() => setShowNewForm(true)}
-            className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2 rounded-lg px-6 py-3 font-medium transition-colors"
           >
             <Plus size={20} />
             Nova Categoria
@@ -131,7 +131,7 @@ export default function CategoriesPage() {
       />
 
       {error && (
-        <div className="mb-6 rounded-lg bg-red-50 p-4 text-red-700">
+        <div className="mb-6 rounded-lg bg-red-50 p-4 text-sm text-red-700">
           {error}
         </div>
       )}
@@ -142,8 +142,8 @@ export default function CategoriesPage() {
         <div className="space-y-4">
           {/* New Category Form */}
           {showNewForm && (
-            <div className="rounded-lg bg-white p-6 shadow-sm">
-              <h3 className="mb-4 text-lg font-bold text-gray-900">
+            <div className="border-border bg-card rounded-lg border p-6 shadow-sm">
+              <h3 className="text-foreground mb-4 text-lg font-bold">
                 Nova Categoria
               </h3>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -157,7 +157,7 @@ export default function CategoriesPage() {
                       name: e.target.value,
                     })
                   }
-                  className="rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                  className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
                 />
                 <input
                   type="text"
@@ -169,7 +169,7 @@ export default function CategoriesPage() {
                       description: e.target.value,
                     })
                   }
-                  className="rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                  className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
                 />
                 <input
                   type="text"
@@ -182,20 +182,20 @@ export default function CategoriesPage() {
                     })
                   }
                   maxLength={2}
-                  className="rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                  className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
                 />
               </div>
               <div className="mt-4 flex gap-2">
                 <button
                   onClick={handleAddCategory}
-                  className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
+                  className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
                 >
                   <Check size={18} />
                   Adicionar
                 </button>
                 <button
                   onClick={() => setShowNewForm(false)}
-                  className="flex items-center gap-2 rounded-lg bg-gray-300 px-4 py-2 text-gray-900 transition-colors hover:bg-gray-400"
+                  className="flex items-center gap-2 rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-400"
                 >
                   <X size={18} />
                   Cancelar
@@ -205,26 +205,28 @@ export default function CategoriesPage() {
           )}
 
           {/* Categories List */}
-          <div className="overflow-hidden rounded-lg bg-white shadow-sm">
+          <div className="border-border bg-card overflow-hidden rounded-lg border shadow-sm">
             {categories.length === 0 ? (
               <div className="p-12 text-center">
-                <p className="text-gray-600">Nenhuma categoria cadastrada</p>
+                <p className="text-muted-foreground">
+                  Nenhuma categoria cadastrada
+                </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="border-b border-gray-200 bg-gray-50">
+                  <thead className="bg-muted border-border border-b">
                     <tr>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      <th className="text-foreground px-6 py-3 text-left text-sm font-semibold">
                         Ícone
                       </th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      <th className="text-foreground px-6 py-3 text-left text-sm font-semibold">
                         Nome
                       </th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
+                      <th className="text-foreground px-6 py-3 text-left text-sm font-semibold">
                         Descrição
                       </th>
-                      <th className="px-6 py-3 text-right text-sm font-semibold text-gray-900">
+                      <th className="text-foreground px-6 py-3 text-right text-sm font-semibold">
                         Ações
                       </th>
                     </tr>
@@ -234,7 +236,7 @@ export default function CategoriesPage() {
                       editingId === category.id ? (
                         <tr
                           key={category.id}
-                          className="border-b border-gray-200 bg-blue-50/50"
+                          className="border-border bg-primary/5 border-b"
                         >
                           <td className="px-6 py-4">
                             <input
@@ -247,7 +249,7 @@ export default function CategoriesPage() {
                                 })
                               }
                               maxLength={2}
-                              className="w-16 rounded border px-2 py-1 text-sm"
+                              className="border-input rounded border px-2 py-1 text-sm"
                             />
                           </td>
                           <td className="px-6 py-4">
@@ -260,7 +262,7 @@ export default function CategoriesPage() {
                                   name: e.target.value,
                                 })
                               }
-                              className="w-full rounded border px-2 py-1 text-sm font-medium"
+                              className="border-input text-foreground w-full rounded border px-2 py-1 text-sm font-medium"
                             />
                           </td>
                           <td className="px-6 py-4">
@@ -273,7 +275,7 @@ export default function CategoriesPage() {
                                   description: e.target.value,
                                 })
                               }
-                              className="w-full rounded border px-2 py-1 text-sm"
+                              className="border-input text-foreground w-full rounded border px-2 py-1 text-sm"
                             />
                           </td>
                           <td className="px-6 py-4 text-right">
@@ -296,28 +298,28 @@ export default function CategoriesPage() {
                       ) : (
                         <tr
                           key={category.id}
-                          className="border-b border-gray-200 transition-colors hover:bg-gray-50"
+                          className="border-border hover:bg-muted/50 border-b transition-colors"
                         >
                           <td className="px-6 py-4 text-2xl">
                             {category.icon || "-"}
                           </td>
-                          <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                          <td className="text-foreground px-6 py-4 text-sm font-medium">
                             {category.name}
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-600">
+                          <td className="text-muted-foreground px-6 py-4 text-sm">
                             {category.description || "-"}
                           </td>
                           <td className="px-6 py-4 text-right text-sm font-medium">
                             <div className="flex items-center justify-end gap-3">
                               <button
                                 onClick={() => handleEditInit(category)}
-                                className="text-blue-600 transition-colors hover:text-blue-700"
+                                className="text-primary hover:text-primary/80 transition-colors"
                               >
                                 <Edit2 size={18} />
                               </button>
                               <button
                                 onClick={() => handleDelete(category.id)}
-                                className="text-red-600 transition-colors hover:text-red-700"
+                                className="text-destructive hover:text-destructive/80 transition-colors"
                               >
                                 <Trash2 size={18} />
                               </button>
