@@ -28,7 +28,6 @@ import {
   fetchProfile,
   updateProfile,
   uploadProfileAvatar,
-  updateUserMetadata,
 } from "@/services/profile.service";
 import { signOut } from "@/services/auth.service";
 
@@ -63,6 +62,7 @@ export default function ProfilePage() {
         name: defaultName,
         username: defaultUsername,
         avatar_url: user.user_metadata?.avatar_url ?? null,
+        bio: null,
       });
 
       return createdProfile;
@@ -80,11 +80,8 @@ export default function ProfilePage() {
       await updateProfile(client, user.id, {
         name: name || null,
         username: username || null,
+        bio: bio || null,
       });
-
-      if (bio !== user.user_metadata?.bio) {
-        await updateUserMetadata(client, { bio: bio || null });
-      }
     },
     onSuccess: () => {
       if (user?.id) {
@@ -128,12 +125,9 @@ export default function ProfilePage() {
     if (profileQuery.data) {
       setName(profileQuery.data.name ?? "");
       setUsername(profileQuery.data.username ?? "");
+      setBio(profileQuery.data.bio ?? "");
     }
   }, [profileQuery.data]);
-
-  useEffect(() => {
-    setBio(user?.user_metadata?.bio ?? "");
-  }, [user?.user_metadata?.bio]);
 
   useEffect(() => {
     if (!avatarFile) {

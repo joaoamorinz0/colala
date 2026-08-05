@@ -246,6 +246,11 @@
   },
   {
     "table_name": "profiles",
+    "column_name": "bio",
+    "data_type": "text"
+  },
+  {
+    "table_name": "profiles",
     "column_name": "updated_at",
     "data_type": "timestamp with time zone"
   },

@@ -11,7 +11,7 @@ export async function fetchProfile(
 ): Promise<Profile | null> {
   const { data, error } = await client
     .from("profiles")
-    .select("id,name,username,avatar_url,created_at,updated_at")
+    .select("id,name,username,avatar_url,bio,created_at,updated_at")
     .eq("id", userId)
     .maybeSingle();
 
@@ -33,12 +33,13 @@ export async function createProfile(
     name: profile.name ?? null,
     username: profile.username ?? null,
     avatar_url: profile.avatar_url ?? null,
+    bio: profile.bio ?? null,
   };
 
   const { data, error } = await client
     .from("profiles")
     .insert([payload])
-    .select("id,name,username,avatar_url,created_at,updated_at")
+    .select("id,name,username,avatar_url,bio,created_at,updated_at")
     .single();
 
   if (error) {
@@ -58,7 +59,7 @@ export async function updateProfile(
     .from("profiles")
     .update(profile)
     .eq("id", userId)
-    .select("id,name,username,avatar_url,created_at,updated_at")
+    .select("id,name,username,avatar_url,bio,created_at,updated_at")
     .single();
 
   if (error) {
