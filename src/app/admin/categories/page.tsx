@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/ui/toast";
 import { AdminLayout, PageHeader, LoadingSpinner } from "@/components/admin";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import {
@@ -10,7 +11,10 @@ import {
   updateCategory,
 } from "@/services/admin.service";
 import type { Category } from "@/types/category";
+import { categorySchema } from "@/lib/validators/admin";
 import { Edit2, Trash2, Plus, Check, X } from "lucide-react";
+
+const EMPTY_FORM = { name: "", description: "", icon: "", color: "" };
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -18,16 +22,9 @@ export default function CategoriesPage() {
   const [error, setError] = useState<string | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
   const [editingId, setEditingId] = useState<string | number | null>(null);
-  const [editFormData, setEditFormData] = useState({
-    name: "",
-    description: "",
-    icon: "",
-  });
-  const [newCategoryData, setNewCategoryData] = useState({
-    name: "",
-    description: "",
-    icon: "",
-  });
+  const [editFormData, setEditFormData] = useState(EMPTY_FORM);
+  const [newCategoryData, setNewCategoryData] = useState(EMPTY_FORM);
+  const toast = useToast();
 
   useEffect(() => {
     loadCategories();
@@ -37,9 +34,7 @@ export default function CategoriesPage() {
     try {
       const client = createSupabaseBrowserClient();
       if (!client) throw new Error("Supabase não configurado");
-
-      const data = await getAllCategories(client);
-      setCategories(data);
+      setCategories(await getAllCategories(client));
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Erro ao carregar categorias",
@@ -51,21 +46,26 @@ export default function CategoriesPage() {
 
   const handleDelete = async (id: string | number) => {
     if (!confirm("Tem certeza que deseja deletar esta categoria?")) return;
-
     try {
       const client = createSupabaseBrowserClient();
       if (!client) throw new Error("Supabase não configurado");
-
       await deleteCategory(client, id);
-      setCategories(categories.filter((cat) => cat.id !== id));
+      setCategories((prev) => prev.filter((cat) => cat.id !== id));
+      toast.show("Categoria removida com sucesso.", "success");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Erro ao deletar categoria");
+      const message =
+        err instanceof Error ? err.message : "Erro ao deletar categoria";
+      toast.show(message, "error");
     }
   };
 
   const handleAddCategory = async () => {
-    if (!newCategoryData.name.trim()) {
-      alert("Nome é obrigatório");
+    const parsed = categorySchema.safeParse(newCategoryData);
+    if (!parsed.success) {
+      toast.show(
+        parsed.error.issues[0]?.message ?? "Categoria inválida",
+        "error",
+      );
       return;
     }
 
@@ -74,16 +74,20 @@ export default function CategoriesPage() {
       if (!client) throw new Error("Supabase não configurado");
 
       const result = await createCategory(client, {
-        name: newCategoryData.name,
-        description: newCategoryData.description || null,
-        icon: newCategoryData.icon || null,
+        name: parsed.data.name,
+        description: parsed.data.description || null,
+        icon: parsed.data.icon || null,
+        color: parsed.data.color || null,
       });
 
-      setCategories([result, ...categories]);
-      setNewCategoryData({ name: "", description: "", icon: "" });
+      setCategories((prev) => [result, ...prev]);
+      setNewCategoryData(EMPTY_FORM);
       setShowNewForm(false);
+      toast.show("Categoria criada com sucesso.", "success");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Erro ao criar categoria");
+      const message =
+        err instanceof Error ? err.message : "Erro ao criar categoria";
+      toast.show(message, "error");
     }
   };
 
@@ -93,24 +97,38 @@ export default function CategoriesPage() {
       name: category.name,
       description: category.description || "",
       icon: category.icon || "",
+      color: category.color || "",
     });
   };
 
   const handleSaveEdit = async (id: string | number) => {
+    const parsed = categorySchema.safeParse(editFormData);
+    if (!parsed.success) {
+      toast.show(
+        parsed.error.issues[0]?.message ?? "Categoria inválida",
+        "error",
+      );
+      return;
+    }
+
     try {
       const client = createSupabaseBrowserClient();
       if (!client) throw new Error("Supabase não configurado");
 
       const updated = await updateCategory(client, id, {
-        name: editFormData.name,
-        description: editFormData.description || null,
-        icon: editFormData.icon || null,
+        name: parsed.data.name,
+        description: parsed.data.description || null,
+        icon: parsed.data.icon || null,
+        color: parsed.data.color || null,
       });
 
-      setCategories(categories.map((c) => (c.id === id ? updated : c)));
+      setCategories((prev) => prev.map((c) => (c.id === id ? updated : c)));
       setEditingId(null);
+      toast.show("Categoria atualizada com sucesso.", "success");
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Erro ao atualizar categoria");
+      const message =
+        err instanceof Error ? err.message : "Erro ao atualizar categoria";
+      toast.show(message, "error");
     }
   };
 
@@ -140,13 +158,12 @@ export default function CategoriesPage() {
         <LoadingSpinner />
       ) : (
         <div className="space-y-4">
-          {/* New Category Form */}
           {showNewForm && (
             <div className="border-border bg-card rounded-lg border p-6 shadow-sm">
               <h3 className="text-foreground mb-4 text-lg font-bold">
                 Nova Categoria
               </h3>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                 <input
                   type="text"
                   placeholder="Nome da categoria"
@@ -173,7 +190,7 @@ export default function CategoriesPage() {
                 />
                 <input
                   type="text"
-                  placeholder="Ícone (emoji)"
+                  placeholder="Ícone"
                   value={newCategoryData.icon}
                   onChange={(e) =>
                     setNewCategoryData({
@@ -181,12 +198,25 @@ export default function CategoriesPage() {
                       icon: e.target.value,
                     })
                   }
-                  maxLength={2}
+                  maxLength={4}
+                  className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
+                />
+                <input
+                  type="text"
+                  placeholder="#be3d25"
+                  value={newCategoryData.color}
+                  onChange={(e) =>
+                    setNewCategoryData({
+                      ...newCategoryData,
+                      color: e.target.value,
+                    })
+                  }
                   className="border-input bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-ring rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
                 />
               </div>
               <div className="mt-4 flex gap-2">
                 <button
+                  type="button"
                   onClick={handleAddCategory}
                   className="flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
                 >
@@ -194,6 +224,7 @@ export default function CategoriesPage() {
                   Adicionar
                 </button>
                 <button
+                  type="button"
                   onClick={() => setShowNewForm(false)}
                   className="flex items-center gap-2 rounded-lg bg-gray-300 px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-400"
                 >
@@ -204,7 +235,6 @@ export default function CategoriesPage() {
             </div>
           )}
 
-          {/* Categories List */}
           <div className="border-border bg-card overflow-hidden rounded-lg border shadow-sm">
             {categories.length === 0 ? (
               <div className="p-12 text-center">
@@ -222,6 +252,9 @@ export default function CategoriesPage() {
                       </th>
                       <th className="text-foreground px-6 py-3 text-left text-sm font-semibold">
                         Nome
+                      </th>
+                      <th className="text-foreground px-6 py-3 text-left text-sm font-semibold">
+                        Cor
                       </th>
                       <th className="text-foreground px-6 py-3 text-left text-sm font-semibold">
                         Descrição
@@ -248,7 +281,7 @@ export default function CategoriesPage() {
                                   icon: e.target.value,
                                 })
                               }
-                              maxLength={2}
+                              maxLength={4}
                               className="border-input rounded border px-2 py-1 text-sm"
                             />
                           </td>
@@ -268,6 +301,19 @@ export default function CategoriesPage() {
                           <td className="px-6 py-4">
                             <input
                               type="text"
+                              value={editFormData.color}
+                              onChange={(e) =>
+                                setEditFormData({
+                                  ...editFormData,
+                                  color: e.target.value,
+                                })
+                              }
+                              className="border-input text-foreground w-full rounded border px-2 py-1 text-sm"
+                            />
+                          </td>
+                          <td className="px-6 py-4">
+                            <input
+                              type="text"
                               value={editFormData.description}
                               onChange={(e) =>
                                 setEditFormData({
@@ -281,12 +327,14 @@ export default function CategoriesPage() {
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <button
+                                type="button"
                                 onClick={() => handleSaveEdit(category.id)}
                                 className="p-1 text-green-600 hover:text-green-700"
                               >
                                 <Check size={18} />
                               </button>
                               <button
+                                type="button"
                                 onClick={() => setEditingId(null)}
                                 className="p-1 text-gray-500 hover:text-gray-700"
                               >
@@ -307,17 +355,22 @@ export default function CategoriesPage() {
                             {category.name}
                           </td>
                           <td className="text-muted-foreground px-6 py-4 text-sm">
+                            {category.color || "-"}
+                          </td>
+                          <td className="text-muted-foreground px-6 py-4 text-sm">
                             {category.description || "-"}
                           </td>
                           <td className="px-6 py-4 text-right text-sm font-medium">
                             <div className="flex items-center justify-end gap-3">
                               <button
+                                type="button"
                                 onClick={() => handleEditInit(category)}
                                 className="text-primary hover:text-primary/80 transition-colors"
                               >
                                 <Edit2 size={18} />
                               </button>
                               <button
+                                type="button"
                                 onClick={() => handleDelete(category.id)}
                                 className="text-destructive hover:text-destructive/80 transition-colors"
                               >

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useToast } from "@/components/ui/toast";
 import { FormField, LoadingSpinner } from "@/components/admin";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { uploadImage } from "@/services/admin.service";
@@ -8,6 +9,7 @@ import type { Place } from "@/types/place";
 import type { Category } from "@/types/category";
 import { getAllCategories } from "@/services/admin.service";
 import { Loader2, MapPin, Upload, X } from "lucide-react";
+import { placeSchema } from "@/lib/validators/admin";
 
 type ExtractedData = {
   name: string;
@@ -52,12 +54,14 @@ export function PlaceForm({
   });
 
   const [coverImage, setCoverImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [existingCoverImage, setExistingCoverImage] = useState<string | null>(
     initialData?.cover_image || null,
   );
   const [categories, setCategories] = useState<Category[]>([]);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
 
   // Google Maps import state
   const [mapsUrl, setMapsUrl] = useState("");
@@ -176,7 +180,17 @@ export function PlaceForm({
     setError(null);
 
     try {
-      let coverImageUrl = imagePreview;
+      const parsed = placeSchema.safeParse({
+        ...formData,
+        ...extraData,
+        cover_image: existingCoverImage,
+      });
+
+      if (!parsed.success) {
+        throw new Error(parsed.error.issues[0]?.message || "Dados inválidos");
+      }
+
+      let coverImageUrl = existingCoverImage;
 
       if (coverImage) {
         setUploadingImage(true);
@@ -225,10 +239,12 @@ export function PlaceForm({
       };
 
       await onSubmit(submitData);
+      toast.show("Local salvo com sucesso.", "success");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Erro ao processar formulário",
-      );
+      const message =
+        err instanceof Error ? err.message : "Erro ao processar formulário";
+      setError(message);
+      toast.show(message, "error");
     } finally {
       setUploadingImage(false);
     }
@@ -296,10 +312,10 @@ export function PlaceForm({
           <label className="text-foreground block text-sm font-medium">
             Imagem de Capa
           </label>
-          {imagePreview && (
+          {(imagePreview || existingCoverImage) && (
             <div className="relative mt-2 mb-4 inline-block">
               <img
-                src={imagePreview}
+                src={imagePreview || existingCoverImage || ""}
                 alt="Preview"
                 className="h-40 w-40 rounded-lg object-cover"
               />
@@ -308,6 +324,7 @@ export function PlaceForm({
                 onClick={() => {
                   setCoverImage(null);
                   setImagePreview(null);
+                  setExistingCoverImage(null);
                 }}
                 className="bg-destructive text-destructive-foreground absolute -top-2 -right-2 rounded-full p-1 transition-colors hover:opacity-90"
               >

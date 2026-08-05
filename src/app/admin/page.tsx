@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AdminLayout, PageHeader } from "@/components/admin";
-import { MapPin, Tags, ArrowRight } from "lucide-react";
+import { MapPin, Tags, Star, ArrowRight } from "lucide-react";
 
 export default function AdminDashboard() {
   const stats = [
@@ -19,6 +19,13 @@ export default function AdminDashboard() {
       description: "Categorias ativas",
       icon: Tags,
       href: "/admin/categories",
+    },
+    {
+      title: "Avaliações",
+      count: 0,
+      description: "Reviews cadastradas",
+      icon: Star,
+      href: "/admin/reviews",
     },
   ];
 
@@ -62,7 +69,7 @@ export default function AdminDashboard() {
 
       <div className="border-border bg-card mt-12 rounded-lg border p-6 shadow-sm">
         <h2 className="text-foreground text-lg font-bold">Atalhos rápidos</h2>
-        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
           <Link
             href={"/admin/places/new" as never}
             className="border-muted-foreground/25 hover:border-primary hover:bg-primary/5 rounded-lg border-2 border-dashed p-4 text-center transition-colors"
@@ -74,6 +81,12 @@ export default function AdminDashboard() {
             className="border-muted-foreground/25 hover:border-primary hover:bg-primary/5 rounded-lg border-2 border-dashed p-4 text-center transition-colors"
           >
             <p className="text-foreground font-medium">Gerenciar categorias</p>
+          </Link>
+          <Link
+            href={"/admin/reviews" as never}
+            className="border-muted-foreground/25 hover:border-primary hover:bg-primary/5 rounded-lg border-2 border-dashed p-4 text-center transition-colors"
+          >
+            <p className="text-foreground font-medium">Gerenciar avaliações</p>
           </Link>
         </div>
       </div>

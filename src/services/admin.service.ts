@@ -1,6 +1,7 @@
 import type { createSupabaseBrowserClient } from "@/lib/supabase";
 import type { Place } from "@/types/place";
 import type { Category } from "@/types/category";
+import type { Review } from "@/types/review";
 
 type SupabaseBrowserClient = NonNullable<
   ReturnType<typeof createSupabaseBrowserClient>
@@ -172,10 +173,14 @@ export async function uploadImage(
   file: File,
   bucket: string = "places",
 ): Promise<string> {
-  const fileName = `${Date.now()}-${file.name}`;
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
+  const fileName = `${bucket}/${Date.now()}-${safeName}`;
   const { error, data } = await client.storage
     .from(bucket)
-    .upload(fileName, file);
+    .upload(fileName, file, {
+      upsert: true,
+      contentType: file.type,
+    });
 
   if (error) {
     throw new Error(`Erro ao fazer upload da imagem: ${error.message}`);
@@ -197,5 +202,70 @@ export async function deleteImage(
 
   if (error) {
     throw new Error(`Erro ao deletar imagem: ${error.message}`);
+  }
+}
+
+// REVIEWS MANAGEMENT
+const REVIEWS_TABLE = "reviews";
+
+export async function getAllReviews(
+  client: SupabaseBrowserClient,
+): Promise<Review[]> {
+  const { data, error } = await client
+    .from(REVIEWS_TABLE)
+    .select("id,place_id,user_id,rating,comment,created_at,updated_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(`Erro ao buscar avaliações: ${error.message}`);
+  }
+
+  return (data ?? []) as Review[];
+}
+
+export async function createReview(
+  client: SupabaseBrowserClient,
+  review: Omit<Review, "id" | "created_at" | "updated_at" | "place">,
+): Promise<Review> {
+  const { data, error } = await client
+    .from(REVIEWS_TABLE)
+    .insert([review])
+    .select("id,place_id,user_id,rating,comment,created_at,updated_at")
+    .single();
+
+  if (error) {
+    throw new Error(`Erro ao criar avaliação: ${error.message}`);
+  }
+
+  return data as Review;
+}
+
+export async function updateReview(
+  client: SupabaseBrowserClient,
+  id: string,
+  review: Partial<Omit<Review, "id" | "created_at" | "updated_at" | "place">>,
+): Promise<Review> {
+  const { data, error } = await client
+    .from(REVIEWS_TABLE)
+    .update(review)
+    .eq("id", id)
+    .select("id,place_id,user_id,rating,comment,created_at,updated_at")
+    .single();
+
+  if (error) {
+    throw new Error(`Erro ao atualizar avaliação: ${error.message}`);
+  }
+
+  return data as Review;
+}
+
+export async function deleteReview(
+  client: SupabaseBrowserClient,
+  id: string,
+): Promise<void> {
+  const { error } = await client.from(REVIEWS_TABLE).delete().eq("id", id);
+
+  if (error) {
+    throw new Error(`Erro ao deletar avaliação: ${error.message}`);
   }
 }

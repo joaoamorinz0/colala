@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutGrid, MapPin, Tags, LogOut } from "lucide-react";
+import { LayoutGrid, MapPin, Tags, Star, LogOut } from "lucide-react";
 import { useSupabase } from "@/providers";
 import { signOut } from "@/services/auth.service";
 
@@ -21,6 +21,11 @@ const adminMenuItems = [
     label: "Categorias",
     href: "/admin/categories",
     icon: Tags,
+  },
+  {
+    label: "Avaliações",
+    href: "/admin/reviews",
+    icon: Star,
   },
 ];
 
