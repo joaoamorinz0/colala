@@ -1,0 +1,317 @@
+[
+  {
+    "table_name": "admins",
+    "column_name": "user_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "admins",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "categories",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "categories",
+    "column_name": "name",
+    "data_type": "text"
+  },
+  {
+    "table_name": "categories",
+    "column_name": "icon",
+    "data_type": "text"
+  },
+  {
+    "table_name": "categories",
+    "column_name": "color",
+    "data_type": "text"
+  },
+  {
+    "table_name": "categories",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "categories",
+    "column_name": "description",
+    "data_type": "text"
+  },
+  {
+    "table_name": "favorites",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "favorites",
+    "column_name": "user_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "favorites",
+    "column_name": "place_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "favorites",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "places",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "places",
+    "column_name": "name",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "description",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "city",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "price_level",
+    "data_type": "smallint"
+  },
+  {
+    "table_name": "places",
+    "column_name": "instagram",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "cover_image",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "places",
+    "column_name": "category_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "places",
+    "column_name": "rating",
+    "data_type": "numeric"
+  },
+  {
+    "table_name": "places",
+    "column_name": "adress",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "latitude",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "address",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "longitude",
+    "data_type": "double precision"
+  },
+  {
+    "table_name": "places",
+    "column_name": "opening_hours",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "phone",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "website",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "gallery",
+    "data_type": "ARRAY"
+  },
+  {
+    "table_name": "places",
+    "column_name": "featured",
+    "data_type": "boolean"
+  },
+  {
+    "table_name": "places",
+    "column_name": "work_friendly",
+    "data_type": "boolean"
+  },
+  {
+    "table_name": "places",
+    "column_name": "pet_friendly",
+    "data_type": "boolean"
+  },
+  {
+    "table_name": "places",
+    "column_name": "wifi",
+    "data_type": "boolean"
+  },
+  {
+    "table_name": "places",
+    "column_name": "sunset",
+    "data_type": "boolean"
+  },
+  {
+    "table_name": "places",
+    "column_name": "slug",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "neighborhood",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "status",
+    "data_type": "text"
+  },
+  {
+    "table_name": "places",
+    "column_name": "user_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "places",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "profile",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "profile",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "profile",
+    "column_name": "name",
+    "data_type": "text"
+  },
+  {
+    "table_name": "profile",
+    "column_name": "username",
+    "data_type": "text"
+  },
+  {
+    "table_name": "profile",
+    "column_name": "avatar_url",
+    "data_type": "text"
+  },
+  {
+    "table_name": "profiles",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "profiles",
+    "column_name": "name",
+    "data_type": "text"
+  },
+  {
+    "table_name": "profiles",
+    "column_name": "username",
+    "data_type": "text"
+  },
+  {
+    "table_name": "profiles",
+    "column_name": "avatar_url",
+    "data_type": "text"
+  },
+  {
+    "table_name": "profiles",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "profiles",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "reviews",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "reviews",
+    "column_name": "place_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "reviews",
+    "column_name": "user_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "reviews",
+    "column_name": "rating",
+    "data_type": "integer"
+  },
+  {
+    "table_name": "reviews",
+    "column_name": "comment",
+    "data_type": "text"
+  },
+  {
+    "table_name": "reviews",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "reviews",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "waitlist",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "waitlist",
+    "column_name": "name",
+    "data_type": "text"
+  },
+  {
+    "table_name": "waitlist",
+    "column_name": "email",
+    "data_type": "text"
+  },
+  {
+    "table_name": "waitlist",
+    "column_name": "username",
+    "data_type": "text"
+  },
+  {
+    "table_name": "waitlist",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  }
+]

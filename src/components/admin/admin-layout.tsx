@@ -27,7 +27,7 @@ const adminMenuItems = [
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { client, user } = useSupabase();
+  const { client, user, profile } = useSupabase();
 
   const handleLogout = async () => {
     if (!client) return;
@@ -52,7 +52,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             <span className="text-primary text-sm font-semibold">Admin</span>
           </h1>
           <p className="text-muted-foreground mt-2 truncate text-sm">
-            {user?.email ?? "Administrador"}
+            {profile?.name ?? user?.email ?? "Administrador"}
           </p>
         </div>
 

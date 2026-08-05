@@ -1,5 +1,5 @@
 import type { createSupabaseBrowserClient } from "@/lib/supabase";
-import type { Place, PlaceStatus } from "@/types/place";
+import type { Place } from "@/types/place";
 import type { Category } from "@/types/category";
 
 type SupabaseBrowserClient = NonNullable<

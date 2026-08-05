@@ -13,7 +13,23 @@ export type NavbarProps = {
 
 export function Navbar({ className }: NavbarProps) {
   const pathname = usePathname();
-  const { user } = useSupabase();
+  const { user, profile } = useSupabase();
+
+  const displayName =
+    profile?.name ??
+    user?.user_metadata?.full_name ??
+    user?.user_metadata?.name ??
+    user?.email?.split("@")[0] ??
+    null;
+
+  const profileInitials = displayName
+    ? displayName
+        .split(" ")
+        .map((part: string) => part[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : null;
 
   return (
     <div
@@ -37,7 +53,6 @@ export function Navbar({ className }: NavbarProps) {
               pathname === item.href ||
               (item.href === "/home" && pathname === "/");
 
-            // Profile tab shows avatar when authenticated
             const isProfileTab = item.href === "/profile";
 
             return (
@@ -50,15 +65,26 @@ export function Navbar({ className }: NavbarProps) {
                   )}
                   href={isProfileTab && !user ? "/login" : item.href}
                 >
-                  {isProfileTab && user?.user_metadata?.avatar_url ? (
-                    <img
-                      src={user.user_metadata.avatar_url}
-                      alt=""
-                      className={cn(
-                        "size-5 rounded-full object-cover",
-                        isActive && "ring-primary ring-2",
-                      )}
-                    />
+                  {isProfileTab && user ? (
+                    profile?.avatar_url ? (
+                      <img
+                        src={profile.avatar_url}
+                        alt={displayName ?? "Avatar"}
+                        className={cn(
+                          "size-5 rounded-full object-cover",
+                          isActive && "ring-primary ring-2",
+                        )}
+                      />
+                    ) : (
+                      <div
+                        className={cn(
+                          "bg-primary/10 text-primary flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold",
+                          isActive && "ring-primary ring-2",
+                        )}
+                      >
+                        {profileInitials}
+                      </div>
+                    )
                   ) : Icon ? (
                     <Icon className="size-5 stroke-[2.1]" />
                   ) : null}

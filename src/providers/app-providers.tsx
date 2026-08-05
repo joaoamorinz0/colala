@@ -13,11 +13,11 @@ type AppProvidersProps = {
 export function AppProviders({ children }: AppProvidersProps) {
   return (
     <ThemeProvider>
-      <SupabaseProvider>
-        <QueryProvider>
+      <QueryProvider>
+        <SupabaseProvider>
           <ToastProvider>{children}</ToastProvider>
-        </QueryProvider>
-      </SupabaseProvider>
+        </SupabaseProvider>
+      </QueryProvider>
     </ThemeProvider>
   );
 }

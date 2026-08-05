@@ -15,19 +15,13 @@ export default async function HomePage() {
   return (
     <AuthLayout>
       <div className={cn(SECTION_STACK, "overflow-hidden")}>
-        <header className="gap-stack-md flex items-start justify-between">
+        <header className="gap-stack-md flex flex-col items-start justify-between">
           <div className="min-w-0">
             <p className="text-muted-foreground text-sm">Boa tarde</p>
             <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
-              João 👋
+              Bem-vindo ao Colalá
             </p>
           </div>
-          <button
-            className="border-primary bg-primary/10 text-primary flex size-12 shrink-0 items-center justify-center rounded-full border-2 text-lg font-bold"
-            type="button"
-          >
-            J
-          </button>
         </header>
 
         <h1 className="text-foreground max-w-[16rem] text-[2rem] leading-[1.12] font-extrabold tracking-tight">
