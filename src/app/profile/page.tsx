@@ -183,7 +183,7 @@ export default function ProfilePage() {
 
     try {
       await signOut(client);
-      router.push("/login");
+      router.replace("/");
     } catch {
       toast.show("Não foi possível sair da conta", "error");
     }
@@ -191,7 +191,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push("/login");
+      router.replace("/login");
     }
   }, [authLoading, router, user]);
 

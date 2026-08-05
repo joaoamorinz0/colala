@@ -51,12 +51,11 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const redirectTo = searchParams.get("redirectTo") ?? "/profile";
+  const redirectTo = searchParams.get("redirectTo") ?? "/home";
 
   useEffect(() => {
     if (user) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      router.replace(redirectTo as any);
+      router.replace(redirectTo as never);
     }
   }, [user, router, redirectTo]);
 
@@ -68,8 +67,7 @@ function LoginForm() {
     try {
       if (!client) throw new Error("Supabase não configurado");
       await signInWithEmail(client, email, password);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      router.push(redirectTo as any);
+      router.replace(redirectTo as never);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao entrar");
     } finally {

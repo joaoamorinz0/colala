@@ -37,8 +37,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     } catch {
       // session may already be gone
     } finally {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      router.push("/login" as any);
+      router.replace("/");
     }
   };
 

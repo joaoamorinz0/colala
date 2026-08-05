@@ -22,8 +22,7 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (user) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      router.replace("/profile" as any);
+      router.replace("/profile");
     }
   }, [user, router]);
 
@@ -38,8 +37,7 @@ export default function RegisterPage() {
       const callbackUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent("/profile")}`;
       await signUpWithEmail(client, email, password, callbackUrl);
       setMessage("Cadastro realizado! Verifique seu e-mail.");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setTimeout(() => router.push("/login" as any), 2000);
+      setTimeout(() => router.replace("/login"), 2000);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao criar conta");
     } finally {
