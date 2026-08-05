@@ -6,7 +6,31 @@ type SupabaseBrowserClient = NonNullable<
 >;
 
 const PLACES_TABLE = "places";
-const PLACES_COLUMNS = "id, name, description, city, created_at";
+const PLACES_COLUMNS = `
+  id,
+  name,
+  description,
+  city,
+  neighborhood,
+  address,
+  price_level,
+  instagram,
+  phone,
+  website,
+  cover_image,
+  gallery,
+  created_at,
+  category_id,
+  rating,
+  latitude,
+  longitude,
+  opening_hours,
+  featured,
+  work_friendly,
+  pet_friendly,
+  wifi,
+  sunset
+`;
 
 export async function fetchPlaces(
   client: SupabaseBrowserClient,
