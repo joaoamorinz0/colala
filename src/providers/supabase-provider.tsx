@@ -23,6 +23,7 @@ type SupabaseContextValue = {
   session: Session | null;
   user: User | null;
   profile: Profile | null;
+  isLoading: boolean;
 };
 
 const SupabaseContext = createContext<SupabaseContextValue | null>(null);
@@ -40,6 +41,7 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!client) return;
@@ -67,6 +69,10 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
         if (isMounted) {
           setProfile(loadedProfile);
         }
+      }
+
+      if (isMounted) {
+        setIsLoading(false);
       }
     });
 
@@ -96,8 +102,9 @@ export function SupabaseProvider({ children }: SupabaseProviderProps) {
       session,
       user,
       profile,
+      isLoading,
     };
-  }, [client, session, user, profile]);
+  }, [client, session, user, profile, isLoading]);
 
   return (
     <SupabaseContext.Provider value={value}>

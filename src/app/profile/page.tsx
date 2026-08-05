@@ -9,9 +9,8 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bell, Lock, LogOut, MapPin, Share2, Star, User } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { AuthLayout } from "@/components/layout";
-import { ProfileMenuSection } from "@/components/profile/profile-menu-section";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
@@ -37,7 +36,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const toast = useToast();
-  const { client, user } = useSupabase();
+  const { client, user, isLoading: authLoading } = useSupabase();
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
@@ -190,7 +189,13 @@ export default function ProfilePage() {
     }
   };
 
-  if (!client || !user || profileQuery.isLoading) {
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push("/login");
+    }
+  }, [authLoading, router, user]);
+
+  if (!client || authLoading || !user || profileQuery.isLoading) {
     return (
       <AuthLayout>
         <div className={SECTION_STACK}>
@@ -219,7 +224,8 @@ export default function ProfilePage() {
 
   return (
     <AuthLayout>
-      <div className={cn(SECTION_STACK, "max-w-3xl")}>
+      <div className={cn(SECTION_STACK, "max-w-4xl")}>
+        {/* Header com Avatar e Informações Básicas */}
         <header className="text-center">
           {avatarUrl ? (
             <img
@@ -239,22 +245,32 @@ export default function ProfilePage() {
         </header>
 
         <form className={LIST_STACK} onSubmit={handleSave}>
-          <div className={cn(CARD_SURFACE, "space-y-stack-lg p-card")}>
+          {/* Seção: Editar Perfil */}
+          <section className={cn(CARD_SURFACE, "space-y-stack-lg p-card")}>
+            <div>
+              <h2 className="text-foreground text-lg font-bold tracking-tight">
+                Editar Perfil
+              </h2>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Atualize suas informações pessoais
+              </p>
+            </div>
+
             <div className="gap-stack-md grid md:grid-cols-2">
               <label className="space-y-stack-xs block">
                 <span className="text-foreground text-sm font-semibold">
-                  Nome
+                  Nome Completo
                 </span>
                 <Input
                   value={name}
                   onChange={(event) => setName(event.target.value)}
-                  placeholder="Nome completo"
+                  placeholder="Seu nome"
                   required
                 />
               </label>
               <label className="space-y-stack-xs block">
                 <span className="text-foreground text-sm font-semibold">
-                  Username
+                  Usuário
                 </span>
                 <Input
                   value={username}
@@ -272,35 +288,11 @@ export default function ProfilePage() {
                 placeholder="Conte algo sobre você"
                 value={bio}
                 onChange={(event) => setBio(event.target.value)}
-                rows={4}
+                rows={3}
               />
             </label>
 
-            <fieldset className="space-y-stack-sm">
-              <legend className="text-foreground text-sm font-semibold">
-                Avatar
-              </legend>
-              <div className="gap-stack-md grid md:grid-cols-[1fr_auto]">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="file:bg-primary file:text-primary-foreground file:rounded-control file:border-none file:px-3 file:py-2"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={!avatarFile || uploadAvatarMutation.isPending}
-                  onClick={handleUploadAvatar}
-                >
-                  {uploadAvatarMutation.isPending
-                    ? "Enviando..."
-                    : "Enviar avatar"}
-                </Button>
-              </div>
-            </fieldset>
-
-            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="gap-stack-md flex md:justify-end">
               <Button
                 type="submit"
                 disabled={updateProfileMutation.isPending}
@@ -308,41 +300,93 @@ export default function ProfilePage() {
               >
                 {updateProfileMutation.isPending
                   ? "Salvando..."
-                  : "Salvar perfil"}
+                  : "Salvar Perfil"}
               </Button>
+            </div>
+          </section>
+
+          {/* Seção: Foto de Perfil */}
+          <section className={cn(CARD_SURFACE, "space-y-stack-lg p-card")}>
+            <div>
+              <h2 className="text-foreground text-lg font-bold tracking-tight">
+                Foto de Perfil
+              </h2>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Escolha uma imagem para seu avatar
+              </p>
+            </div>
+
+            <fieldset className="space-y-stack-md">
+              <div className="gap-stack-md grid md:grid-cols-2">
+                <div>
+                  <label className="space-y-stack-xs block">
+                    <span className="text-foreground text-sm font-semibold">
+                      Selecionar imagem
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="file:bg-primary file:text-primary-foreground file:rounded-control text-sm file:border-none file:px-3 file:py-2"
+                    />
+                  </label>
+                  {avatarPreview && (
+                    <div className="mt-stack-sm">
+                      <p className="text-muted-foreground text-xs font-semibold">
+                        Pré-visualização:
+                      </p>
+                      <img
+                        src={avatarPreview}
+                        alt="Preview"
+                        className="mt-1 size-16 rounded-md object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-end">
+                  <Button
+                    type="button"
+                    disabled={!avatarFile || uploadAvatarMutation.isPending}
+                    onClick={handleUploadAvatar}
+                    className={cn(CONTROL_HEIGHT, "w-full")}
+                  >
+                    {uploadAvatarMutation.isPending
+                      ? "Enviando..."
+                      : "Enviar Foto"}
+                  </Button>
+                </div>
+              </div>
+            </fieldset>
+          </section>
+
+          {/* Seção: Conta */}
+          <section className={cn(CARD_SURFACE, "space-y-stack-lg p-card")}>
+            <div>
+              <h2 className="text-foreground text-lg font-bold tracking-tight">
+                Conta
+              </h2>
+              <p className="text-muted-foreground mt-1 text-sm">
+                Gerencie sua conta e segurança
+              </p>
+            </div>
+
+            <div className="gap-stack-md flex flex-col">
               <Button
                 type="button"
                 variant="outline"
                 className={cn(
                   CONTROL_HEIGHT,
-                  "w-full border-red-200 text-red-600 hover:bg-red-50 md:w-auto",
+                  "w-full justify-start border-red-200 text-red-600 hover:bg-red-50",
                 )}
                 onClick={handleSignOut}
               >
-                <LogOut className="size-5" />
-                Sair da conta
+                <LogOut className="mr-2 size-5" />
+                Sair da Conta
               </Button>
             </div>
-          </div>
+          </section>
         </form>
-
-        <ProfileMenuSection
-          items={[
-            { icon: User, label: "Editar perfil" },
-            { icon: Bell, label: "Notificações" },
-            { icon: Lock, label: "Privacidade" },
-          ]}
-          title="Conta"
-        />
-
-        <ProfileMenuSection
-          items={[
-            { icon: MapPin, label: "Minha localização" },
-            { icon: Star, label: "Minhas avaliações" },
-            { icon: Share2, label: "Compartilhar Colalá" },
-          ]}
-          title="Preferências"
-        />
       </div>
     </AuthLayout>
   );

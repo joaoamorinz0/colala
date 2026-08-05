@@ -18,9 +18,9 @@ export function placeToExperience(place: Place): Experience {
     address: place.city ?? "",
     neighborhood: place.city ?? "",
     distance: "",
-    rating: 0,
+    rating: place.rating ?? 0,
     reviewCount: 0,
     price: "",
-    imageUrl: FALLBACK_IMAGE,
+    imageUrl: place.cover_image ?? FALLBACK_IMAGE,
   };
 }
