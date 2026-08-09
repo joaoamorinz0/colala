@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | Colalá",
   },
   description:
-    "Aplicativo mobile-first para descoberta de cafés, restaurantes, bares e experiências.",
+    "Faça a descoberta de cafés, restaurantes e bares. Descubra novos lugares e compartilhe suas experiências.",
 };
 
 export const viewport: Viewport = {

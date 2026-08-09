@@ -19,18 +19,12 @@ export const placeSchema = z.object({
   city: z.string().trim().optional().nullable(),
   neighborhood: z.string().trim().optional().nullable(),
   address: z.string().trim().optional().nullable(),
-  price_level: z
-    .preprocess(
-      (value) => (value === "" ? null : value),
-      z.number().int().min(1).max(4).nullable(),
-    )
-    .optional()
-    .nullable(),
+  price_level: z.coerce.number().int().min(1).max(4).nullable().optional(),
   instagram: z.string().trim().optional().nullable(),
   phone: z.string().trim().optional().nullable(),
   website: z.string().trim().url().optional().nullable().or(z.literal("")),
   cover_image: z.string().trim().url().optional().nullable(),
-  category_id: z.string().uuid().optional().nullable().or(z.literal("")),
+  category_id: z.string().uuid().optional().nullable(),
   latitude: z
     .preprocess(
       (value) => (value === "" ? null : Number(value)),

@@ -43,7 +43,88 @@ create or replace function public.make_unique_slug(base_value text, row_id uuid)
 returns text
 language sql
 immutable
-as $$
+a- ============================================================================
+-- 3. Tables
+-- ============================================================================
+-- Core tables for the Colalá MVP.
+
+create table if not exists public.admins (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  name text,
+  username text not null,
+  bio text,
+  avatar_url text,
+  city text,
+  instagram text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.categories (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  slug text not null,
+  description text,
+  icon text,
+  color text,
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.places (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete set null,
+  name text not null,
+  slug text not null,
+  description text,
+  city text,
+  neighborhood text,
+  address text,
+  adress text,
+  latitude double precision,
+  longitude double precision,
+  rating numeric(3,2) default 0,
+  price_level smallint,
+  opening_hours text,
+  instagram text,
+  phone text,
+  website text,
+  cover_image text,
+  gallery text[] not null default '{}'::text[],
+  featured boolean not null default false,
+  work_friendly boolean not null default false,
+  wifi boolean not null default false,
+  pet_friendly boolean not null default false,
+  sunset boolean not null default false,
+  category_id uuid references public.categories(id) on delete set null,
+  status text not null default 'published',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.favorites (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  place_id uuid not null references public.places(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.reviews (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  place_id uuid not null references public.places(id) on delete cascade,
+  rating smallint not null,
+  comment text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);s $$
   select
     case
       when coalesce(public.slugify_text(base_value), '') = '' then 'item'
