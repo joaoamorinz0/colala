@@ -78,7 +78,6 @@ export async function fetchPlaces({
 
 export async function fetchPlaceById(id: string): Promise<Place | null> {
   const supabase = createSupabaseServerClient();
-
   if (!supabase) {
     console.error("❌ Supabase client não foi criado.");
     return null;
@@ -89,6 +88,9 @@ export async function fetchPlaceById(id: string): Promise<Place | null> {
     .select(PLACE_SELECT_COLUMNS)
     .eq("id", id)
     .single();
+
+  console.log("📦 Dados encontrados:", data);
+  console.log("🔴 Erro:", error);
 
   if (error) {
     console.error("🔴 Failed to load place by id:", error);

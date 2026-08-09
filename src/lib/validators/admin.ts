@@ -30,7 +30,7 @@ export const placeSchema = z.object({
   phone: z.string().trim().optional().nullable(),
   website: z.string().trim().url().optional().nullable().or(z.literal("")),
   cover_image: z.string().trim().url().optional().nullable(),
-  category_id: z.string().uuid().optional().nullable().or(z.literal("")),
+  category_id: z.string().uuid().optional().nullable(),
   latitude: z
     .preprocess(
       (value) => (value === "" ? null : Number(value)),
