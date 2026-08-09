@@ -35,10 +35,16 @@ export async function updatePlace(
     .update(place)
     .eq("id", id)
     .select()
-    .single();
+    .maybeSingle();
 
   if (error) {
     throw new Error(`Erro ao atualizar local: ${error.message}`);
+  }
+
+  if (!data) {
+    throw new Error(
+      "Local atualizado, mas não retornado — possível bloqueio de RLS na leitura.",
+    );
   }
 
   return data;

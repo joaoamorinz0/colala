@@ -7,16 +7,16 @@ export type Place = {
   city: string | null;
   neighborhood: string | null;
   address: string | null;
-  price_level: string | number | null;
+  price_level: number | null;
   instagram: string | null;
   phone: string | null;
   website: string | null;
   cover_image: string | null;
   gallery: string[] | null;
   created_at: string;
-  category_id: string | number | null;
+  category_id: string | null;
   category?: {
-    id: string | number;
+    id: string;
     name: string;
     icon: string | null;
   } | null;

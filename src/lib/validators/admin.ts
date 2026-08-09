@@ -21,7 +21,7 @@ export const placeSchema = z.object({
   address: z.string().trim().optional().nullable(),
   price_level: z
     .preprocess(
-      (value) => (value === "" ? null : value),
+      (value) => (value === "" ? null : Number(value)),
       z.number().int().min(1).max(4).nullable(),
     )
     .optional()

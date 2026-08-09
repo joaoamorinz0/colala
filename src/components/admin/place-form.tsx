@@ -223,9 +223,7 @@ export function PlaceForm({
         website: extraData.website || null,
         cover_image: coverImageUrl || null,
         gallery: null,
-        category_id: formData.category_id
-          ? parseInt(formData.category_id)
-          : null,
+        category_id: formData.category_id || null,
         rating: null,
         latitude: extraData.latitude ? parseFloat(extraData.latitude) : null,
         longitude: extraData.longitude ? parseFloat(extraData.longitude) : null,
