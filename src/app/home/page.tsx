@@ -9,24 +9,11 @@ import { CategoryChip } from "@/components/search/category-chip";
 import { LargeSearchBox } from "@/components/search/large-search-box";
 import { LIST_STACK, SECTION_GAP, SECTION_STACK } from "@/constants/design";
 import { EXPERIENCE_CATEGORIES } from "@/features/places";
-import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { calculateDistanceKm, type Coordinates } from "@/lib/distance";
 import { useSupabase } from "@/providers";
 import { fetchPlaces } from "@/services/places.service";
 import type { Place } from "@/types/place";
-
-const HomeMap = dynamic(
-  () => import("@/components/map/home-map").then((mod) => mod.HomeMap),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="bg-muted text-muted-foreground flex size-full items-center justify-center text-sm font-semibold">
-        Carregando mapa...
-      </div>
-    ),
-  },
-);
 
 type GeoState =
   | { status: "idle" | "loading" | "granted" | "denied" | "error" }
@@ -166,7 +153,7 @@ export default function HomePage() {
       <div className={cn(SECTION_STACK, "overflow-hidden")}>
         <header className="gap-stack-md flex flex-col items-start justify-between">
           <div className="min-w-0">
-            <p className="text-muted-foreground text-sm">Boa tarde</p>
+            <p className="text-muted-foreground text-sm">Olá</p>
             <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
               Bem-vindo ao Colalá
             </p>
@@ -194,13 +181,6 @@ export default function HomePage() {
             );
           })}
         </div>
-
-        <section className={SECTION_GAP}>
-          <SectionHeader title="🗺️ Explorar no mapa" />
-          <div className="border-border bg-card shadow-soft rounded-card-lg h-[72dvh] overflow-hidden border">
-            <HomeMap />
-          </div>
-        </section>
 
         <section className={SECTION_GAP}>
           <SectionHeader title="⭐ Destaques" />
