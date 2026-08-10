@@ -9,11 +9,24 @@ import { CategoryChip } from "@/components/search/category-chip";
 import { LargeSearchBox } from "@/components/search/large-search-box";
 import { LIST_STACK, SECTION_GAP, SECTION_STACK } from "@/constants/design";
 import { EXPERIENCE_CATEGORIES } from "@/features/places";
+import dynamic from "next/dynamic";
 import { cn } from "@/lib/utils";
 import { calculateDistanceKm, type Coordinates } from "@/lib/distance";
 import { useSupabase } from "@/providers";
 import { fetchPlaces } from "@/services/places.service";
 import type { Place } from "@/types/place";
+
+const HomeMap = dynamic(
+  () => import("@/components/map/home-map").then((mod) => mod.HomeMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="bg-muted text-muted-foreground flex size-full items-center justify-center text-sm font-semibold">
+        Carregando mapa...
+      </div>
+    ),
+  },
+);
 
 type GeoState =
   | { status: "idle" | "loading" | "granted" | "denied" | "error" }
@@ -181,6 +194,13 @@ export default function HomePage() {
             );
           })}
         </div>
+
+        <section className={SECTION_GAP}>
+          <SectionHeader title="🗺️ Explorar no mapa" />
+          <div className="border-border bg-card shadow-soft rounded-card-lg h-[72dvh] overflow-hidden border">
+            <HomeMap />
+          </div>
+        </section>
 
         <section className={SECTION_GAP}>
           <SectionHeader title="⭐ Destaques" />

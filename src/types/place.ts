@@ -31,3 +31,27 @@ export type Place = {
   sunset: boolean | null;
   status: PlaceStatus | null;
 };
+
+/**
+ * Retorno da função RPC `get_places_in_bbox` do Supabase.
+ * Representa um local com dados prontos para renderização no mapa.
+ */
+export type PlaceMapItem = {
+  id: string;
+  name: string;
+  slug: string | null;
+  description: string | null;
+  city: string | null;
+  neighborhood: string | null;
+  address: string | null;
+  latitude: number;
+  longitude: number;
+  price_level: number | null;
+  category_id: string | null;
+  category_name: string | null;
+  category_icon: string | null;
+  cover_image: string | null;
+  rating: number | null;
+  featured: boolean | null;
+  total_count: number;
+};
