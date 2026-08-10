@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServerSessionClient } from "@/lib/supabase/server";
-import LoginPage from "@/app/login/page";
+import { LoginView } from "@/components/auth/login-view";
 
 export default async function IndexPage() {
   const supabase = await createSupabaseServerSessionClient();
@@ -15,5 +15,5 @@ export default async function IndexPage() {
     }
   }
 
-  return <LoginPage />;
+  return <LoginView />;
 }

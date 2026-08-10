@@ -233,7 +233,7 @@ export function PlaceForm({
         pet_friendly: null,
         wifi: null,
         sunset: null,
-        status: null,
+        status: initialData?.status ?? "published",
       };
 
       await onSubmit(submitData);

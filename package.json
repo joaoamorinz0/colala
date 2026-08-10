@@ -12,6 +12,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@ducanh2912/next-pwa": "^10.2.9",
     "@fontsource-variable/inter": "^5.2.6",
     "@hookform/resolvers": "^5.1.1",
     "@radix-ui/react-slot": "^1.2.3",
