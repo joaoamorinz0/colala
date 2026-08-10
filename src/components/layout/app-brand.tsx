@@ -21,10 +21,6 @@ export function AppBrand({ className, compact = false }: AppBrandProps) {
           width={compact ? 28 : 44}
           height={compact ? 28 : 44}
           priority
-          className={cn(
-            "rounded-full object-contain",
-            compact ? "size-7" : "xs:size-11 size-9",
-          )}
         />
       </div>
       <h1
