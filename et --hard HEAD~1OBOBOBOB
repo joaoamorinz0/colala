@@ -1,5 +1,0 @@
-[33m50f68bf[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Adicionar tabelas principais, atualizar metadados e simplificar validadores
-[33m8e52d3a[m chore: checkpoint before final MVP
-[33m7c2fabe[m Finaliza a parte de autenticação e perfil usando o schema correto, incluindo bio dentro de profiles.
-[33m2fbfb11[m refatora pagina de admin e finaliza reviews
-[33m54cfc82[m adição de geolocalização com base no usuario
