@@ -11,16 +11,17 @@ export function AppBrand({ className, compact = false }: AppBrandProps) {
     <div className={cn("flex flex-col items-center text-center", className)}>
       <div
         className={cn(
-          "bg-primary/10 ring-primary/15 relative flex items-center justify-center rounded-full ring-1",
-          compact ? "size-12" : "xs:size-20 size-16",
+          "relative flex items-center justify-center",
+          compact ? "size-14" : "xs:size-28 size-24",
         )}
       >
         <Image
-          src="/icons/icon-512.png"
+          src="/icons/logo.png"
           alt="Colalá"
-          width={compact ? 28 : 44}
-          height={compact ? 28 : 44}
+          width={compact ? 56 : 112}
+          height={compact ? 56 : 112}
           priority
+          className="size-full rounded-full object-cover shadow-[0_4px_16px_-4px_rgba(0,0,0,0.15)]"
         />
       </div>
       <h1
@@ -32,7 +33,7 @@ export function AppBrand({ className, compact = false }: AppBrandProps) {
         Colalá
       </h1>
       {!compact ? (
-        <p className="text-muted-foreground mt-stack-xs xs:text-base max-w-[26ch] text-sm leading-snug">
+        <p className="text-muted-foreground/80 mt-stack-xs xs:text-base max-w-[26ch] text-sm leading-snug">
           Descubra lugares pelas pessoas, não pelo algoritmo.
         </p>
       ) : null}

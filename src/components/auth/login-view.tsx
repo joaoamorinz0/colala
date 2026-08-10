@@ -3,11 +3,8 @@
 import { Suspense, useEffect, useState, type FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Eye } from "lucide-react";
-import { AppBrand, PublicLayout } from "@/components/layout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { CONTROL_HEIGHT, LIST_STACK } from "@/constants/design";
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { PublicLayout } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { useSupabase } from "@/providers";
 import { signInWithEmail, signInWithGoogle } from "@/services/auth.service";
@@ -15,10 +12,9 @@ import { signInWithEmail, signInWithGoogle } from "@/services/auth.service";
 function GoogleIcon() {
   return (
     <svg
-      width="20"
-      height="20"
+      width="18"
+      height="18"
       viewBox="0 0 24 24"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -91,107 +87,109 @@ function LoginForm() {
   };
 
   return (
-    <>
-      <div className={LIST_STACK}>
-        <Button
-          type="button"
-          onClick={handleGoogleSignIn}
-          className={cn(
-            CONTROL_HEIGHT,
-            "border-border bg-card text-foreground hover:bg-muted rounded-control w-full border text-base font-bold shadow-none",
-          )}
-          variant="outline"
-          disabled={loading}
-        >
-          <GoogleIcon />
-          Continuar com Google
-        </Button>
+    <div className="flex min-h-[100dvh] flex-col space-y-5 bg-[#fbf8f4] px-6 pt-10 pb-8">
+      {/* Espaço reservado para a ilustração (unDraw/Storyset, cores #d97757 / #7a9e7e) */}
+      <div className="mx-auto flex w-full max-w-[220px] flex-1 items-center justify-center" />
+
+      <div className="mt-6 text-center">
+        <h1 className="text-3xl font-extrabold tracking-tight text-[#2b2621]">
+          Bem-vindo de volta
+        </h1>
+        <p className="mt-1.5 text-sm text-[#8a8078]">
+          Entre para descobrir lugares recomendados por pessoas, não por
+          algoritmo.
+        </p>
       </div>
 
-      <div className="text-muted-foreground my-section gap-stack-md flex items-center text-sm">
-        <div className="bg-border h-px flex-1" />
-        <span>ou continue com e-mail</span>
-        <div className="bg-border h-px flex-1" />
-      </div>
-
-      <form className="space-y-stack-lg" onSubmit={handleEmailSignIn}>
-        <label className="space-y-stack-xs block">
-          <span className="text-foreground text-sm font-semibold">E-mail</span>
-          <Input
-            className={cn(
-              CONTROL_HEIGHT,
-              "bg-card rounded-control px-card text-base",
-            )}
-            placeholder="seu@email.com"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
+      <form onSubmit={handleEmailSignIn} className="mt-8 space-y-3.5">
+        <div className="relative">
+          <Mail className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-[#a89e94]" />
+          <input
             type="email"
             required
+            placeholder="E-mail"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            className="h-13 w-full rounded-full border border-[#e8e1d8] bg-white pr-4 pl-11 text-sm text-[#2b2621] placeholder:text-[#a89e94] focus:border-[#d97757] focus:ring-2 focus:ring-[#d97757]/25 focus:outline-none"
           />
-        </label>
+        </div>
 
-        <label className="space-y-stack-xs block">
-          <span className="text-foreground text-sm font-semibold">Senha</span>
-          <div className="relative">
-            <Input
-              className={cn(
-                CONTROL_HEIGHT,
-                "bg-card rounded-control px-card pr-12 text-base",
-              )}
-              placeholder="••••••••"
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-            />
-            <button
-              type="button"
-              className="text-muted-foreground absolute top-1/2 right-4 -translate-y-1/2"
-              onClick={() => setShowPassword(!showPassword)}
-              tabIndex={-1}
-            >
-              <Eye className="size-5" />
-            </button>
-          </div>
-        </label>
+        <div className="relative">
+          <Lock className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-[#a89e94]" />
+          <input
+            type={showPassword ? "text" : "password"}
+            required
+            placeholder="Senha"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            className="h-13 w-full rounded-full border border-[#e8e1d8] bg-white pr-11 pl-11 text-sm text-[#2b2621] placeholder:text-[#a89e94] focus:border-[#d97757] focus:ring-2 focus:ring-[#d97757]/25 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((value) => !value)}
+            tabIndex={-1}
+            className="absolute top-1/2 right-4 -translate-y-1/2 text-[#a89e94]"
+          >
+            {showPassword ? (
+              <EyeOff className="size-4" />
+            ) : (
+              <Eye className="size-4" />
+            )}
+          </button>
+        </div>
 
         {error && (
-          <p className="rounded-control bg-red-50 px-4 py-2 text-sm text-red-600">
+          <p className="rounded-2xl bg-red-50 px-4 py-2.5 text-sm text-red-600">
             {error}
           </p>
         )}
 
-        <Button
+        <button
           type="submit"
-          className={cn(
-            CONTROL_HEIGHT,
-            "rounded-control w-full text-base font-bold",
-          )}
           disabled={loading}
+          className="h-13 w-full rounded-full bg-[#d97757] text-sm font-bold text-white shadow-[0_8px_20px_-6px_rgba(217,119,87,0.55)] transition-transform active:scale-[0.98] disabled:opacity-60"
         >
           {loading ? "Entrando..." : "Entrar"}
-        </Button>
+        </button>
       </form>
 
-      <p className="text-muted-foreground mt-section text-center text-sm">
+      <div className="my-6 flex items-center gap-3 text-xs text-[#a89e94]">
+        <div className="h-px flex-1 bg-[#e8e1d8]" />
+        ou
+        <div className="h-px flex-1 bg-[#e8e1d8]" />
+      </div>
+
+      <div className="space-y-3">
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={loading}
+          className={cn(
+            "flex h-13 w-full items-center justify-center gap-2.5 rounded-full border border-[#e8e1d8] bg-white text-sm font-semibold text-[#2b2621]",
+            "transition-transform active:scale-[0.98] disabled:opacity-60",
+          )}
+        >
+          <GoogleIcon />
+          Continuar com Google
+        </button>
+      </div>
+
+      <p className="mt-7 text-center text-sm text-[#8a8078]">
         Não tem conta?{" "}
-        <Link className="text-primary font-bold" href="/register">
+        <Link href="/register" className="font-bold text-[#d97757]">
           Criar conta
         </Link>
       </p>
-    </>
+    </div>
   );
 }
 
 export function LoginView() {
   return (
     <PublicLayout>
-      <div className="flex min-h-[calc(100dvh-2.5rem)] flex-col justify-center">
-        <AppBrand className="mb-section" />
-        <Suspense fallback={null}>
-          <LoginForm />
-        </Suspense>
-      </div>
+      <Suspense fallback={null}>
+        <LoginForm />
+      </Suspense>
     </PublicLayout>
   );
 }

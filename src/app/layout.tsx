@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Descubra cafés, restaurantes, bares e novos lugares. Encontre experiências incríveis perto de você e compartilhe suas descobertas.",
+    "Encontre experiências incríveis perto de você e compartilhe suas descobertas.",
 
   applicationName: "Colalá",
 
