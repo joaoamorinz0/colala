@@ -4,6 +4,13 @@ import { createServerClient } from "@supabase/ssr";
 const PROTECTED_ROUTES = ["/admin", "/profile", "/favorites"];
 
 function isProtectedRoute(pathname: string): boolean {
+  // "/profile/[username]" é uma rota pública (perfil público);
+  // apenas "/profile" exato (área da conta) e "/profile/edit"
+  // exigem autenticação.
+  if (pathname.startsWith("/profile/")) {
+    return pathname === "/profile/edit";
+  }
+
   return PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 }
 
