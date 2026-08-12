@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Flame, MapPin, Star } from "lucide-react";
 import { AuthLayout } from "@/components/layout";
-import { SectionHeader } from "@/components/layout/section-header";
 import { HeroCard, HorizontalCard } from "@/components/place";
 import { CategoryChip } from "@/components/search/category-chip";
 import { LargeSearchBox } from "@/components/search/large-search-box";
@@ -239,13 +238,14 @@ export default function HomePage() {
         </section>
 
         <section className={SECTION_GAP}>
-          <SectionHeader
-            title={
-              showRecentInsteadOfNearby
-                ? "📍 Locais recentes"
-                : "📍 Próximos de você"
-            }
-          />
+          <div className="flex items-center gap-2">
+            <MapPin className="text-primary size-5" />
+            <h2 className="text-foreground text-xl font-extrabold tracking-tight">
+              {showRecentInsteadOfNearby
+                ? "Locais recentes"
+                : "Próximos de você"}
+            </h2>
+          </div>
 
           {placesQuery.isLoading ? (
             <div className="border-border bg-card text-muted-foreground rounded-card-lg p-card border text-sm">
@@ -292,7 +292,12 @@ export default function HomePage() {
         </section>
 
         <section className={SECTION_GAP}>
-          <SectionHeader title="🔥 Novidades" />
+          <div className="flex items-center gap-2">
+            <Flame className="text-primary size-5" />
+            <h2 className="text-foreground text-xl font-extrabold tracking-tight">
+              Novidades
+            </h2>
+          </div>
           {placesQuery.isLoading ? (
             <div className="border-border bg-card text-muted-foreground rounded-card-lg p-card border text-sm">
               Carregando novidades...
