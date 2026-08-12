@@ -1,18 +1,21 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Flame, MapPin, Star } from "lucide-react";
 import { AuthLayout } from "@/components/layout";
 import { SectionHeader } from "@/components/layout/section-header";
 import { HeroCard, HorizontalCard } from "@/components/place";
 import { CategoryChip } from "@/components/search/category-chip";
 import { LargeSearchBox } from "@/components/search/large-search-box";
 import { LIST_STACK, SECTION_GAP, SECTION_STACK } from "@/constants/design";
-import { EXPERIENCE_CATEGORIES } from "@/features/places";
 import { cn } from "@/lib/utils";
 import { calculateDistanceKm, type Coordinates } from "@/lib/distance";
 import { useSupabase } from "@/providers";
+import { categoriesService } from "@/services/categories";
 import { fetchPlaces } from "@/services/places.service";
+import type { Category } from "@/types/category";
 import type { Place } from "@/types/place";
 
 type GeoState =
@@ -60,6 +63,7 @@ function getDistanceLabel(distanceKm: number) {
 export default function HomePage() {
   const { client } = useSupabase();
   const [geoState, setGeoState] = useState<GeoState>({ status: "idle" });
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const placesQuery = useQuery({
     queryKey: ["home-places"],
@@ -72,6 +76,27 @@ export default function HomePage() {
     },
     enabled: Boolean(client),
   });
+
+  useEffect(() => {
+    if (!client) return;
+
+    let cancelled = false;
+
+    categoriesService
+      .getAll()
+      .then((data) => {
+        if (!cancelled) {
+          setCategories(data);
+        }
+      })
+      .catch((error) => {
+        console.error("[home] failed to load categories:", error);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [client]);
 
   useEffect(() => {
     if (!("geolocation" in navigator)) {
@@ -142,7 +167,6 @@ export default function HomePage() {
 
   const recentPlaces = useMemo(() => sortByRecency(allPlaces), [allPlaces]);
 
-  const chips = EXPERIENCE_CATEGORIES.slice(0, 4);
   const featuredPlace = featuredPlaces[0] ?? null;
   const nearbyFallbackPlaces = recentPlaces.slice(0, 6);
   const noveltyPlaces = recentPlaces.slice(0, 6);
@@ -167,23 +191,40 @@ export default function HomePage() {
         <LargeSearchBox placeholder="Buscar lugares..." showFilter />
 
         <div className="-mx-page-x gap-stack-sm px-page-x flex scrollbar-none overflow-x-auto pb-0.5">
-          {chips.map((category, index) => {
-            const Icon = category.icon;
-
-            return (
-              <CategoryChip
-                active={index === 0}
-                icon={<Icon className="size-4" />}
-                key={category.id}
-              >
-                {category.label}
-              </CategoryChip>
-            );
-          })}
+          <Link href="/search" className="shrink-0">
+            <CategoryChip active={false}>Todos</CategoryChip>
+          </Link>
+          {categories.length === 0
+            ? Array.from({ length: 4 }, (_, index) => (
+                <span
+                  key={`chip-skeleton-${index}`}
+                  className="bg-muted inline-flex h-10 w-24 shrink-0 animate-pulse rounded-full"
+                />
+              ))
+            : categories.map((category) => (
+                <Link
+                  key={String(category.id)}
+                  href={`/search?category=${encodeURIComponent(String(category.id))}`}
+                  className="shrink-0"
+                >
+                  <CategoryChip
+                    icon={
+                      category.icon ? <span>{category.icon}</span> : undefined
+                    }
+                  >
+                    {category.name}
+                  </CategoryChip>
+                </Link>
+              ))}
         </div>
 
         <section className={SECTION_GAP}>
-          <SectionHeader title="⭐ Destaques" />
+          <div className="flex items-center gap-2">
+            <Star className="text-primary size-5" />
+            <h2 className="text-foreground text-xl font-extrabold tracking-tight">
+              Destaques
+            </h2>
+          </div>
           {placesQuery.isLoading ? (
             <div className="border-border bg-card text-muted-foreground rounded-card-lg p-card border text-sm">
               Carregando destaques...

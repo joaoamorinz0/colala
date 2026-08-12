@@ -88,6 +88,32 @@ export async function updateProfile(
   return data;
 }
 
+export async function searchProfiles(
+  client: SupabaseBrowserClient,
+  query: string,
+  limit: number = 10,
+): Promise<Profile[]> {
+  const trimmed = query.trim();
+
+  if (!trimmed) {
+    return [];
+  }
+
+  const { data, error } = await client
+    .from("profiles")
+    .select(PROFILE_SELECT_COLUMNS)
+    .or(`name.ilike.%${trimmed}%,username.ilike.%${trimmed}%`)
+    .order("username", { ascending: true })
+    .limit(limit);
+
+  if (error) {
+    console.error("Erro ao buscar perfis:", error.message);
+    throw error;
+  }
+
+  return (data ?? []) as Profile[];
+}
+
 export async function fetchProfileReviewStats(
   client: SupabaseBrowserClient,
   userId: string,

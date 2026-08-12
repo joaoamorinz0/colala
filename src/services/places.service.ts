@@ -29,24 +29,46 @@ const PLACES_COLUMNS = `
   work_friendly,
   pet_friendly,
   wifi,
-  sunset
+  sunset,
+  category:categories(id, name, icon)
 `;
+
+export type FetchPlacesClientOptions = {
+  query?: string;
+  categoryId?: string | null;
+  limit?: number;
+};
 
 export async function fetchPlaces(
   client: SupabaseBrowserClient,
+  { query, categoryId, limit }: FetchPlacesClientOptions = {},
 ): Promise<Place[]> {
-  const { data, error, status, statusText } = await client
+  let request = client
     .from(PLACES_TABLE)
     .select(PLACES_COLUMNS)
     .order("created_at", { ascending: false });
 
-  console.log("[places] fetch status:", status, statusText);
-  console.log("[places] fetch data:", data);
+  if (query?.trim()) {
+    const searchTerm = query.trim();
+    request = request.or(
+      `name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,city.ilike.%${searchTerm}%`,
+    );
+  }
+
+  if (categoryId) {
+    request = request.eq("category_id", categoryId);
+  }
+
+  if (limit) {
+    request = request.limit(limit);
+  }
+
+  const { data, error } = await request;
 
   if (error) {
     console.error("[places] fetch error:", error);
     throw error;
   }
 
-  return (data ?? []) as Place[];
+  return (data ?? []) as unknown as Place[];
 }

@@ -8,14 +8,23 @@ import { PriceLevelBadge } from "./price-level-badge";
 
 export type PlaceCardProps = {
   place: Place;
+  distanceKm?: number;
   className?: string;
 };
+
+function getDistanceLabel(distanceKm: number) {
+  if (distanceKm < 1) {
+    return `${Math.round(distanceKm * 1000)} m`;
+  }
+
+  return `${distanceKm.toFixed(1)} km`;
+}
 
 /**
  * Medium vertical card — full column width on lists/grids.
  * For fixed-width carousels, prefer `components/cards/medium-card`.
  */
-export function PlaceCard({ place, className }: PlaceCardProps) {
+export function PlaceCard({ place, distanceKm, className }: PlaceCardProps) {
   return (
     <article className={cn(CARD_SURFACE_LG, "w-full", className)}>
       <Link href={`/place/${place.id}`} className="block">
@@ -50,6 +59,24 @@ export function PlaceCard({ place, className }: PlaceCardProps) {
               <PriceLevelBadge level={place.price_level} />
             ) : null}
           </div>
+
+          {place.category ? (
+            <p className="text-muted-foreground inline-flex items-center gap-1.5 text-xs font-medium">
+              {place.category.icon ? <span>{place.category.icon}</span> : null}
+              {place.category.name}
+              {typeof distanceKm === "number" ? (
+                <span className="text-muted-foreground/70">
+                  • {getDistanceLabel(distanceKm)}
+                </span>
+              ) : null}
+            </p>
+          ) : (
+            typeof distanceKm === "number" && (
+              <p className="text-muted-foreground text-xs font-medium">
+                {getDistanceLabel(distanceKm)}
+              </p>
+            )
+          )}
 
           {place.description ? (
             <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
