@@ -11,6 +11,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Navbar } from "@/components/navigation/navbar";
+import { PlaceReviewSection } from "@/components/place/place-review-section";
+import { VisitIntentButton } from "@/components/place/visit-intent-button";
 import { APP_SHELL } from "@/constants/design";
 import { cn } from "@/lib/utils";
 import type { Place } from "@/types/place";
@@ -446,6 +448,9 @@ export default async function PlacePage({ params }: PlacePageProps) {
           </>
         )}
 
+        {/* Reviews */}
+        <PlaceReviewSection placeId={place.id} />
+
         {/* Related places */}
         <RelatedPlaces categoryId={place.category_id} currentId={place.id} />
       </div>
@@ -454,13 +459,14 @@ export default async function PlacePage({ params }: PlacePageProps) {
       {place.latitude && place.longitude && (
         <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center">
           <div className={cn(APP_SHELL, "pointer-events-auto")}>
-            <div className="px-5 pt-3 pb-6">
+            <div className="flex items-stretch gap-3 px-5 pt-3 pb-6">
+              <VisitIntentButton placeId={place.id} />
               <a
                 id="place-directions-btn"
                 href={`https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-primary shadow-primary/30 hover:bg-primary/90 flex w-full items-center justify-center gap-2.5 rounded-2xl py-4 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98]"
+                className="bg-primary shadow-primary/30 hover:bg-primary/90 flex flex-1 items-center justify-center gap-2.5 rounded-2xl py-3.5 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98]"
               >
                 <Navigation className="size-5" />
                 Como chegar
