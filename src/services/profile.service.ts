@@ -140,13 +140,14 @@ export async function fetchProfileReviewStats(
 
 export async function uploadProfileAvatar(
   client: SupabaseBrowserClient,
+  userId: string,
   file: File,
-  bucket: string = "places",
+  bucket: string = "avatars",
 ): Promise<string> {
-  const fileName = `${Date.now()}-${file.name}`;
+  const filePath = `${userId}/${Date.now()}-${file.name}`;
   const { error, data } = await client.storage
     .from(bucket)
-    .upload(fileName, file);
+    .upload(filePath, file, { upsert: true });
 
   if (error) {
     throw new Error(`Erro ao fazer upload do avatar: ${error.message}`);

@@ -109,7 +109,7 @@ export default function ProfileEditPage() {
         throw new Error("Supabase não configurado");
       }
 
-      const avatarUrl = await uploadProfileAvatar(client, file);
+      const avatarUrl = await uploadProfileAvatar(client, user.id, file); // ← passa user.id
       await updateProfile(client, user.id, { avatar_url: avatarUrl });
       return avatarUrl;
     },
