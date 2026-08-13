@@ -3,6 +3,7 @@ export type Profile = {
   name: string | null;
   username: string | null;
   avatar_url: string | null;
+  cover_image: string | null;
   bio: string | null;
   city: string | null;
   instagram: string | null;

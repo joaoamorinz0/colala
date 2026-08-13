@@ -1,13 +1,24 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { Place } from "@/types/place";
+import type { ProfileInterest } from "@/types/profile-interest";
 import type { Profile } from "@/types/profile";
 import type { PublicReview } from "@/types/review";
+import {
+  normalizeProfileInterestsRows,
+  type RawProfileInterestRow,
+} from "@/services/profile-interests.service";
+
+const PROFILE_INTEREST_SELECT_COLUMNS = `
+  user_id,
+  category_id,
+  category:categories(id, name, icon, color)
+`;
 
 const PROFILE_SELECT_COLUMNS = `
   id,
   name,
   username,
   avatar_url,
+  cover_image,
   bio,
   city,
   instagram,
@@ -87,44 +98,30 @@ export async function fetchReviewsByUser(
   return (data ?? []) as unknown as PublicReview[];
 }
 
-/**
- * Adapta o `place` aninhado de uma PublicReview para o formato Place
- * consumido pelo HorizontalCard existente no projeto.
- */
-export function reviewPlaceToPlace(review: PublicReview): Place {
-  const place = review.place;
+export async function fetchProfileInterestsByUser(
+  userId: string,
+): Promise<ProfileInterest[]> {
+  const supabase = createSupabaseServerClient();
 
-  return {
-    id: place.id,
-    name: place.name,
-    description: place.description,
-    city: place.city,
-    neighborhood: place.neighborhood,
-    address: null,
-    price_level: place.price_level,
-    instagram: place.instagram,
-    phone: null,
-    website: null,
-    cover_image: place.cover_image,
-    gallery: [],
-    created_at: "",
-    category_id: place.category?.id ?? null,
-    rating: place.rating,
-    latitude: null,
-    longitude: null,
-    opening_hours: null,
-    featured: false,
-    work_friendly: false,
-    pet_friendly: false,
-    wifi: false,
-    sunset: false,
-    status: "published",
-    category: place.category
-      ? {
-          id: place.category.id,
-          name: place.category.name,
-          icon: place.category.icon,
-        }
-      : null,
-  };
+  if (!supabase) {
+    console.error("❌ Supabase client não foi criado.");
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("profile_interests")
+    .select(PROFILE_INTEREST_SELECT_COLUMNS)
+    .eq("user_id", userId)
+    .order("category_id", { ascending: true });
+
+  if (error) {
+    console.error("🔴 Failed to load user interests:", error);
+    return [];
+  }
+
+  return normalizeProfileInterestsRows(
+    (data ?? []) as unknown as RawProfileInterestRow[],
+  );
 }
+
+export { reviewPlaceToPlace } from "@/services/reviews.service";

@@ -1,5 +1,6 @@
 import type { createSupabaseBrowserClient } from "@/lib/supabase";
-import type { Review } from "@/types/review";
+import type { Place } from "@/types/place";
+import type { PublicReview, Review } from "@/types/review";
 
 type SupabaseBrowserClient = NonNullable<
   ReturnType<typeof createSupabaseBrowserClient>
@@ -13,6 +14,28 @@ const REVIEW_SELECT_COLUMNS = `
   comment,
   created_at,
   updated_at
+`;
+
+const REVIEW_WITH_PLACE_SELECT_COLUMNS = `
+  id,
+  place_id,
+  user_id,
+  rating,
+  comment,
+  created_at,
+  updated_at,
+  place:places(
+    id,
+    name,
+    description,
+    city,
+    neighborhood,
+    price_level,
+    instagram,
+    cover_image,
+    rating,
+    category:categories(id, name, icon)
+  )
 `;
 
 export type PlaceReviewSummary = {
@@ -134,4 +157,74 @@ export async function saveReview(
   }
 
   return data as Review;
+}
+
+/**
+ * Adapta o `place` aninhado de uma PublicReview para o formato Place
+ * consumido pelos cards de perfil (HorizontalCard, RecentPlaceCard).
+ */
+export function reviewPlaceToPlace(review: PublicReview): Place {
+  const place = review.place;
+
+  return {
+    id: place.id,
+    name: place.name,
+    description: place.description,
+    city: place.city,
+    neighborhood: place.neighborhood,
+    address: null,
+    price_level: place.price_level,
+    instagram: place.instagram,
+    phone: null,
+    website: null,
+    cover_image: place.cover_image,
+    gallery: [],
+    created_at: "",
+    category_id: place.category?.id ?? null,
+    rating: place.rating,
+    latitude: null,
+    longitude: null,
+    opening_hours: null,
+    featured: false,
+    work_friendly: false,
+    pet_friendly: false,
+    wifi: false,
+    sunset: false,
+    status: "published",
+    category: place.category
+      ? {
+          id: place.category.id,
+          name: place.category.name,
+          icon: place.category.icon,
+        }
+      : null,
+  };
+}
+
+/**
+ * Retorna os lugares mais recentemente avaliados pelo usuário,
+ * com capa, categoria e rating do place (join aninhado).
+ * Leitura é pública via RLS.
+ */
+export async function fetchRecentReviewedPlaces(
+  client: SupabaseBrowserClient,
+  userId: string,
+  limit: number = 5,
+): Promise<Place[]> {
+  const { data, error } = await client
+    .from("reviews")
+    .select(REVIEW_WITH_PLACE_SELECT_COLUMNS)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error(
+      "[reviews] Erro ao carregar lugares avaliados:",
+      error.message,
+    );
+    throw error;
+  }
+
+  return ((data ?? []) as unknown as PublicReview[]).map(reviewPlaceToPlace);
 }

@@ -6,6 +6,7 @@ import { APP_SHELL, PAGE_X } from "@/constants/design";
 import { cn } from "@/lib/utils";
 import {
   fetchProfileByUsername,
+  fetchProfileInterestsByUser,
   fetchReviewsByUser,
   reviewPlaceToPlace,
 } from "@/services/profiles";
@@ -39,7 +40,10 @@ export default async function PublicProfilePage({
     notFound();
   }
 
-  const reviews = await fetchReviewsByUser(profile.id);
+  const [reviews, interests] = await Promise.all([
+    fetchReviewsByUser(profile.id),
+    fetchProfileInterestsByUser(profile.id),
+  ]);
   const uniquePlaces = reviews.filter(
     (review, index, all) =>
       all.findIndex((item) => item.place_id === review.place_id) === index,
@@ -55,6 +59,7 @@ export default async function PublicProfilePage({
           reviewedPlaceCount={uniquePlaces.length}
           showCity={profile.show_city !== false}
           showInstagram={profile.show_instagram !== false}
+          interests={interests}
         />
 
         <div className="mt-8 block h-px bg-gray-200" />

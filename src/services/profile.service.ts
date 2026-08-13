@@ -10,6 +10,7 @@ const PROFILE_SELECT_COLUMNS = `
   name,
   username,
   avatar_url,
+  cover_image,
   bio,
   city,
   instagram,
@@ -47,6 +48,7 @@ export async function createProfile(
     name: profile.name ?? null,
     username: profile.username ?? null,
     avatar_url: profile.avatar_url ?? null,
+    cover_image: profile.cover_image ?? null,
     bio: profile.bio ?? null,
     city: profile.city ?? null,
     instagram: profile.instagram ?? null,
@@ -171,4 +173,71 @@ export async function updateUserMetadata(
   }
 
   return data;
+}
+
+export type ProfileStats = {
+  visitedPlaceCount: number;
+  favoritesCount: number;
+  reviewCount: number;
+};
+
+/**
+ * Estatísticas do card de perfil:
+ * - Lugares visitados: place_id distintos na união de reviews e visit_intents.
+ * - Favoritos: count(favorites).
+ * - Avaliações: count(reviews).
+ */
+export async function fetchProfileStats(
+  client: SupabaseBrowserClient,
+  userId: string,
+): Promise<ProfileStats> {
+  const [reviewsResult, favoritesResult, visitIntentsResult] =
+    await Promise.all([
+      client.from("reviews").select("place_id").eq("user_id", userId),
+      client
+        .from("favorites")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId),
+      client.from("visit_intents").select("place_id").eq("user_id", userId),
+    ]);
+
+  if (reviewsResult.error) {
+    console.error(
+      "[profile-stats] Erro ao carregar avaliações:",
+      reviewsResult.error.message,
+    );
+    throw reviewsResult.error;
+  }
+
+  if (favoritesResult.error) {
+    console.error(
+      "[profile-stats] Erro ao carregar favoritos:",
+      favoritesResult.error.message,
+    );
+    throw favoritesResult.error;
+  }
+
+  if (visitIntentsResult.error) {
+    console.error(
+      "[profile-stats] Erro ao carregar intenções de visita:",
+      visitIntentsResult.error.message,
+    );
+    throw visitIntentsResult.error;
+  }
+
+  const reviewedPlaceIds = (reviewsResult.data ?? []).map(
+    (row) => row.place_id,
+  );
+  const intendedPlaceIds = (visitIntentsResult.data ?? []).map(
+    (row) => row.place_id,
+  );
+
+  const visitedPlaceCount = new Set([...reviewedPlaceIds, ...intendedPlaceIds])
+    .size;
+
+  return {
+    visitedPlaceCount,
+    favoritesCount: favoritesResult.count ?? 0,
+    reviewCount: (reviewsResult.data ?? []).length,
+  };
 }
