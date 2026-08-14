@@ -6,8 +6,8 @@ import {
   Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { ProfileInterest } from "@/types/profile-interest";
 import type { Profile } from "@/types/profile";
+import type { ProfileInterest } from "@/types/profile-interest";
 import { InterestChips } from "./interest-chips";
 
 export type ProfileHeaderProps = {
@@ -71,7 +71,7 @@ export function ProfileHeader({
       <div
         className={cn(
           "relative flex flex-col items-center",
-          profile.cover_image ? "mt-6 pt-28" : "pt-0",
+          profile.cover_image ? "pt-28" : "pt-0",
         )}
       >
         {profile.avatar_url ? (
@@ -79,10 +79,18 @@ export function ProfileHeader({
           <img
             src={profile.avatar_url}
             alt={`Avatar de ${displayName}`}
-            className="border-primary border-background size-24 rounded-full border-[3px] object-cover shadow-md"
+            className={cn(
+              "size-24 rounded-full border-[3px] object-cover shadow-md",
+              profile.cover_image ? "border-background" : "border-primary",
+            )}
           />
         ) : (
-          <div className="border-primary bg-primary/10 text-primary border-background flex size-24 items-center justify-center rounded-full border-[3px] text-3xl font-bold shadow-md">
+          <div
+            className={cn(
+              "bg-primary/10 text-primary flex size-24 items-center justify-center rounded-full border-[3px] text-3xl font-bold shadow-md",
+              profile.cover_image ? "border-background" : "border-primary",
+            )}
+          >
             {initials}
           </div>
         )}
@@ -126,7 +134,10 @@ export function ProfileHeader({
 
         {interests.length > 0 ? (
           <div className="mt-5 w-full">
-            <InterestChips interests={interests} className="text-left" />
+            <InterestChips
+              interests={interests}
+              className="items-start text-left"
+            />
           </div>
         ) : null}
 
