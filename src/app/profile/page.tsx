@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { LogOut, MapPin, PenLine } from "lucide-react";
+import { Instagram, LogOut, MapPin, PenLine } from "lucide-react";
 import { AuthLayout } from "@/components/layout";
 import {
   InterestChips,
@@ -182,6 +182,18 @@ export default function ProfilePage() {
               <MapPin className="size-3.5 shrink-0" />
               {profile.city}
             </p>
+          ) : null}
+
+          {profile.show_instagram !== false && profile.instagram ? (
+            <a
+              href={`https://instagram.com/${profile.instagram.replace(/^@/, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:text-primary/80 mt-stack-xs flex items-center gap-1 text-sm font-semibold"
+            >
+              <Instagram className="size-3.5 shrink-0" />@
+              {profile.instagram.replace(/^@/, "")}
+            </a>
           ) : null}
 
           {profile.bio ? (
