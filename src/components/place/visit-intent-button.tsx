@@ -2,6 +2,7 @@
 
 import { CalendarCheck2, MapPinPlus } from "lucide-react";
 import { useVisitIntent } from "@/features/places/hooks/use-visit-intent";
+import { usePopFeedback } from "@/hooks";
 import { cn } from "@/lib/utils";
 
 type VisitIntentButtonProps = {
@@ -14,12 +15,16 @@ export function VisitIntentButton({
   className,
 }: VisitIntentButtonProps) {
   const { isActive, toggle, isToggling } = useVisitIntent(placeId);
+  const { isPopping, triggerPop } = usePopFeedback();
 
   return (
     <button
       id="place-visit-intent-btn"
       type="button"
-      onClick={toggle}
+      onClick={() => {
+        triggerPop();
+        toggle();
+      }}
       disabled={isToggling}
       aria-pressed={isActive}
       aria-label={
@@ -36,9 +41,15 @@ export function VisitIntentButton({
       )}
     >
       {isActive ? (
-        <CalendarCheck2 className="size-5 fill-white/20" />
+        <CalendarCheck2
+          key="active"
+          className={cn("size-5 fill-white/20", isPopping && "animate-pop")}
+        />
       ) : (
-        <MapPinPlus className="size-5" />
+        <MapPinPlus
+          key="inactive"
+          className={cn("size-5", isPopping && "animate-pop")}
+        />
       )}
       {isActive ? "Na minha lista" : "Quero ir"}
     </button>

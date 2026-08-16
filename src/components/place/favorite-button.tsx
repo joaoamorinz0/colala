@@ -2,6 +2,7 @@
 
 import { Heart } from "lucide-react";
 import { useFavoriteStatus } from "@/features/places/hooks/use-favorites";
+import { usePopFeedback } from "@/hooks";
 import { cn } from "@/lib/utils";
 
 type FavoriteButtonProps = {
@@ -11,11 +12,15 @@ type FavoriteButtonProps = {
 
 export function FavoriteButton({ placeId, className }: FavoriteButtonProps) {
   const { isFavored, toggleFavorite, isToggling } = useFavoriteStatus(placeId);
+  const { isPopping, triggerPop } = usePopFeedback();
 
   return (
     <button
       id="place-favorite-btn"
-      onClick={() => toggleFavorite()}
+      onClick={() => {
+        triggerPop();
+        toggleFavorite();
+      }}
       disabled={isToggling}
       type="button"
       aria-label={
@@ -29,7 +34,12 @@ export function FavoriteButton({ placeId, className }: FavoriteButtonProps) {
       )}
     >
       <Heart
-        className={cn("size-5 transition-all", isFavored && "fill-red-400")}
+        key={isFavored ? "fav" : "unfav"}
+        className={cn(
+          "size-5 transition-all",
+          isFavored && "fill-red-400",
+          isPopping && "animate-pop",
+        )}
       />
     </button>
   );

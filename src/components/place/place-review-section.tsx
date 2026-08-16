@@ -79,11 +79,11 @@ function ReviewSheet({ placeId, open, onClose }: ReviewSheetProps) {
         type="button"
         aria-label="Fechar avaliação"
         onClick={onClose}
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="animate-fade-in absolute inset-0 bg-black/50 backdrop-blur-sm"
       />
 
       {/* Sheet */}
-      <div className="animate-in slide-in-from-bottom-4 relative w-full max-w-lg rounded-t-3xl bg-white p-6 pb-8">
+      <div className="animate-sheet-in relative w-full max-w-lg rounded-t-3xl bg-white p-6 pb-8">
         {/* Grab handle */}
         <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-gray-200" />
 

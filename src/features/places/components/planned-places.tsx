@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
+import { CalendarCheck, Compass } from "lucide-react";
 import { EmptyState } from "@/components/layout";
 import { MasonryPlaceCard } from "@/components/place";
+import { Button } from "@/components/ui";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { LIST_STACK } from "@/constants/design";
 import { useVisitIntents } from "@/features/places/hooks/use-visit-intents";
@@ -35,8 +38,17 @@ export function PlannedPlaces() {
   if (places.length === 0) {
     return (
       <EmptyState
+        icon={CalendarCheck}
         title="Nenhum lugar na sua lista"
         description='Toque em "Quero ir" na página de um lugar para adicioná-lo aos seus planos.'
+        action={
+          <Button asChild>
+            <Link href="/search">
+              <Compass className="size-4" />
+              Explorar lugares
+            </Link>
+          </Button>
+        }
       />
     );
   }

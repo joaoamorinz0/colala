@@ -1,7 +1,11 @@
+"use client";
+
 import { Heart, Star } from "lucide-react";
 import { HORIZONTAL_CARD_HEIGHT, MEDIA_COVER } from "@/constants/design";
-import type { Experience } from "@/features/places";
+import { useFavoriteStatus } from "@/features/places/hooks/use-favorites";
+import { usePopFeedback } from "@/hooks";
 import { cn } from "@/lib/utils";
+import type { Experience } from "@/features/places";
 
 export type FavoritePlaceRowProps = {
   experience: Experience;
@@ -13,6 +17,11 @@ export function FavoritePlaceRow({
   experience,
   className,
 }: FavoritePlaceRowProps) {
+  const { isFavored, toggleFavorite, isToggling } = useFavoriteStatus(
+    experience.id,
+  );
+  const { isPopping, triggerPop } = usePopFeedback();
+
   return (
     <article
       className={cn(
@@ -47,8 +56,30 @@ export function FavoritePlaceRow({
           <span className="text-muted-foreground ml-1">{experience.price}</span>
         </div>
       </div>
-      <button className="text-primary shrink-0 self-start pt-1" type="button">
-        <Heart className="size-5" />
+      <button
+        type="button"
+        onClick={() => {
+          triggerPop();
+          toggleFavorite();
+        }}
+        disabled={isToggling}
+        aria-label={
+          isFavored ? "Remover dos favoritos" : "Adicionar aos favoritos"
+        }
+        aria-pressed={isFavored}
+        className={cn(
+          "text-primary shrink-0 self-start pt-1 transition-all active:scale-90",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+        )}
+      >
+        <Heart
+          key={isFavored ? "fav" : "unfav"}
+          className={cn(
+            "size-5 transition-all",
+            isFavored && "fill-red-500 text-red-500",
+            isPopping && "animate-pop",
+          )}
+        />
       </button>
     </article>
   );
