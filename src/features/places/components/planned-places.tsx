@@ -1,7 +1,7 @@
 "use client";
 
 import { EmptyState } from "@/components/layout";
-import { HorizontalCard } from "@/components/place";
+import { MasonryPlaceCard } from "@/components/place";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 import { LIST_STACK } from "@/constants/design";
 import { useVisitIntents } from "@/features/places/hooks/use-visit-intents";
@@ -42,9 +42,9 @@ export function PlannedPlaces() {
   }
 
   return (
-    <div className={cn(LIST_STACK)}>
-      {places.map((place) => (
-        <HorizontalCard key={place.id} place={place} />
+    <div className="columns-2 gap-3 sm:columns-3">
+      {places.map((place, index) => (
+        <MasonryPlaceCard key={place.id} place={place} index={index} />
       ))}
     </div>
   );
