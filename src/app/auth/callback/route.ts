@@ -4,7 +4,18 @@ import { createServerClient } from "@supabase/ssr";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  const type = searchParams.get("type");
   const next = searchParams.get("next") ?? "/home";
+
+  // Fluxo de recuperação de senha: garante que o usuário seja levado
+  // à página de definição de nova senha (cria sessão temporária via code).
+  if (type === "recovery" && next === "/home") {
+    const recoveryCode = code ?? "";
+    const recoveryUrl = new URL("/auth/callback", origin);
+    recoveryUrl.searchParams.set("code", recoveryCode);
+    recoveryUrl.searchParams.set("next", "/update-password");
+    return NextResponse.redirect(recoveryUrl);
+  }
 
   if (code) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

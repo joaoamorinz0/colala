@@ -154,6 +154,21 @@ export async function updateUserPassword(
   }
 }
 
+/**
+ * Exclui a conta do usuário autenticado e todos os dados associados.
+ * Depende da função RPC `public.delete_account` (ver
+ * supabase/migrations/20260816_account_deletion.sql), que remove perfil,
+ * favoritos, "quero ir", interesses, avaliações, imagens do Storage e o
+ * registro em auth.users.
+ */
+export async function deleteAccount(client: SupabaseBrowserClient) {
+  const { error } = await client.rpc("delete_account");
+
+  if (error) {
+    throw new Error(translateAuthError(error.message));
+  }
+}
+
 export async function signOut(client: SupabaseBrowserClient) {
   const { error } = await client.auth.signOut();
   if (error) {

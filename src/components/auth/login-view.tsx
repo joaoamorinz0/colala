@@ -7,7 +7,7 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { PublicLayout } from "@/components/layout";
 import { cn } from "@/lib/utils";
 import { useSupabase } from "@/providers";
-import { signInWithEmail, signInWithGoogle } from "@/services/auth.service";
+import { signInWithGoogle } from "@/services/auth.service";
 
 function GoogleIcon() {
   return (
@@ -62,10 +62,30 @@ function LoginForm() {
 
     try {
       if (!client) throw new Error("Supabase não configurado");
-      await signInWithEmail(client, email, password);
+
+      const { error: signInError } = await client.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        const normalized = signInError.message.toLowerCase();
+
+        // E-mail não confirmado: levar à tela de verificação com reenvio.
+        if (normalized.includes("email not confirmed")) {
+          router.replace(
+            `/verify-email?email=${encodeURIComponent(email.trim())}`,
+          );
+          return;
+        }
+
+        throw new Error(signInError.message);
+      }
+
       router.replace(redirectTo as never);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao entrar");
+      const rawMessage = err instanceof Error ? err.message : "Erro ao entrar";
+      setError(translateLoginError(rawMessage));
     } finally {
       setLoading(false);
     }
@@ -138,6 +158,15 @@ function LoginForm() {
           </button>
         </div>
 
+        <div className="flex justify-end">
+          <Link
+            href="/forgot-password"
+            className="text-[13px] font-semibold text-[#d97757]"
+          >
+            Esqueci minha senha
+          </Link>
+        </div>
+
         {error && (
           <p className="rounded-2xl bg-red-50 px-4 py-2.5 text-sm text-red-600">
             {error}
@@ -180,8 +209,42 @@ function LoginForm() {
           Criar conta
         </Link>
       </p>
+
+      <p className="mt-4 text-center text-xs leading-relaxed text-[#a89e94]">
+        Ao continuar, você concorda com os{" "}
+        <Link href="/terms" className="font-semibold text-[#8a8078] underline">
+          Termos de Uso
+        </Link>{" "}
+        e com a{" "}
+        <Link
+          href="/privacy"
+          className="font-semibold text-[#8a8078] underline"
+        >
+          Política de Privacidade
+        </Link>
+        .
+      </p>
     </div>
   );
+}
+
+function translateLoginError(rawMessage: string): string {
+  const normalized = rawMessage.toLowerCase();
+
+  if (normalized.includes("invalid login credentials")) {
+    return "E-mail ou senha incorretos.";
+  }
+  if (normalized.includes("email not confirmed")) {
+    return "E-mail ainda não confirmado.";
+  }
+  if (normalized.includes("rate limit")) {
+    return "Muitas tentativas. Aguarde alguns instantes e tente novamente.";
+  }
+  if (normalized.includes("for security purposes")) {
+    return "Muitas tentativas. Aguarde alguns instantes e tente novamente.";
+  }
+
+  return rawMessage;
 }
 
 export function LoginView() {

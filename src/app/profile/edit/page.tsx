@@ -11,7 +11,14 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ImagePlus, UploadCloud } from "lucide-react";
+import {
+  ArrowLeft,
+  FileText,
+  ImagePlus,
+  ShieldAlert,
+  Trash2,
+  UploadCloud,
+} from "lucide-react";
 import { AuthLayout } from "@/components/layout";
 import { CategoryChip } from "@/components/search/category-chip";
 import { Button, Input, Switch } from "@/components/ui";
@@ -25,6 +32,7 @@ import {
 } from "@/constants/design";
 import { cn } from "@/lib/utils";
 import { useSupabase } from "@/providers";
+import { deleteAccount } from "@/services/auth.service";
 import { categoriesService } from "@/services/categories";
 import {
   addProfileInterest,
@@ -226,6 +234,38 @@ export default function ProfileEditPage() {
       toast.show(message, "error");
     },
   });
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: async () => {
+      if (!client) {
+        throw new Error("Supabase não configurado");
+      }
+      await deleteAccount(client);
+    },
+    onSuccess: () => {
+      if (user?.id) {
+        queryClient.removeQueries({ queryKey: ["profile", user.id] });
+        queryClient.clear();
+      }
+      toast.show("Conta excluída com sucesso", "success");
+      router.replace("/");
+    },
+    onError: (error) => {
+      const message =
+        error instanceof Error ? error.message : "Erro ao excluir conta";
+      toast.show(message, "error");
+    },
+  });
+
+  const handleDeleteAccount = () => {
+    const confirmed = window.confirm(
+      "Tem certeza que deseja excluir sua conta? Esta ação é permanente: seu perfil, favoritos, 'quero ir', interesses, avaliações e fotos serão removidos. Essa ação não pode ser desfeita.",
+    );
+
+    if (confirmed) {
+      deleteAccountMutation.mutate();
+    }
+  };
 
   useEffect(() => {
     if (profileQuery.data) {
@@ -693,6 +733,69 @@ export default function ProfileEditPage() {
                   );
                 })}
           </div>
+        </section>
+
+        {/* ── Seção: Informações e termos ── */}
+        <section className={cn(CARD_SURFACE, "space-y-stack-lg p-card")}>
+          <div>
+            <h2 className="text-foreground text-lg font-bold tracking-tight">
+              Informações
+            </h2>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Documentos legais da plataforma
+            </p>
+          </div>
+
+          <div className="divide-border divide-y">
+            <Link
+              href="/terms"
+              className="hover:bg-muted flex items-center gap-3 rounded-lg px-1 py-3 text-sm font-semibold transition-colors"
+            >
+              <FileText className="text-muted-foreground size-5" />
+              Termos de Uso
+            </Link>
+            <Link
+              href="/privacy"
+              className="hover:bg-muted flex items-center gap-3 rounded-lg px-1 py-3 text-sm font-semibold transition-colors"
+            >
+              <ShieldAlert className="text-muted-foreground size-5" />
+              Política de Privacidade
+            </Link>
+          </div>
+        </section>
+
+        {/* ── Seção: Zona de perigo — excluir conta ── */}
+        <section className={cn(CARD_SURFACE, "space-y-stack-lg p-card")}>
+          <div>
+            <h2 className="text-lg font-bold tracking-tight text-red-600">
+              Excluir conta
+            </h2>
+            <p className="text-muted-foreground mt-1 text-sm">
+              Ao excluir sua conta, seu perfil, favoritos, “quero ir”,
+              interesses, avaliações e fotos serão removidos permanentemente.
+              Esta ação não pode ser desfeita.
+            </p>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+            onClick={handleDeleteAccount}
+            disabled={deleteAccountMutation.isPending}
+          >
+            {deleteAccountMutation.isPending ? (
+              <>
+                <span className="size-4 animate-spin rounded-full border-2 border-red-300 border-t-red-600" />
+                Excluindo conta...
+              </>
+            ) : (
+              <>
+                <Trash2 className="size-4" />
+                Excluir minha conta
+              </>
+            )}
+          </Button>
         </section>
       </div>
     </AuthLayout>
