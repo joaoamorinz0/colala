@@ -43,6 +43,7 @@ type ProfileEditPayload = Partial<{
   name: string | null;
   username: string | null;
   bio: string | null;
+  instagram: string | null;
   city: string | null;
   show_city: boolean;
   show_instagram: boolean;
@@ -59,6 +60,7 @@ export default function ProfileEditPage() {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
+  const [instagram, setInstagram] = useState("");
   const [city, setCity] = useState("");
   const [showCity, setShowCity] = useState(true);
   const [showInstagram, setShowInstagram] = useState(true);
@@ -230,6 +232,7 @@ export default function ProfileEditPage() {
       setName(profileQuery.data.name ?? "");
       setUsername(profileQuery.data.username ?? "");
       setBio(profileQuery.data.bio ?? "");
+      setInstagram(profileQuery.data.instagram ?? "");
       setCity(profileQuery.data.city ?? "");
       setShowCity(profileQuery.data.show_city ?? true);
       setShowInstagram(profileQuery.data.show_instagram ?? true);
@@ -256,10 +259,13 @@ export default function ProfileEditPage() {
   const handleSaveBasic = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    const normalizedInstagram = instagram.trim().replace(/^@/, "") || null;
+
     await updateProfileMutation.mutateAsync({
       name: name || null,
       username: username || null,
       bio: bio || null,
+      instagram: normalizedInstagram,
     });
 
     toast.show("Perfil atualizado com sucesso", "success");
@@ -520,6 +526,26 @@ export default function ProfileEditPage() {
                 />
               </label>
             </div>
+
+            <label className="space-y-stack-xs block">
+              <span className="text-foreground text-sm font-semibold">
+                Instagram
+              </span>
+              <div className="relative">
+                <span
+                  aria-hidden="true"
+                  className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2 text-sm font-semibold"
+                >
+                  @
+                </span>
+                <Input
+                  value={instagram}
+                  onChange={(event) => setInstagram(event.target.value)}
+                  placeholder="seu_usuario"
+                  className="pl-7"
+                />
+              </div>
+            </label>
 
             <label className="space-y-stack-xs block">
               <span className="text-foreground text-sm font-semibold">Bio</span>
