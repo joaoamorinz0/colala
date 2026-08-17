@@ -4,15 +4,17 @@
 -- Run after 01_tables.sql and 03_functions.sql.
 -- ============================================================================
 
-insert into storage.buckets (id, name, public)
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values
-  ('avatars', 'avatars', true),
+  ('avatars', 'avatars', true, 10485760, array['image/jpeg', 'image/png', 'image/webp']::text[]),
   ('places', 'places', true),
   ('gallery', 'gallery', true)
 on conflict (id) do update
 set
   name = excluded.name,
-  public = excluded.public;
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
 
 alter table storage.objects enable row level security;
 
@@ -158,4 +160,3 @@ using (
     where a.user_id = auth.uid()
   )
 );
-
