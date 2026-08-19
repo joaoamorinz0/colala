@@ -14,6 +14,32 @@ export const metadata: Metadata = {
   description:
     "Encontre experiências incríveis perto de você e compartilhe suas descobertas.",
 
+  openGraph: {
+    title: "Colalá — Descubra lugares pelas pessoas, não pelo algoritmo",
+    description:
+      "Encontre experiências incríveis perto de você e compartilhe suas descobertas.",
+    url: "https://colala-amber.vercel.app",
+    siteName: "Colalá",
+    locale: "pt_BR",
+    type: "website",
+    images: [
+      {
+        url: "https://colala-amber.vercel.app/icons/icon-512.png",
+        width: 512,
+        height: 512,
+        alt: "Colalá",
+      },
+    ],
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Colalá — Descubra lugares pelas pessoas, não pelo algoritmo",
+    description:
+      "Encontre experiências incríveis perto de você e compartilhe suas descobertas.",
+    images: ["https://colala-amber.vercel.app/icons/icon-512.png"],
+  },
+
   applicationName: "Colalá",
 
   generator: "Next.js",

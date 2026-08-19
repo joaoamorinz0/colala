@@ -30,18 +30,33 @@ const PLACES_COLUMNS = `
   pet_friendly,
   wifi,
   sunset,
+  accepts_book_club,
   category:categories(id, name, icon)
 `;
 
 export type FetchPlacesClientOptions = {
   query?: string;
   categoryId?: string | null;
+  subcategoryIds?: string[];
+  workFriendly?: boolean;
+  petFriendly?: boolean;
+  wifi?: boolean;
+  acceptsBookClub?: boolean;
   limit?: number;
 };
 
 export async function fetchPlaces(
   client: SupabaseBrowserClient,
-  { query, categoryId, limit }: FetchPlacesClientOptions = {},
+  {
+    query,
+    categoryId,
+    subcategoryIds,
+    workFriendly,
+    petFriendly,
+    wifi,
+    acceptsBookClub,
+    limit,
+  }: FetchPlacesClientOptions = {},
 ): Promise<Place[]> {
   let request = client
     .from(PLACES_TABLE)
@@ -55,8 +70,26 @@ export async function fetchPlaces(
     );
   }
 
-  if (categoryId) {
+  // Subcategoria específica: filtra pela lista exata de IDs.
+  // Se subcategoryIds for vazio mas categoryId existir, filtra só pela
+  // categoria principal (places sem subcategoria).
+  if (subcategoryIds && subcategoryIds.length > 0) {
+    request = request.in("category_id", subcategoryIds);
+  } else if (categoryId) {
     request = request.eq("category_id", categoryId);
+  }
+
+  if (workFriendly) {
+    request = request.eq("work_friendly", true);
+  }
+  if (petFriendly) {
+    request = request.eq("pet_friendly", true);
+  }
+  if (wifi) {
+    request = request.eq("wifi", true);
+  }
+  if (acceptsBookClub) {
+    request = request.eq("accepts_book_club", true);
   }
 
   if (limit) {

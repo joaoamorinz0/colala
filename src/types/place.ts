@@ -29,6 +29,7 @@ export type Place = {
   pet_friendly: boolean | null;
   wifi: boolean | null;
   sunset: boolean | null;
+  accepts_book_club: boolean | null;
   status: PlaceStatus | null;
 };
 

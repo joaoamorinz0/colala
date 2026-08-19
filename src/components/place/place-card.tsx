@@ -3,6 +3,7 @@ import { MapPin } from "lucide-react";
 import { CARD_SURFACE_LG, MEDIA_COVER } from "@/constants/design";
 import type { Place } from "@/types/place";
 import { cn } from "@/lib/utils";
+import { AttributeBadges } from "./attribute-badges";
 import { InstagramButton } from "./instagram-button";
 import { PriceLevelBadge } from "./price-level-badge";
 
@@ -83,6 +84,12 @@ export function PlaceCard({ place, distanceKm, className }: PlaceCardProps) {
               {place.description}
             </p>
           ) : null}
+
+          <AttributeBadges
+            workFriendly={place.work_friendly}
+            petFriendly={place.pet_friendly}
+            wifi={place.wifi}
+          />
 
           {place.instagram ? (
             <div className="flex items-center gap-1">

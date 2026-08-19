@@ -190,6 +190,7 @@ export function reviewPlaceToPlace(review: PublicReview): Place {
     pet_friendly: false,
     wifi: false,
     sunset: false,
+    accepts_book_club: null,
     status: "published",
     category: place.category
       ? {

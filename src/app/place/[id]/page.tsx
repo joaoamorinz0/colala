@@ -11,6 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Navbar } from "@/components/navigation/navbar";
+import { AttributeBadges } from "@/components/place/attribute-badges";
 import { PlaceReviewSection } from "@/components/place/place-review-section";
 import { VisitIntentButton } from "@/components/place/visit-intent-button";
 import { APP_SHELL } from "@/constants/design";
@@ -364,6 +365,13 @@ export default async function PlacePage({ params }: PlacePageProps) {
             ))}
           </div>
         )}
+
+        {/* Attribute badges */}
+        <AttributeBadges
+          workFriendly={place.work_friendly}
+          petFriendly={place.pet_friendly}
+          wifi={place.wifi}
+        />
 
         <div className="h-px bg-gray-100" />
 

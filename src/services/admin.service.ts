@@ -93,6 +93,19 @@ export async function getAllPlaces(
   return data || [];
 }
 
+const CATEGORY_SELECT = `
+  id,
+  name,
+  description,
+  icon,
+  color,
+  slug,
+  sort_order,
+  parent_id,
+  created_at,
+  updated_at
+`;
+
 // CATEGORIES MANAGEMENT
 export async function createCategory(
   client: SupabaseBrowserClient,
@@ -101,7 +114,7 @@ export async function createCategory(
   const { data, error } = await client
     .from("categories")
     .insert([category])
-    .select()
+    .select(CATEGORY_SELECT)
     .single();
 
   if (error) {
@@ -120,7 +133,7 @@ export async function updateCategory(
     .from("categories")
     .update(category)
     .eq("id", id)
-    .select()
+    .select(CATEGORY_SELECT)
     .single();
 
   if (error) {
@@ -130,10 +143,25 @@ export async function updateCategory(
   return data;
 }
 
+/**
+ * Exclui uma categoria. Bloqueia a operação se a categoria ainda possuir
+ * subcategorias, para preservar a hierarquia pai/filho.
+ */
 export async function deleteCategory(
   client: SupabaseBrowserClient,
   id: string | number,
 ): Promise<void> {
+  const { data: children } = await client
+    .from("categories")
+    .select("id")
+    .eq("parent_id", id);
+
+  if (children && children.length > 0) {
+    throw new Error(
+      "Esta categoria possui subcategorias. Exclua ou mova as subcategorias antes de excluí-la.",
+    );
+  }
+
   const { error } = await client.from("categories").delete().eq("id", id);
 
   if (error) {
@@ -163,14 +191,15 @@ export async function getAllCategories(
 ): Promise<Category[]> {
   const { data, error } = await client
     .from("categories")
-    .select("*")
-    .order("created_at", { ascending: false });
+    .select(CATEGORY_SELECT)
+    .order("sort_order", { ascending: true })
+    .order("name", { ascending: true });
 
   if (error) {
     throw new Error(`Erro ao buscar categorias: ${error.message}`);
   }
 
-  return data || [];
+  return (data ?? []) as Category[];
 }
 
 // IMAGE UPLOAD

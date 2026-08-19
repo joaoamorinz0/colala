@@ -1,3 +1,4 @@
+export { AttributeBadges } from "@/components/place/attribute-badges";
 export { FavoritePlaceRow } from "@/components/place/favorite-place-row";
 export { FeaturedPlaceCard } from "@/components/place/featured-place-card";
 export { HeroCard } from "@/components/place/hero-card";

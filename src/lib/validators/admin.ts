@@ -11,6 +11,9 @@ export const categorySchema = z.object({
     .optional()
     .nullable()
     .or(z.literal("")),
+  slug: z.string().trim().optional().nullable().or(z.literal("")),
+  sort_order: z.coerce.number().int().min(0).optional().nullable(),
+  parent_id: z.string().uuid("Categoria pai inválida.").optional().nullable(),
 });
 
 export const placeSchema = z.object({

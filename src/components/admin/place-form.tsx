@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useToast } from "@/components/ui/toast";
 import { FormField, LoadingSpinner } from "@/components/admin";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
@@ -10,6 +10,10 @@ import type { Category } from "@/types/category";
 import { getAllCategories } from "@/services/admin.service";
 import { Loader2, MapPin, Upload, X } from "lucide-react";
 import { placeSchema } from "@/lib/validators/admin";
+
+function toId(value: string | number): string {
+  return String(value);
+}
 
 type ExtractedData = {
   name: string;
@@ -74,6 +78,22 @@ export function PlaceForm({
       !!initialData?.latitude,
   );
 
+  // Categoria pai selecionada no formulário (categoria principal).
+  // Apenas controla o select secundário de subcategorias; o valor salvo
+  // continua sendo `category_id` (pode ser principal ou subcategoria).
+  const [selectedParentId, setSelectedParentId] = useState<string>("");
+
+  const mainCategories = useMemo(
+    () => categories.filter((category) => category.parent_id === null),
+    [categories],
+  );
+
+  const subcategories = useMemo(
+    () =>
+      categories.filter((category) => category.parent_id === selectedParentId),
+    [categories, selectedParentId],
+  );
+
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -88,6 +108,22 @@ export function PlaceForm({
 
     loadCategories();
   }, []);
+
+  useEffect(() => {
+    if (categories.length === 0) return;
+
+    const currentCategory = categories.find(
+      (category) => toId(category.id) === formData.category_id,
+    );
+
+    if (currentCategory && currentCategory.parent_id) {
+      // Local já cadastrado com subcategoria: pré-seleciona o pai.
+      setSelectedParentId(currentCategory.parent_id);
+    } else if (currentCategory && !currentCategory.parent_id) {
+      // Local com categoria principal: pai é a própria categoria.
+      setSelectedParentId(toId(currentCategory.id));
+    }
+  }, [categories, formData.category_id]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -228,11 +264,12 @@ export function PlaceForm({
         latitude: extraData.latitude ? parseFloat(extraData.latitude) : null,
         longitude: extraData.longitude ? parseFloat(extraData.longitude) : null,
         opening_hours: parsedOpeningHours,
-        featured: null,
-        work_friendly: null,
-        pet_friendly: null,
-        wifi: null,
-        sunset: null,
+        featured: initialData?.featured ?? null,
+        work_friendly: initialData?.work_friendly ?? null,
+        pet_friendly: initialData?.pet_friendly ?? null,
+        wifi: initialData?.wifi ?? null,
+        sunset: initialData?.sunset ?? null,
+        accepts_book_club: initialData?.accepts_book_club ?? null,
         status: initialData?.status ?? "published",
       };
 
@@ -382,25 +419,51 @@ export function PlaceForm({
           placeholder="Digite a cidade"
         />
 
-        {/* Category */}
+        {/* Category: principal + subcategoria opcional */}
         <div className="mb-4">
           <label className="text-foreground block text-sm font-medium">
             Categoria
           </label>
           <select
-            name="category_id"
-            value={formData.category_id}
-            onChange={handleChange}
+            value={selectedParentId}
+            onChange={(event) => {
+              const parentId = event.target.value;
+              setSelectedParentId(parentId);
+              setFormData((prev) => ({ ...prev, category_id: parentId }));
+            }}
             className="border-input bg-background text-foreground focus-visible:ring-ring mt-2 w-full rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
           >
             <option value="">Selecione uma categoria</option>
-            {categories.map((cat) => (
+            {mainCategories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.name}
               </option>
             ))}
           </select>
         </div>
+
+        {selectedParentId && subcategories.length > 0 ? (
+          <div className="mb-4">
+            <label className="text-foreground block text-sm font-medium">
+              Subcategoria
+            </label>
+            <select
+              value={formData.category_id}
+              onChange={handleChange}
+              className="border-input bg-background text-foreground focus-visible:ring-ring mt-2 w-full rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
+            >
+              <option value="">Nenhuma (usar categoria principal)</option>
+              {subcategories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            <p className="text-muted-foreground mt-1 text-xs">
+              Deixe em branco para usar apenas a categoria principal.
+            </p>
+          </div>
+        ) : null}
 
         {/* Price Level */}
         <FormField
