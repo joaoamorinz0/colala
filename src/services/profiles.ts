@@ -1,6 +1,7 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { ProfileInterest } from "@/types/profile-interest";
 import type { Profile } from "@/types/profile";
+import type { ProfileSocialLink } from "@/types/profile-social-link";
 import type { PublicReview } from "@/types/review";
 import {
   normalizeProfileInterestsRows,
@@ -122,6 +123,30 @@ export async function fetchProfileInterestsByUser(
   return normalizeProfileInterestsRows(
     (data ?? []) as unknown as RawProfileInterestRow[],
   );
+}
+
+export async function fetchProfileSocialLinksByUser(
+  userId: string,
+): Promise<ProfileSocialLink[]> {
+  const supabase = createSupabaseServerClient();
+
+  if (!supabase) {
+    console.error("❌ Supabase client não foi criado.");
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from("profile_social_links")
+    .select("id, user_id, url, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("🔴 Failed to load profile social links:", error);
+    return [];
+  }
+
+  return (data ?? []) as ProfileSocialLink[];
 }
 
 export { reviewPlaceToPlace } from "@/services/reviews.service";

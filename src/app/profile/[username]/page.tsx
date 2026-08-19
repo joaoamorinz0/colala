@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import {
   fetchProfileByUsername,
   fetchProfileInterestsByUser,
+  fetchProfileSocialLinksByUser,
   fetchReviewsByUser,
   reviewPlaceToPlace,
 } from "@/services/profiles";

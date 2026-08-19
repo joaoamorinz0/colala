@@ -188,7 +188,7 @@ export function FilterSheet({
           {/* Attribute toggles */}
           <section className="mb-6">
             <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-              Atributos
+              Características
             </h3>
             <div className="grid grid-cols-2 gap-2">
               <FilterToggle
