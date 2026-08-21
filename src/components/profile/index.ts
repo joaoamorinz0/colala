@@ -6,3 +6,5 @@ export { ProfileStatsCard } from "@/components/profile/profile-stats-card";
 export { PublicReviewCard } from "@/components/profile/public-review-card";
 export { RecentPlaceCard } from "@/components/profile/recent-place-card";
 export { RecentPlacesSection } from "@/components/profile/recent-places-section";
+export { SocialLinksDisplay } from "@/components/profile/social-links-display";
+export { SocialLinksEditor } from "@/components/profile/social-links-editor";

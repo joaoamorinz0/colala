@@ -54,11 +54,78 @@ const PLATFORM_MAP: Record<string, DetectedPlatform> = {
     hostname: "facebook.com",
     icon: "Facebook",
   },
+  letterboxd: {
+    name: "letterboxd",
+    displayName: "Letterboxd",
+    hostname: "letterboxd.com",
+    icon: "Letterboxd",
+  },
 };
 
 /** Remove "www." do início do hostname. */
 function normalizeHostname(hostname: string): string {
   return hostname.replace(/^www\./, "");
+}
+
+/**
+ * Segmentos de path que não representam um handle de usuário.
+ */
+const IGNORED_HANDLE_SEGMENTS = new Set([
+  "home",
+  "profile",
+  "settings",
+  "account",
+  "search",
+  "explore",
+]);
+
+/**
+ * Prefixos de path usados por algumas plataformas antes do handle.
+ * Ex: linkedin.com/in/joao, twitter.com/user/joao.
+ */
+const PROFILE_PATH_PREFIXES = new Set(["in", "u", "user", "p", "profile"]);
+
+/**
+ * Extrai um handle legível a partir da URL de uma rede social.
+ *
+ * @example
+ * extractHandle("https://twitter.com/joaoamorinz") // "joaoamorinz"
+ * extractHandle("https://www.instagram.com/@user") // "user"
+ * extractHandle("https://linkedin.com/in/joao")    // "joao"
+ * extractHandle("https://example.com/blog")       // "example.com"
+ * extractHandle("não é uma url")                  // ""
+ */
+export function extractHandle(url: string): string {
+  try {
+    const parsed = new URL(url);
+    const segments = parsed.pathname
+      .split("/")
+      .filter(Boolean)
+      .map((segment) => segment.replace(/^@/, ""))
+      .filter((segment) => segment.length > 0);
+
+    if (
+      segments.length > 1 &&
+      PROFILE_PATH_PREFIXES.has(segments[0].toLowerCase())
+    ) {
+      return segments[1];
+    }
+
+    if (
+      segments.length > 0 &&
+      !IGNORED_HANDLE_SEGMENTS.has(segments[0].toLowerCase())
+    ) {
+      return segments[0];
+    }
+  } catch {
+    // URL inválida — cai no fallback do domínio
+  }
+
+  try {
+    return normalizeHostname(new URL(url).hostname);
+  } catch {
+    return "";
+  }
 }
 
 /**

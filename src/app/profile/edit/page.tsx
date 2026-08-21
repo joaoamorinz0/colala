@@ -20,6 +20,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import { AuthLayout } from "@/components/layout";
+import { SocialLinksEditor } from "@/components/profile";
 import { CategoryChip } from "@/components/search/category-chip";
 import { Button, Input, Switch } from "@/components/ui";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
@@ -51,9 +52,7 @@ import {
   updateProfile,
   uploadProfileAvatar,
 } from "@/services/profile.service";
-import { SocialLinksEditor } from "@/components/profile/social-links-editor";
 import type { Category } from "@/types/category";
-import type { ProfileSocialLink } from "@/types/profile-social-link";
 
 type ProfileEditPayload = Partial<{
   name: string | null;

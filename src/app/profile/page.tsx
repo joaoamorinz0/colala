@@ -4,13 +4,14 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Instagram, LogOut, MapPin, PenLine } from "lucide-react";
+import { LogOut, MapPin, PenLine } from "lucide-react";
 import { AuthLayout } from "@/components/layout";
 import {
   InterestChips,
   ProfileBanner,
   ProfileStatsCard,
   RecentPlacesSection,
+  SocialLinksDisplay,
 } from "@/components/profile";
 import { Button } from "@/components/ui";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
@@ -24,6 +25,7 @@ import {
   fetchProfileStats,
 } from "@/services/profile.service";
 import { fetchProfileInterests } from "@/services/profile-interests.service";
+import { fetchProfileSocialLinks } from "@/services/profile-social-links.service";
 import { fetchRecentReviewedPlaces } from "@/services/reviews.service";
 import { signOut } from "@/services/auth.service";
 
@@ -80,6 +82,18 @@ export default function ProfilePage() {
         throw new Error("Supabase não configurado");
       }
       return fetchProfileInterests(client, user.id);
+    },
+    enabled: Boolean(client && user),
+    staleTime: 1000 * 60,
+  });
+
+  const socialLinksQuery = useQuery({
+    queryKey: ["profile-social-links", user?.id],
+    queryFn: async () => {
+      if (!client || !user) {
+        throw new Error("Supabase não configurado");
+      }
+      return fetchProfileSocialLinks(client, user.id);
     },
     enabled: Boolean(client && user),
     staleTime: 1000 * 60,
@@ -189,11 +203,16 @@ export default function ProfilePage() {
               href={`https://instagram.com/${profile.instagram.replace(/^@/, "")}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80 mt-stack-xs flex items-center gap-1 text-sm font-semibold"
+              className="text-primary hover:text-primary/80 mt-stack-xs inline-flex items-center text-sm font-semibold"
             >
-              <Instagram className="size-3.5 shrink-0" />@
-              {profile.instagram.replace(/^@/, "")}
+              @{profile.instagram.replace(/^@/, "")}
             </a>
+          ) : null}
+
+          {socialLinksQuery.data && socialLinksQuery.data.length > 0 ? (
+            <div className="mt-stack-xs">
+              <SocialLinksDisplay links={socialLinksQuery.data} align="start" />
+            </div>
           ) : null}
 
           {profile.bio ? (

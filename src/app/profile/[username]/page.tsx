@@ -41,9 +41,10 @@ export default async function PublicProfilePage({
     notFound();
   }
 
-  const [reviews, interests] = await Promise.all([
+  const [reviews, interests, socialLinks] = await Promise.all([
     fetchReviewsByUser(profile.id),
     fetchProfileInterestsByUser(profile.id),
+    fetchProfileSocialLinksByUser(profile.id),
   ]);
   const uniquePlaces = reviews.filter(
     (review, index, all) =>
@@ -61,6 +62,7 @@ export default async function PublicProfilePage({
           showCity={profile.show_city !== false}
           showInstagram={profile.show_instagram !== false}
           interests={interests}
+          socialLinks={socialLinks}
         />
 
         <div className="mt-8 block h-px bg-gray-200" />

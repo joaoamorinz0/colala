@@ -33,11 +33,12 @@ begin
   where bucket_id = 'avatars'
     and owner = target_user_id;
 
-  -- Dados relacionados (mais tabelas que o schema atual: visit_intents e
-  -- profile_interests não possuem FK registrada nos arquivos .sql do repo,
-  -- então a remoção é feita explicitamente aqui).
+  -- Dados relacionados (mais tabelas que o schema atual: visit_intents,
+  -- profile_interests e profile_social_links não possuem FK registrada nos
+  -- arquivos .sql do repo, então a remoção é feita explicitamente aqui).
   delete from public.profile_interests where user_id = target_user_id;
   delete from public.visit_intents where user_id = target_user_id;
+  delete from public.profile_social_links where user_id = target_user_id;
   delete from public.favorites where user_id = target_user_id;
   delete from public.reviews where user_id = target_user_id;
   delete from public.admins where user_id = target_user_id;

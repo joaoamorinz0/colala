@@ -1,13 +1,10 @@
-import {
-  CalendarDays,
-  Instagram,
-  MapPin,
-  MessageSquare,
-  Star,
-} from "lucide-react";
+import { CalendarDays, MapPin, MessageSquare, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/types/profile";
 import type { ProfileInterest } from "@/types/profile-interest";
+import type { ProfileSocialLink } from "@/types/profile-social-link";
+import { SocialPlatformIcon } from "./social-platform-icon";
+import { SocialLinksDisplay } from "./social-links-display";
 import { InterestChips } from "./interest-chips";
 
 export type ProfileHeaderProps = {
@@ -17,6 +14,7 @@ export type ProfileHeaderProps = {
   showCity?: boolean;
   showInstagram?: boolean;
   interests?: ProfileInterest[];
+  socialLinks?: ProfileSocialLink[];
   className?: string;
 };
 
@@ -44,10 +42,14 @@ export function ProfileHeader({
   showCity = true,
   showInstagram = true,
   interests = [],
+  socialLinks = [],
   className,
 }: ProfileHeaderProps) {
   const displayName = profile.name ?? `@${profile.username}`;
   const initials = getInitials(profile);
+  const instagramHandle = profile.instagram
+    ? profile.instagram.replace(/^@/, "")
+    : null;
 
   return (
     <header
@@ -102,6 +104,33 @@ export function ProfileHeader({
           <p className="text-muted-foreground text-sm">@{profile.username}</p>
         </div>
 
+        {/* ── Redes sociais: Instagram + profile_social_links ──
+            Texto puro "@handle", sem ícones/pills/bordas, empilhado. */}
+        {(showInstagram && instagramHandle) || socialLinks.length > 0 ? (
+          <div className="mt-2 flex flex-col items-center gap-0.5">
+            {showInstagram && instagramHandle ? (
+              <a
+                href={`https://instagram.com/${instagramHandle}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:text-primary/80 inline-flex items-center gap-1.5 text-sm font-semibold transition-colors"
+              >
+                <SocialPlatformIcon
+                  platform={{
+                    name: "instagram",
+                    displayName: "Instagram",
+                    hostname: "instagram.com",
+                    icon: "Instagram",
+                  }}
+                  className="size-3.5 shrink-0"
+                />
+                <span>@{instagramHandle}</span>
+              </a>
+            ) : null}
+            <SocialLinksDisplay links={socialLinks} />
+          </div>
+        ) : null}
+
         {profile.bio && (
           <p className="text-foreground/80 mt-3 max-w-xs text-sm leading-relaxed">
             {profile.bio}
@@ -119,17 +148,6 @@ export function ProfileHeader({
             <CalendarDays className="size-3.5" />
             Membro desde {formatMemberSince(profile.created_at)}
           </span>
-          {showInstagram && profile.instagram && (
-            <a
-              href={`https://instagram.com/${profile.instagram.replace(/^@/, "")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80 flex items-center gap-1 font-semibold"
-            >
-              <Instagram className="size-3.5" />@
-              {profile.instagram.replace(/^@/, "")}
-            </a>
-          )}
         </div>
 
         {interests.length > 0 ? (
