@@ -448,6 +448,7 @@ export function PlaceForm({
               Subcategoria
             </label>
             <select
+              name="category_id"
               value={formData.category_id}
               onChange={handleChange}
               className="border-input bg-background text-foreground focus-visible:ring-ring mt-2 w-full rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
