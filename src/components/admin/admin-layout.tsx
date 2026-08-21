@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutGrid, MapPin, Tags, Star, LogOut } from "lucide-react";
+import {
+  LayoutGrid,
+  MapPin,
+  Tags,
+  Star,
+  CalendarDays,
+  LogOut,
+} from "lucide-react";
 import { useSupabase } from "@/providers";
 import { signOut } from "@/services/auth.service";
 
@@ -16,6 +23,11 @@ const adminMenuItems = [
     label: "Locais",
     href: "/admin/places",
     icon: MapPin,
+  },
+  {
+    label: "Eventos",
+    href: "/admin/events",
+    icon: CalendarDays,
   },
   {
     label: "Categorias",

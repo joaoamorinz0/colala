@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Flame, MapPin, Star } from "lucide-react";
 import { AuthLayout } from "@/components/layout";
 import { HeroCard, HorizontalCard } from "@/components/place";
+import { HomeEventsSection } from "@/components/events/home-events-section";
 import { CategoryChip } from "@/components/search/category-chip";
 import { LargeSearchBox } from "@/components/search/large-search-box";
 import { LIST_STACK, SECTION_GAP, SECTION_STACK } from "@/constants/design";
@@ -59,10 +60,23 @@ function getDistanceLabel(distanceKm: number) {
   return `${distanceKm.toFixed(1)} km`;
 }
 
+/** Saudação conforme o horário local do dispositivo. */
+function getGreetingByHour(hour: number): string {
+  if (hour >= 5 && hour < 12) return "Bom dia";
+  if (hour >= 12 && hour < 18) return "Boa tarde";
+  if (hour >= 18 && hour < 24) return "Boa noite";
+  return "Boa madrugada";
+}
+
 export default function HomePage() {
   const { client } = useSupabase();
   const [geoState, setGeoState] = useState<GeoState>({ status: "idle" });
   const [categories, setCategories] = useState<Category[]>([]);
+  const [greeting, setGreeting] = useState("");
+
+  useEffect(() => {
+    setGreeting(getGreetingByHour(new Date().getHours()));
+  }, []);
 
   const placesQuery = useQuery({
     queryKey: ["home-places"],
@@ -176,7 +190,7 @@ export default function HomePage() {
       <div className={cn(SECTION_STACK, "overflow-hidden")}>
         <header className="gap-stack-md flex flex-col items-start justify-between">
           <div className="min-w-0">
-            <p className="text-muted-foreground text-sm">Olá</p>
+            <p className="text-muted-foreground text-sm">{greeting}</p>
             <p className="text-foreground mt-1 text-2xl font-bold tracking-tight">
               Bem-vindo ao Colalá
             </p>
@@ -290,6 +304,8 @@ export default function HomePage() {
             </>
           )}
         </section>
+
+        <HomeEventsSection />
 
         <section className={SECTION_GAP}>
           <div className="flex items-center gap-2">
