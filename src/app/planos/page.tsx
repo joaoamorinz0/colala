@@ -8,10 +8,10 @@ export default function PlanosPage() {
       <div className={SECTION_STACK}>
         <header>
           <h1 className="text-foreground text-[2rem] font-extrabold tracking-tight">
-            Planos
+            Seus Planos
           </h1>
-          <p className="text-muted-foreground mt-1 text-base">
-            Lugares que você quer visitar
+          <p className="text-muted-foreground mt-1 text-base font-medium">
+            Suas experiências salvas para visitar depois.
           </p>
         </header>
 

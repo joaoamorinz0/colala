@@ -31,7 +31,7 @@ export default async function ExperienciasPage() {
           Experiências
         </h1>
         <p className="text-muted-foreground text-sm">
-          Feiras, oficinas, gastronomia, música e arte em Brasília.
+          Descubra feiras, oficinas, gastronomia, música e arte por aqui!
         </p>
       </header>
 
