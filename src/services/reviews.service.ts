@@ -156,6 +156,17 @@ export type SaveReviewInput = {
   photoUrls: string[];
 };
 
+export async function deleteReview(
+  client: SupabaseBrowserClient,
+  reviewId: string,
+): Promise<void> {
+  const { error } = await client.from("reviews").delete().eq("id", reviewId);
+
+  if (error) {
+    throw new Error(`Erro ao deletar avaliação: ${error.message}`);
+  }
+}
+
 export async function fetchReviewTags(
   client: SupabaseBrowserClient,
 ): Promise<ReviewTag[]> {

@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "@/providers";
 import {
+  deleteReview,
   fetchReviewTags,
   fetchPlaceReviewSummary,
   fetchUserReviewForPlace,
@@ -15,6 +16,7 @@ import type { Review, ReviewTag } from "@/types/review";
 export const PLACE_REVIEWS_QUERY_KEY = ["place-review-summary"] as const;
 export const USER_PLACE_REVIEW_QUERY_KEY = ["user-place-review"] as const;
 export const REVIEW_TAGS_QUERY_KEY = ["review-tags"] as const;
+export const PLACE_REVIEW_LIST_QUERY_KEY = ["place-review-list"] as const;
 
 /** Média + quantidade de avaliações de um lugar (leitura pública). */
 export function usePlaceReviewSummary(placeId: string) {
@@ -67,6 +69,35 @@ export function useSavePlaceReview(placeId: string) {
       // Recalcula média/quantidade e revalida a avaliação do usuário
       queryClient.invalidateQueries({
         queryKey: [...PLACE_REVIEWS_QUERY_KEY, placeId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...PLACE_REVIEW_LIST_QUERY_KEY, placeId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...USER_PLACE_REVIEW_QUERY_KEY, user?.id, placeId],
+      });
+    },
+  });
+}
+
+export function useDeletePlaceReview(placeId: string) {
+  const queryClient = useQueryClient();
+  const { client, user } = useSupabase();
+
+  return useMutation({
+    mutationFn: async (reviewId: string) => {
+      if (!client || !user) {
+        throw new Error("Supabase client ou usuário não configurado.");
+      }
+
+      return deleteReview(client, reviewId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [...PLACE_REVIEWS_QUERY_KEY, placeId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...PLACE_REVIEW_LIST_QUERY_KEY, placeId],
       });
       queryClient.invalidateQueries({
         queryKey: [...USER_PLACE_REVIEW_QUERY_KEY, user?.id, placeId],

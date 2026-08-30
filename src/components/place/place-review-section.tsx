@@ -6,6 +6,7 @@ import { Check, ImagePlus, Star, X } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { useSupabase } from "@/providers";
 import {
+  useDeletePlaceReview,
   usePlaceReviewSummary,
   useReviewTags,
   useSavePlaceReview,
@@ -27,10 +28,12 @@ type ReviewSheetProps = {
 function ReviewSheet({ placeId, open, onClose }: ReviewSheetProps) {
   const toast = useToast();
   const { user } = useSupabase();
+  const router = useRouter();
   const { data: currentReview, isLoading: currentLoading } =
     useUserPlaceReview(placeId);
   const { data: reviewTags = [], isLoading: tagsLoading } = useReviewTags();
   const saveReviewMutation = useSavePlaceReview(placeId);
+  const deleteReviewMutation = useDeletePlaceReview(placeId);
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -120,8 +123,34 @@ function ReviewSheet({ placeId, open, onClose }: ReviewSheetProps) {
     );
   };
 
+  const handleDelete = () => {
+    if (!currentReview) return;
+
+    const confirmed = window.confirm(
+      "Tem certeza que deseja deletar sua avaliação?",
+    );
+    if (!confirmed) return;
+
+    deleteReviewMutation.mutate(currentReview.id, {
+      onSuccess: () => {
+        toast.show("Avaliação deletada com sucesso!", "success");
+        onClose();
+        router.refresh();
+      },
+      onError: (error) => {
+        toast.show(
+          error instanceof Error
+            ? error.message
+            : "Não foi possível deletar a avaliação.",
+          "error",
+        );
+      },
+    });
+  };
+
   const isSaving = saveReviewMutation.isPending;
-  const isBusy = isSaving || uploadingPhotos;
+  const isDeleting = deleteReviewMutation.isPending;
+  const isBusy = isSaving || uploadingPhotos || isDeleting;
   const isExisting = Boolean(currentReview);
 
   const toggleTag = (tagId: string) => {
@@ -284,6 +313,17 @@ function ReviewSheet({ placeId, open, onClose }: ReviewSheetProps) {
 
         {/* Actions */}
         <div className="mt-5 flex gap-3">
+          {isExisting ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="h-12 flex-1 border-red-200 text-red-700 hover:bg-red-50"
+              onClick={handleDelete}
+              disabled={isBusy}
+            >
+              {isDeleting ? "Deletando..." : "Deletar"}
+            </Button>
+          ) : null}
           <Button
             type="button"
             variant="outline"
