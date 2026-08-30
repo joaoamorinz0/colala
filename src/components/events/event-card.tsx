@@ -3,6 +3,7 @@ import { CalendarClock, MapPin } from "lucide-react";
 import { CARD_SURFACE } from "@/constants/design";
 import { cn } from "@/lib/utils";
 import {
+  formatEventDateLabel,
   formatDayMonth,
   getEventLocationLabel,
   getEventPriceLabel,
@@ -44,6 +45,9 @@ export function EventCard({ event, className }: EventCardProps) {
           <h3 className="text-foreground group-hover:text-primary line-clamp-1 text-sm font-bold tracking-tight transition-colors">
             {event.name}
           </h3>
+          <p className="text-muted-foreground mt-1 line-clamp-1 text-xs">
+            {formatEventDateLabel(event)}
+          </p>
 
           {locationLabel && (
             <p className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">

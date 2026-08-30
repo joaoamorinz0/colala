@@ -28,6 +28,7 @@ import { fetchProfileInterests } from "@/services/profile-interests.service";
 import { fetchProfileSocialLinks } from "@/services/profile-social-links.service";
 import { fetchRecentReviewedPlaces } from "@/services/reviews.service";
 import { signOut } from "@/services/auth.service";
+import { FavoritePlacesSection } from "@/components/profile";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -233,6 +234,9 @@ export default function ProfilePage() {
           places={recentPlacesQuery.data ?? []}
           username={profile.username}
         />
+
+        {/* ── Seção: Favoritos ── */}
+        <FavoritePlacesSection />
 
         {/* ── Sair da conta ── */}
         <div className="flex justify-center pt-2">
