@@ -20,6 +20,12 @@ import type { Place } from "@/types/place";
 import { DescriptionExpander } from "@/components/place/description-expander";
 import { FavoriteButton } from "@/components/place/favorite-button";
 import { fetchPlaceById, fetchPlaces } from "@/services/places";
+import {
+  fetchPlacePopularTags,
+  fetchReviewsForPlace,
+} from "@/services/reviews.service";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { PublicReviewCard } from "@/components/profile";
 import { notFound } from "next/navigation";
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
@@ -79,9 +85,25 @@ function StarRating({ rating }: { rating: number | null }) {
 // ─── Chips ─────────────────────────────────────────────────────────────────────
 type Chip = { label: string; icon: string };
 
+type BadgeChip = { label: string; icon: string };
+
+function getHeroBadges(place: Place, popularTags: BadgeChip[]): BadgeChip[] {
+  const badges: BadgeChip[] = [];
+  if (place.category) {
+    badges.push({
+      label: place.category.name,
+      icon: place.category.icon ?? "🗂️",
+    });
+  }
+  if (place.featured) {
+    badges.push({ label: "Em destaque", icon: "🔥" });
+  }
+  badges.push(...popularTags.slice(0, 3));
+  return badges;
+}
+
 function getChips(place: Place): Chip[] {
   const chips: Chip[] = [];
-  if (place.featured) chips.push({ label: "Em destaque", icon: "🔥" });
   if (place.work_friendly)
     chips.push({ label: "Bom para trabalhar", icon: "💻" });
   if (place.wifi) chips.push({ label: "Wi-Fi", icon: "📶" });
@@ -275,10 +297,30 @@ async function RelatedPlaces({
   );
 }
 
+async function PlaceReviewsList({ placeId }: { placeId: string }) {
+  const client = createSupabaseServerClient();
+  if (!client) return null;
+
+  const reviews = await fetchReviewsForPlace(client, placeId);
+  if (reviews.length === 0) return null;
+
+  return (
+    <section className="space-y-3">
+      <h2 className="text-base font-bold text-gray-900">Reviews recentes</h2>
+      <div className="space-y-3">
+        {reviews.map((review) => (
+          <PublicReviewCard key={review.id} review={review} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default async function PlacePage({ params }: PlacePageProps) {
   const { id } = await params;
   const place = await fetchPlaceById(id);
+  const client = createSupabaseServerClient();
 
   if (!place) {
     notFound();
@@ -286,6 +328,9 @@ export default async function PlacePage({ params }: PlacePageProps) {
 
   const chips = getChips(place);
   const gallery = place.gallery ?? [];
+  const popularTags = client
+    ? await fetchPlacePopularTags(client, place.id, 3)
+    : [];
 
   return (
     <div className={cn(APP_SHELL, "bg-background relative min-h-dvh")}>
@@ -323,15 +368,30 @@ export default async function PlacePage({ params }: PlacePageProps) {
 
         {/* Category + Name over hero */}
         <div className="absolute inset-x-0 bottom-0 p-5 pb-6">
-          {place.category && (
-            <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white/90 ring-1 ring-white/20 backdrop-blur-sm">
-              {place.category.icon && <span>{place.category.icon}</span>}
-              {place.category.name}
-            </div>
-          )}
           <h1 className="text-2xl leading-tight font-extrabold tracking-tight text-white drop-shadow-sm">
             {place.name}
           </h1>
+        </div>
+      </div>
+
+      {/* Badges row */}
+      <div className="px-5 pt-4">
+        <div className="flex flex-wrap gap-2">
+          {getHeroBadges(
+            place,
+            popularTags.map((tag) => ({
+              label: tag.place_tag_name,
+              icon: tag.place_tag_icon ?? "✨",
+            })),
+          ).map((badge) => (
+            <span
+              key={`${badge.label}-${badge.icon}`}
+              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-gray-200"
+            >
+              <span>{badge.icon}</span>
+              {badge.label}
+            </span>
+          ))}
         </div>
       </div>
 
@@ -357,7 +417,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
             {chips.map((chip) => (
               <span
                 key={chip.label}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-700 shadow-sm"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-900 shadow-sm"
               >
                 <span>{chip.icon}</span>
                 {chip.label}
@@ -457,6 +517,9 @@ export default async function PlacePage({ params }: PlacePageProps) {
         )}
 
         {/* Reviews */}
+        <PlaceReviewsList placeId={place.id} />
+        <div className="h-px bg-gray-100" />
+
         <PlaceReviewSection placeId={place.id} />
 
         {/* Related places */}

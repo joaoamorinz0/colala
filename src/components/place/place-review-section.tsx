@@ -1,18 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Star, X } from "lucide-react";
+import { Check, ImagePlus, Star, X } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
 import { useSupabase } from "@/providers";
 import {
   usePlaceReviewSummary,
+  useReviewTags,
   useSavePlaceReview,
   useUserPlaceReview,
 } from "@/features/places/hooks/use-place-reviews";
 import { StarRatingInput } from "@/components/place/star-rating-input";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui";
+import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { uploadImage } from "@/services/admin.service";
 
 // ─── Review Modal ──────────────────────────────────────────────────────────────
 type ReviewSheetProps = {
@@ -26,18 +29,41 @@ function ReviewSheet({ placeId, open, onClose }: ReviewSheetProps) {
   const { user } = useSupabase();
   const { data: currentReview, isLoading: currentLoading } =
     useUserPlaceReview(placeId);
+  const { data: reviewTags = [], isLoading: tagsLoading } = useReviewTags();
   const saveReviewMutation = useSavePlaceReview(placeId);
 
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [photoUrls, setPhotoUrls] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFilePreviews, setSelectedFilePreviews] = useState<string[]>(
+    [],
+  );
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
 
   // Pré-carrega a avaliação atual quando o modal abre
   useEffect(() => {
     if (open) {
       setRating(currentReview?.rating ?? 0);
       setComment(currentReview?.comment ?? "");
+      setSelectedTagIds(currentReview?.review_tags?.map((tag) => tag.id) ?? []);
+      setPhotoUrls(
+        currentReview?.review_photos?.map((photo) => photo.url) ?? [],
+      );
+      setSelectedFiles([]);
+      setSelectedFilePreviews([]);
     }
   }, [open, currentReview]);
+
+  useEffect(() => {
+    const previews = selectedFiles.map((file) => URL.createObjectURL(file));
+    setSelectedFilePreviews(previews);
+
+    return () => {
+      previews.forEach((preview) => URL.revokeObjectURL(preview));
+    };
+  }, [selectedFiles]);
 
   if (!open) return null;
 
@@ -47,10 +73,35 @@ function ReviewSheet({ placeId, open, onClose }: ReviewSheetProps) {
       return;
     }
 
+    let uploadedPhotoUrls = [...photoUrls];
+    if (selectedFiles.length > 0) {
+      try {
+        setUploadingPhotos(true);
+        const client = createSupabaseBrowserClient();
+        if (!client) throw new Error("Supabase não configurado");
+        const results = await Promise.all(
+          selectedFiles.map((file) => uploadImage(client, file, "places")),
+        );
+        uploadedPhotoUrls = [...uploadedPhotoUrls, ...results];
+      } catch (error) {
+        toast.show(
+          error instanceof Error
+            ? error.message
+            : "Não foi possível enviar as fotos.",
+          "error",
+        );
+        return;
+      } finally {
+        setUploadingPhotos(false);
+      }
+    }
+
     saveReviewMutation.mutate(
       {
         rating,
         comment: comment.trim() || null,
+        tagIds: selectedTagIds,
+        photoUrls: uploadedPhotoUrls,
       },
       {
         onSuccess: () => {
@@ -70,7 +121,23 @@ function ReviewSheet({ placeId, open, onClose }: ReviewSheetProps) {
   };
 
   const isSaving = saveReviewMutation.isPending;
+  const isBusy = isSaving || uploadingPhotos;
   const isExisting = Boolean(currentReview);
+
+  const toggleTag = (tagId: string) => {
+    setSelectedTagIds((current) =>
+      current.includes(tagId)
+        ? current.filter((id) => id !== tagId)
+        : [...current, tagId],
+    );
+  };
+
+  const handleFilesChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) return;
+    setSelectedFiles((current) => [...current, ...files]);
+    event.target.value = "";
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
@@ -116,7 +183,7 @@ function ReviewSheet({ placeId, open, onClose }: ReviewSheetProps) {
           <StarRatingInput
             value={rating}
             onChange={setRating}
-            disabled={isSaving}
+            disabled={isBusy}
           />
         )}
 
@@ -124,11 +191,96 @@ function ReviewSheet({ placeId, open, onClose }: ReviewSheetProps) {
         <textarea
           value={comment}
           onChange={(event) => setComment(event.target.value)}
-          disabled={isSaving}
+          disabled={isBusy}
           placeholder="Conte como foi sua experiência (opcional)..."
           rows={4}
           className="mt-5 w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-900 placeholder:text-gray-400 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 focus:outline-none disabled:opacity-60"
         />
+
+        <div className="mt-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-gray-900">Tags</h3>
+            {tagsLoading && (
+              <span className="text-xs text-gray-400">Carregando...</span>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {reviewTags.map((tag) => {
+              const active = selectedTagIds.includes(tag.id);
+              return (
+                <button
+                  key={tag.id}
+                  type="button"
+                  onClick={() => toggleTag(tag.id)}
+                  disabled={isBusy}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-semibold transition-all",
+                    active
+                      ? "border-amber-300 bg-amber-50 text-amber-800"
+                      : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50",
+                  )}
+                >
+                  {active ? (
+                    <Check className="size-3.5" />
+                  ) : tag.icon ? (
+                    <span>{tag.icon}</span>
+                  ) : null}
+                  <span>{tag.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-gray-900">Fotos</h3>
+            <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">
+              <ImagePlus className="size-3.5" />
+              Adicionar fotos
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFilesChange}
+                className="hidden"
+                disabled={isBusy}
+              />
+            </label>
+          </div>
+          {(photoUrls.length > 0 || selectedFiles.length > 0) && (
+            <div className="grid grid-cols-3 gap-2">
+              {photoUrls.map((url) => (
+                <div
+                  key={url}
+                  className="relative aspect-square overflow-hidden rounded-xl bg-gray-100"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt="Foto da avaliação"
+                    className="size-full object-cover"
+                  />
+                </div>
+              ))}
+              {selectedFiles.map((file) => (
+                <div
+                  key={file.name + file.lastModified}
+                  className="relative aspect-square overflow-hidden rounded-xl bg-gray-100"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={
+                      selectedFilePreviews[selectedFiles.indexOf(file)] ?? ""
+                    }
+                    alt={file.name}
+                    className="size-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Actions */}
         <div className="mt-5 flex gap-3">
@@ -137,17 +289,17 @@ function ReviewSheet({ placeId, open, onClose }: ReviewSheetProps) {
             variant="outline"
             className="h-12 flex-1"
             onClick={onClose}
-            disabled={isSaving}
+            disabled={isBusy}
           >
             Cancelar
           </Button>
           <Button
             type="button"
             onClick={handleSave}
-            disabled={isSaving}
+            disabled={isBusy}
             className="h-12 flex-1"
           >
-            {isSaving ? "Salvando..." : isExisting ? "Atualizar" : "Salvar"}
+            {isBusy ? "Salvando..." : isExisting ? "Atualizar" : "Salvar"}
           </Button>
         </div>
 

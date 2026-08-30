@@ -3,16 +3,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSupabase } from "@/providers";
 import {
+  fetchReviewTags,
   fetchPlaceReviewSummary,
   fetchUserReviewForPlace,
   saveReview,
   type PlaceReviewSummary,
   type SaveReviewInput,
 } from "@/services/reviews.service";
-import type { Review } from "@/types/review";
+import type { Review, ReviewTag } from "@/types/review";
 
 export const PLACE_REVIEWS_QUERY_KEY = ["place-review-summary"] as const;
 export const USER_PLACE_REVIEW_QUERY_KEY = ["user-place-review"] as const;
+export const REVIEW_TAGS_QUERY_KEY = ["review-tags"] as const;
 
 /** Média + quantidade de avaliações de um lugar (leitura pública). */
 export function usePlaceReviewSummary(placeId: string) {
@@ -70,5 +72,21 @@ export function useSavePlaceReview(placeId: string) {
         queryKey: [...USER_PLACE_REVIEW_QUERY_KEY, user?.id, placeId],
       });
     },
+  });
+}
+
+export function useReviewTags() {
+  const { client } = useSupabase();
+
+  return useQuery<ReviewTag[]>({
+    queryKey: REVIEW_TAGS_QUERY_KEY,
+    queryFn: () => {
+      if (!client) {
+        throw new Error("Supabase client não configurado.");
+      }
+
+      return fetchReviewTags(client);
+    },
+    enabled: Boolean(client),
   });
 }

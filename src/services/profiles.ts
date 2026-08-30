@@ -48,6 +48,22 @@ const REVIEW_SELECT_COLUMNS = `
     cover_image,
     rating,
     category:categories(id, name, icon)
+  ),
+  review_tags:review_tag_links(
+    tag:review_tags(
+      id,
+      name,
+      slug,
+      icon,
+      sort_order
+    )
+  ),
+  review_photos(
+    id,
+    review_id,
+    url,
+    sort_order,
+    created_at
   )
 `;
 

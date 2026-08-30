@@ -52,7 +52,7 @@ export function AttributeBadges({
         return (
           <span
             key={badge.label}
-            className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium"
+            className="border-border inline-flex items-center gap-1 rounded-full border bg-white px-2 py-0.5 text-[11px] font-medium text-gray-900 shadow-sm"
           >
             <Icon className="size-3" />
             {badge.label}
