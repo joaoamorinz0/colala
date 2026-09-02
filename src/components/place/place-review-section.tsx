@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Check, ImagePlus, Star, X } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
@@ -8,6 +8,7 @@ import { useSupabase } from "@/providers";
 import {
   useDeletePlaceReview,
   usePlaceReviewSummary,
+  usePlaceReviews,
   useReviewTags,
   useSavePlaceReview,
   useUserPlaceReview,
@@ -17,6 +18,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { uploadImage } from "@/services/admin.service";
+import { PublicReviewCard } from "@/components/profile";
+import type { ReviewTag } from "@/types/review";
 
 // ─── Review Modal ──────────────────────────────────────────────────────────────
 type ReviewSheetProps = {
@@ -393,7 +396,33 @@ export function PlaceReviewSection({ placeId }: { placeId: string }) {
   const { data: summary, isLoading: summaryLoading } =
     usePlaceReviewSummary(placeId);
   const { data: currentReview } = useUserPlaceReview(placeId);
+  const { data: reviews = [], isLoading: reviewsLoading } =
+    usePlaceReviews(placeId);
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  const tagFrequency = useMemo(() => {
+    const counts = new Map<string, { tag: ReviewTag; count: number }>();
+    reviews.forEach((review) => {
+      review.review_tags.forEach((tag) => {
+        const existing = counts.get(tag.id);
+        if (existing) {
+          existing.count += 1;
+        } else {
+          counts.set(tag.id, { tag, count: 1 });
+        }
+      });
+    });
+
+    const total = reviews.length;
+    return Array.from(counts.values())
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3)
+      .map(({ tag, count }) => ({
+        tag,
+        count,
+        percentage: total > 0 ? Math.round((count / total) * 100) : 0,
+      }));
+  }, [reviews]);
 
   const openReviewSheet = () => {
     if (!user) {
@@ -434,6 +463,38 @@ export function PlaceReviewSection({ placeId }: { placeId: string }) {
           {hasUserReview ? "Editar avaliação" : "Avaliar"}
         </button>
       </div>
+
+      {/* Agregação: tags mais frequentes entre as avaliações */}
+      {tagFrequency.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-sm font-bold text-gray-900">O que dizem sobre</h3>
+          <div className="flex flex-wrap gap-2">
+            {tagFrequency.map(({ tag, percentage }) => (
+              <span
+                key={tag.id}
+                className="inline-flex items-center gap-1.5 rounded-full border border-amber-100 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800"
+              >
+                {tag.icon ? <span>{tag.icon}</span> : null}
+                {percentage}% dizem que é {tag.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Lista de avaliações */}
+      {reviewsLoading ? (
+        <div className="space-y-3">
+          <div className="h-28 animate-pulse rounded-2xl bg-gray-100" />
+          <div className="h-28 animate-pulse rounded-2xl bg-gray-100" />
+        </div>
+      ) : reviews.length > 0 ? (
+        <div className="space-y-3">
+          {reviews.map((review) => (
+            <PublicReviewCard key={review.id} review={review} />
+          ))}
+        </div>
+      ) : null}
 
       <ReviewSheet
         placeId={placeId}

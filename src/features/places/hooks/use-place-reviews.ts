@@ -6,12 +6,13 @@ import {
   deleteReview,
   fetchReviewTags,
   fetchPlaceReviewSummary,
+  fetchReviewsForPlace,
   fetchUserReviewForPlace,
   saveReview,
   type PlaceReviewSummary,
   type SaveReviewInput,
 } from "@/services/reviews.service";
-import type { Review, ReviewTag } from "@/types/review";
+import type { PlaceReview, Review, ReviewTag } from "@/types/review";
 
 export const PLACE_REVIEWS_QUERY_KEY = ["place-review-summary"] as const;
 export const USER_PLACE_REVIEW_QUERY_KEY = ["user-place-review"] as const;
@@ -117,6 +118,23 @@ export function useReviewTags() {
       }
 
       return fetchReviewTags(client);
+    },
+    enabled: Boolean(client),
+  });
+}
+
+/** Lista de avaliações de um lugar, com autor, tags e fotos (leitura pública). */
+export function usePlaceReviews(placeId: string) {
+  const { client } = useSupabase();
+
+  return useQuery<PlaceReview[]>({
+    queryKey: [...PLACE_REVIEW_LIST_QUERY_KEY, placeId],
+    queryFn: () => {
+      if (!client) {
+        throw new Error("Supabase client não configurado.");
+      }
+
+      return fetchReviewsForPlace(client, placeId);
     },
     enabled: Boolean(client),
   });

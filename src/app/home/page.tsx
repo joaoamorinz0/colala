@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Flame, MapPin, Star } from "lucide-react";
+import { BedDouble, Flame, MapPin, Star } from "lucide-react";
 import { AuthLayout } from "@/components/layout";
-import { HeroCard, HorizontalCard } from "@/components/place";
+import { HorizontalCard, PlacesCarouselSection } from "@/components/place";
 import { HomeEventsSection } from "@/components/events/home-events-section";
 import { CategoryChip } from "@/components/search/category-chip";
 import { LargeSearchBox } from "@/components/search/large-search-box";
@@ -180,7 +180,31 @@ export default function HomePage() {
 
   const recentPlaces = useMemo(() => sortByRecency(allPlaces), [allPlaces]);
 
-  const featuredPlace = featuredPlaces[0] ?? null;
+  const estadaCategory = categories.find(
+    (category) => category.slug === "estadia" || category.name === "Estadia",
+  );
+
+  const estadaCategoryIds = useMemo(() => {
+    if (!estadaCategory) return new Set<string>();
+    const ids = new Set<string>([String(estadaCategory.id)]);
+    categories.forEach((category) => {
+      if (category.parent_id === String(estadaCategory.id)) {
+        ids.add(String(category.id));
+      }
+    });
+    return ids;
+  }, [categories, estadaCategory]);
+
+  const stayPlaces = useMemo(
+    () =>
+      allPlaces.filter((place) =>
+        place.category_id
+          ? estadaCategoryIds.has(String(place.category_id))
+          : false,
+      ),
+    [allPlaces, estadaCategoryIds],
+  );
+
   const nearbyFallbackPlaces = recentPlaces.slice(0, 6);
   const noveltyPlaces = recentPlaces.slice(0, 6);
   const showRecentInsteadOfNearby = geoState.status !== "granted";
@@ -231,25 +255,21 @@ export default function HomePage() {
               ))}
         </div>
 
-        <section className={SECTION_GAP}>
-          <div className="flex items-center gap-2">
-            <Star className="text-primary size-5" />
-            <h2 className="text-foreground text-xl font-extrabold tracking-tight">
-              Destaques
-            </h2>
-          </div>
-          {placesQuery.isLoading ? (
-            <div className="border-border bg-card text-muted-foreground rounded-card-lg p-card border text-sm">
-              Carregando destaques...
-            </div>
-          ) : featuredPlace ? (
-            <HeroCard place={featuredPlace} />
-          ) : (
-            <div className="border-border bg-card text-muted-foreground rounded-card-lg p-card border text-sm">
-              Nenhum destaque disponível no momento.
-            </div>
-          )}
-        </section>
+        <PlacesCarouselSection
+          title="Destaques"
+          icon={<Star className="text-primary size-5" />}
+          places={featuredPlaces}
+          isLoading={placesQuery.isLoading}
+          emptyMessage="Nenhum destaque disponível no momento."
+        />
+
+        <HomeEventsSection />
+
+        <PlacesCarouselSection
+          title="Onde ficar"
+          icon={<BedDouble className="text-primary size-5" />}
+          places={stayPlaces}
+        />
 
         <section className={SECTION_GAP}>
           <div className="flex items-center gap-2">
@@ -304,8 +324,6 @@ export default function HomePage() {
             </>
           )}
         </section>
-
-        <HomeEventsSection />
 
         <section className={SECTION_GAP}>
           <div className="flex items-center gap-2">

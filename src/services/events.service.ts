@@ -34,7 +34,7 @@ const EVENT_COLUMNS = `
   created_at,
   updated_at,
   category:categories(id, name, icon),
-  place:places(id, name)
+  place:places!left(id, name)
 `;
 
 function toIsoDate(date: Date): string {
@@ -61,17 +61,29 @@ export async function fetchEvents(
   options: FetchEventsOptions = {},
 ): Promise<Event[]> {
   const supabase = createSupabaseBrowserClient();
-  if (!supabase) return [];
+  if (!supabase) {
+    console.warn(
+      "[events] Supabase client não configurado (browser). Verifique NEXT_PUBLIC_SUPABASE_* env vars.",
+    );
+    return [];
+  }
 
   const { upcomingOnly = true, categoryId, freeOnly, limit } = options;
 
   let request = supabase
     .from(EVENTS_TABLE)
     .select(EVENT_COLUMNS)
+    .eq("status", "published")
     .order("start_date", { ascending: true });
 
   if (upcomingOnly) {
-    request = request.gte("start_date", toIsoDate(new Date()));
+    const today = toIsoDate(new Date());
+    // Include events that haven't finished yet: either end_date >= today
+    // or events without end_date but with start_date >= today.
+    // PostgREST OR with grouped AND: `end_date.gte.today,(end_date.is.null,start_date.gte.today)`
+    request = request.or(
+      `end_date.gte.${today},and(end_date.is.null,start_date.gte.${today})`,
+    );
   }
 
   if (categoryId) {
@@ -93,6 +105,24 @@ export async function fetchEvents(
     throw error;
   }
 
+  if (!data || (Array.isArray(data) && data.length === 0)) {
+    console.info(
+      "[events] fetch returned no rows (maybe no published events or RLS).",
+      {
+        upcomingOnly,
+        categoryId,
+        freeOnly,
+        limit,
+        returned: Array.isArray(data) ? data.length : 0,
+      },
+    );
+  } else {
+    console.info(
+      "[events] fetch returned rows:",
+      Array.isArray(data) ? data.length : 1,
+    );
+  }
+
   return (data ?? []) as unknown as Event[];
 }
 
@@ -104,6 +134,7 @@ export async function fetchEventById(id: string): Promise<Event | null> {
     .from(EVENTS_TABLE)
     .select(EVENT_COLUMNS)
     .eq("id", id)
+    .eq("status", "published")
     .maybeSingle();
 
   if (error) {

@@ -5,8 +5,13 @@ export {
   removeFavorite,
 } from "@/services/favorites.service";
 export {
+  deleteReview,
+  fetchPlacePopularTags,
   fetchPlaceReviewSummary,
+  fetchPlaceReviewTagsFrequency,
   fetchRecentReviewedPlaces,
+  fetchReviewsForPlace,
+  fetchReviewTags,
   fetchUserReviewForPlace,
   reviewPlaceToPlace,
   saveReview,

@@ -7,6 +7,7 @@ export { InstagramButton } from "@/components/place/instagram-button";
 export { MasonryPlaceCard } from "@/components/place/masonry-place-card";
 export { PlaceCard } from "@/components/place/place-card";
 export { PlaceReviewSection } from "@/components/place/place-review-section";
+export { PlacesCarouselSection } from "@/components/place/places-carousel-section";
 export { PriceLevelBadge } from "@/components/place/price-level-badge";
 export { StarRatingInput } from "@/components/place/star-rating-input";
 export { VisitIntentButton } from "@/components/place/visit-intent-button";

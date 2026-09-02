@@ -61,6 +61,7 @@ export async function fetchPlaces(
   let request = client
     .from(PLACES_TABLE)
     .select(PLACES_COLUMNS)
+    .eq("status", "published")
     .order("created_at", { ascending: false });
 
   if (query?.trim()) {

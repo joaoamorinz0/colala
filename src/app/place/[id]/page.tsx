@@ -20,12 +20,8 @@ import type { Place } from "@/types/place";
 import { DescriptionExpander } from "@/components/place/description-expander";
 import { FavoriteButton } from "@/components/place/favorite-button";
 import { fetchPlaceById, fetchPlaces } from "@/services/places";
-import {
-  fetchPlacePopularTags,
-  fetchReviewsForPlace,
-} from "@/services/reviews.service";
+import { fetchPlacePopularTags } from "@/services/reviews.service";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { PublicReviewCard } from "@/components/profile";
 import { notFound } from "next/navigation";
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
@@ -297,25 +293,6 @@ async function RelatedPlaces({
   );
 }
 
-async function PlaceReviewsList({ placeId }: { placeId: string }) {
-  const client = createSupabaseServerClient();
-  if (!client) return null;
-
-  const reviews = await fetchReviewsForPlace(client, placeId);
-  if (reviews.length === 0) return null;
-
-  return (
-    <section className="space-y-3">
-      <h2 className="text-base font-bold text-gray-900">Reviews recentes</h2>
-      <div className="space-y-3">
-        {reviews.map((review) => (
-          <PublicReviewCard key={review.id} review={review} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default async function PlacePage({ params }: PlacePageProps) {
   const { id } = await params;
@@ -517,9 +494,6 @@ export default async function PlacePage({ params }: PlacePageProps) {
         )}
 
         {/* Reviews */}
-        <PlaceReviewsList placeId={place.id} />
-        <div className="h-px bg-gray-100" />
-
         <PlaceReviewSection placeId={place.id} />
 
         {/* Related places */}
