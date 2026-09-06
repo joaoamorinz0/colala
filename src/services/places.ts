@@ -16,6 +16,7 @@ const PLACE_SELECT_COLUMNS = `
   gallery, 
   created_at, 
   category_id, 
+  status,
   rating, 
   latitude, 
   longitude, 
@@ -49,6 +50,7 @@ export async function fetchPlaces({
   let request = supabase
     .from("places")
     .select(PLACE_SELECT_COLUMNS)
+    .eq("status", "published")
     .order("created_at", { ascending: false });
 
   if (query?.trim()) {
@@ -87,6 +89,7 @@ export async function fetchPlaceById(id: string): Promise<Place | null> {
     .from("places")
     .select(PLACE_SELECT_COLUMNS)
     .eq("id", id)
+    .eq("status", "published")
     .single();
 
   console.log("📦 Dados encontrados:", data);

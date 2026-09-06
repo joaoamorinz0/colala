@@ -8,6 +8,7 @@ import {
   Tags,
   Star,
   CalendarDays,
+  Bed,
   LogOut,
 } from "lucide-react";
 import { useSupabase } from "@/providers";
@@ -23,6 +24,11 @@ const adminMenuItems = [
     label: "Locais",
     href: "/admin/places",
     icon: MapPin,
+  },
+  {
+    label: "Estadias",
+    href: "/admin/estadias",
+    icon: Bed,
   },
   {
     label: "Eventos",

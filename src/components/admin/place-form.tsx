@@ -9,6 +9,7 @@ import type { Place } from "@/types/place";
 import type { Category } from "@/types/category";
 import { getAllCategories } from "@/services/admin.service";
 import { Loader2, MapPin, Upload, X } from "lucide-react";
+import Image from "next/image";
 import { placeSchema } from "@/lib/validators/admin";
 
 function toId(value: string | number): string {
@@ -31,12 +32,15 @@ interface PlaceFormProps {
   initialData?: Place;
   onSubmit: (data: Omit<Place, "id" | "created_at">) => Promise<void>;
   isLoading?: boolean;
+  /** Slug da categoria principal a pré-selecionar no formulário de criação (ex: 'estadia'). */
+  defaultCategorySlug?: string;
 }
 
 export function PlaceForm({
   initialData,
   onSubmit,
   isLoading,
+  defaultCategorySlug,
 }: PlaceFormProps) {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
@@ -93,7 +97,15 @@ export function PlaceForm({
       categories.filter((category) => category.parent_id === selectedParentId),
     [categories, selectedParentId],
   );
+  const handleParentCategoryChange = (parentId: string) => {
+    setSelectedParentId(parentId);
+    setFormData((prev) => ({ ...prev, category_id: parentId }));
+  };
 
+  const handleSubcategoryChange = (subcategoryId: string) => {
+    const nextId = subcategoryId || selectedParentId;
+    setFormData((prev) => ({ ...prev, category_id: nextId }));
+  };
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -124,6 +136,28 @@ export function PlaceForm({
       setSelectedParentId(toId(currentCategory.id));
     }
   }, [categories, formData.category_id]);
+
+  // Em modo de criação, pré-seleciona a categoria principal indicada por
+  // `defaultCategorySlug` (ex: 'estadia'). Não interfere em locais existentes.
+  useEffect(() => {
+    if (categories.length === 0) return;
+    if (initialData) return;
+    if (!defaultCategorySlug) return;
+
+    const defaultCategory = categories.find(
+      (category) =>
+        category.slug === defaultCategorySlug && category.parent_id === null,
+    );
+
+    if (defaultCategory) {
+      const id = toId(defaultCategory.id);
+      setSelectedParentId(id);
+      setFormData((prev) => ({
+        ...prev,
+        category_id: prev.category_id || id,
+      }));
+    }
+  }, [categories, defaultCategorySlug, initialData]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -349,9 +383,12 @@ export function PlaceForm({
           </label>
           {(imagePreview || existingCoverImage) && (
             <div className="relative mt-2 mb-4 inline-block">
-              <img
+              <Image
                 src={imagePreview || existingCoverImage || ""}
                 alt="Preview"
+                width={160}
+                height={160}
+                unoptimized
                 className="h-40 w-40 rounded-lg object-cover"
               />
               <button
@@ -426,11 +463,7 @@ export function PlaceForm({
           </label>
           <select
             value={selectedParentId}
-            onChange={(event) => {
-              const parentId = event.target.value;
-              setSelectedParentId(parentId);
-              setFormData((prev) => ({ ...prev, category_id: parentId }));
-            }}
+            onChange={(event) => handleParentCategoryChange(event.target.value)}
             className="border-input bg-background text-foreground focus-visible:ring-ring mt-2 w-full rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
           >
             <option value="">Selecione uma categoria</option>
@@ -449,8 +482,8 @@ export function PlaceForm({
             </label>
             <select
               name="category_id"
-              value={formData.category_id}
-              onChange={handleChange}
+              value={formData.category_id || ""}
+              onChange={(event) => handleSubcategoryChange(event.target.value)}
               className="border-input bg-background text-foreground focus-visible:ring-ring mt-2 w-full rounded-lg border px-4 py-2 focus-visible:ring-2 focus-visible:outline-none"
             >
               <option value="">Nenhuma (usar categoria principal)</option>

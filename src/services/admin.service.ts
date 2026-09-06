@@ -7,6 +7,10 @@ type SupabaseBrowserClient = NonNullable<
   ReturnType<typeof createSupabaseBrowserClient>
 >;
 
+function toId(value: string | number | null | undefined): string {
+  return value == null ? "" : String(value);
+}
+
 // PLACES MANAGEMENT
 export async function createPlace(
   client: SupabaseBrowserClient,
@@ -91,6 +95,53 @@ export async function getAllPlaces(
   }
 
   return data || [];
+}
+
+/**
+ * Retorna todos os locais cuja categoria pertence a um grupo de categorias
+ * identificado pelo slug (ex: slug 'estadia' → categoria principal + todas as
+ * suas subcategorias, como Hotel, Pousada, Hostel, Casa/Airbnb e Resort).
+ *
+ * Equivale a:
+ *   select p.* from places p
+ *   join categories c on c.id = p.category_id
+ *   where c.slug = 'estadia'
+ *      or c.parent_id = (select id from categories where slug = 'estadia');
+ */
+export async function getPlacesByCategorySlug(
+  client: SupabaseBrowserClient,
+  slug: string,
+): Promise<Place[]> {
+  const categories = await getAllCategories(client);
+  const target = categories.find((category) => category.slug === slug);
+
+  if (!target) {
+    return [];
+  }
+
+  const targetId = toId(target.id);
+  const categoryIds = categories
+    .filter(
+      (category) =>
+        toId(category.id) === targetId || toId(category.parent_id) === targetId,
+    )
+    .map((category) => toId(category.id));
+
+  if (categoryIds.length === 0) {
+    return [];
+  }
+
+  const { data, error } = await client
+    .from("places")
+    .select("*")
+    .in("category_id", categoryIds)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error(`Erro ao buscar locais da categoria: ${error.message}`);
+  }
+
+  return (data ?? []) as Place[];
 }
 
 const CATEGORY_SELECT = `

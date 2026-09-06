@@ -14,6 +14,7 @@ import { Navbar } from "@/components/navigation/navbar";
 import { AttributeBadges } from "@/components/place/attribute-badges";
 import { PlaceReviewSection } from "@/components/place/place-review-section";
 import { VisitIntentButton } from "@/components/place/visit-intent-button";
+import { WhatsAppButton } from "@/components/place/whatsapp-button";
 import { APP_SHELL } from "@/constants/design";
 import { cn } from "@/lib/utils";
 import type { Place } from "@/types/place";
@@ -501,11 +502,40 @@ export default async function PlacePage({ params }: PlacePageProps) {
       </div>
 
       {/* ── FIXED BOTTOM CTA ── */}
-      {place.latitude && place.longitude && (
-        <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center">
-          <div className={cn(APP_SHELL, "pointer-events-auto")}>
-            <div className="flex items-stretch gap-3 px-5 pt-3 pb-6">
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center">
+        <div className={cn(APP_SHELL, "pointer-events-auto")}>
+          <div className="flex items-stretch gap-3 px-5 pt-3 pb-6">
+            {place.phone ? (
+              <WhatsAppButton
+                phone={place.phone}
+                className="flex-1"
+                label="Chamar no WhatsApp"
+              />
+            ) : place.website ? (
+              <a
+                href={place.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-primary shadow-primary/30 hover:bg-primary/90 flex flex-1 items-center justify-center gap-2.5 rounded-2xl py-3.5 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98]"
+              >
+                <Globe className="size-5" />
+                Visitar site
+              </a>
+            ) : place.instagram ? (
+              <a
+                href={`https://instagram.com/${place.instagram.replace(/^@/, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-primary shadow-primary/30 hover:bg-primary/90 flex flex-1 items-center justify-center gap-2.5 rounded-2xl py-3.5 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98]"
+              >
+                <Instagram className="size-5" />
+                Instagram
+              </a>
+            ) : (
               <VisitIntentButton placeId={place.id} />
+            )}
+
+            {place.latitude && place.longitude && (
               <a
                 id="place-directions-btn"
                 href={`https://www.google.com/maps/search/?api=1&query=${place.latitude},${place.longitude}`}
@@ -516,10 +546,10 @@ export default async function PlacePage({ params }: PlacePageProps) {
                 <Navigation className="size-5" />
                 Como chegar
               </a>
-            </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
 
       <Navbar />
     </div>

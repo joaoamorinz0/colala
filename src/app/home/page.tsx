@@ -227,34 +227,6 @@ export default function HomePage() {
 
         <LargeSearchBox placeholder="Buscar lugares..." showFilter />
 
-        <div className="-mx-page-x gap-stack-sm px-page-x flex scrollbar-none overflow-x-auto pb-0.5">
-          <Link href="/search" className="shrink-0">
-            <CategoryChip active={false}>Todos</CategoryChip>
-          </Link>
-          {categories.length === 0
-            ? Array.from({ length: 4 }, (_, index) => (
-                <span
-                  key={`chip-skeleton-${index}`}
-                  className="bg-muted inline-flex h-10 w-24 shrink-0 animate-pulse rounded-full"
-                />
-              ))
-            : categories.map((category) => (
-                <Link
-                  key={String(category.id)}
-                  href={`/search?category=${encodeURIComponent(String(category.id))}`}
-                  className="shrink-0"
-                >
-                  <CategoryChip
-                    icon={
-                      category.icon ? <span>{category.icon}</span> : undefined
-                    }
-                  >
-                    {category.name}
-                  </CategoryChip>
-                </Link>
-              ))}
-        </div>
-
         <PlacesCarouselSection
           title="Destaques"
           icon={<Star className="text-primary size-5" />}

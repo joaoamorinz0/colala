@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSupabase } from "@/providers";
 import { fetchPlaces } from "@/services/places.service";
+import { parseSearchIntent } from "@/services/search-intent";
 import type { Place } from "@/types/place";
 
 export const SEARCH_PLACES_QUERY_KEY = ["search-places"] as const;
@@ -40,10 +41,15 @@ export function useSearchPlaces(filters: SearchPlacesFilters) {
       wifi,
       acceptsBookClub,
     ],
-    queryFn: () => {
+    queryFn: async () => {
       if (!client) {
         throw new Error("Supabase client não configurado.");
       }
+
+      const naturalLanguageIntent =
+        query.trim().length >= 2
+          ? await parseSearchIntent(client, query)
+          : null;
 
       return fetchPlaces(client, {
         query,
@@ -53,6 +59,7 @@ export function useSearchPlaces(filters: SearchPlacesFilters) {
         petFriendly,
         wifi,
         acceptsBookClub,
+        naturalLanguageIntent,
         limit: 50,
       });
     },

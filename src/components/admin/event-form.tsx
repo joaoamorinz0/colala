@@ -155,6 +155,7 @@ export function EventForm({
   );
   const [categories, setCategories] = useState<Category[]>([]);
   const [places, setPlaces] = useState<{ id: string; name: string }[]>([]);
+  const [selectedParentId, setSelectedParentId] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
@@ -230,10 +231,51 @@ export function EventForm({
       categories.filter(
         (category) =>
           category.parent_id !== null &&
-          category.parent_id === formData.category_id,
+          category.parent_id === selectedParentId,
       ),
-    [categories, formData.category_id],
+    [categories, selectedParentId],
   );
+
+  useEffect(() => {
+    if (!categories.length) return;
+
+    const currentCategory = categories.find(
+      (category) => String(category.id) === formData.category_id,
+    );
+
+    if (currentCategory?.parent_id) {
+      setSelectedParentId(String(currentCategory.parent_id));
+      return;
+    }
+
+    if (currentCategory && !currentCategory.parent_id) {
+      setSelectedParentId(String(currentCategory.id));
+      return;
+    }
+
+    if (formData.category_id) {
+      const parent = categories.find(
+        (category) => String(category.id) === formData.category_id,
+      );
+      if (parent) {
+        setSelectedParentId(String(parent.id));
+      }
+    }
+  }, [categories, formData.category_id]);
+
+  const handleParentCategoryChange = (parentId: string) => {
+    setSelectedParentId(parentId);
+    setFormData((prev) => ({ ...prev, category_id: parentId }));
+  };
+
+  const handleSubcategoryChange = (subcategoryId: string) => {
+    if (!subcategoryId) {
+      setFormData((prev) => ({ ...prev, category_id: selectedParentId }));
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, category_id: subcategoryId }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -415,8 +457,8 @@ export function EventForm({
           </label>
           <select
             name="category_id"
-            value={formData.category_id}
-            onChange={handleChange}
+            value={selectedParentId}
+            onChange={(event) => handleParentCategoryChange(event.target.value)}
             required
             className={inputClassName}
           >
@@ -436,15 +478,15 @@ export function EventForm({
             </label>
             <select
               name="subcategory_id"
-              value=""
-              onChange={(event) => {
-                if (event.target.value) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    category_id: event.target.value,
-                  }));
-                }
-              }}
+              value={
+                formData.category_id &&
+                subcategories.some(
+                  (cat) => String(cat.id) === formData.category_id,
+                )
+                  ? formData.category_id
+                  : ""
+              }
+              onChange={(event) => handleSubcategoryChange(event.target.value)}
               className={inputClassName}
             >
               <option value="">Manter categoria atual</option>
