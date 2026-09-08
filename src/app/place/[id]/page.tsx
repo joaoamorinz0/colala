@@ -109,6 +109,48 @@ function getChips(place: Place): Chip[] {
   return chips;
 }
 
+// ─── Estadias ────────────────────────────────────────────────────────────────
+type CategoryRow = {
+  id: string | number;
+  name: string;
+  slug: string | null;
+  parent_id: string | null;
+};
+
+/**
+ * Retorna os IDs da árvore de categorias de "Estadia" (a categoria principal
+ * "Estadia" + todas as subcategorias: Hotel, Pousada, Hostel, Casa/Airbnb,
+ * Resort...). Usado para decidir quando exibir ações extras de contato
+ * (WhatsApp / visitar site) sem substituir o "Quero ir".
+ */
+async function getStayCategoryIds(): Promise<Set<string>> {
+  const supabase = createSupabaseServerClient();
+  if (!supabase) return new Set();
+
+  const { data, error } = await supabase
+    .from("categories")
+    .select("id, name, slug, parent_id")
+    .order("sort_order", { ascending: true });
+
+  if (error || !data) return new Set();
+
+  const categories = data as CategoryRow[];
+  const stayCategory = categories.find(
+    (category) => category.slug === "estadia" || category.name === "Estadia",
+  );
+
+  if (!stayCategory) return new Set();
+
+  const ids = new Set<string>([String(stayCategory.id)]);
+  categories.forEach((category) => {
+    if (String(category.parent_id) === String(stayCategory.id)) {
+      ids.add(String(category.id));
+    }
+  });
+
+  return ids;
+}
+
 // ─── Gallery ───────────────────────────────────────────────────────────────────
 function Gallery({ images }: { images: string[] }) {
   if (!images.length) return null;
@@ -310,6 +352,11 @@ export default async function PlacePage({ params }: PlacePageProps) {
     ? await fetchPlacePopularTags(client, place.id, 3)
     : [];
 
+  const stayCategoryIds = await getStayCategoryIds();
+  const isStay = Boolean(
+    place.category_id && stayCategoryIds.has(String(place.category_id)),
+  );
+
   return (
     <div className={cn(APP_SHELL, "bg-background relative min-h-dvh")}>
       {/* ── HERO ── */}
@@ -505,35 +552,41 @@ export default async function PlacePage({ params }: PlacePageProps) {
       <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center">
         <div className={cn(APP_SHELL, "pointer-events-auto")}>
           <div className="flex items-stretch gap-3 px-5 pt-3 pb-6">
-            {place.phone ? (
-              <WhatsAppButton
-                phone={place.phone}
-                className="flex-1"
-                label="Chamar no WhatsApp"
-              />
-            ) : place.website ? (
-              <a
-                href={place.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-primary shadow-primary/30 hover:bg-primary/90 flex flex-1 items-center justify-center gap-2.5 rounded-2xl py-3.5 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98]"
-              >
-                <Globe className="size-5" />
-                Visitar site
-              </a>
-            ) : place.instagram ? (
-              <a
-                href={`https://instagram.com/${place.instagram.replace(/^@/, "")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-primary shadow-primary/30 hover:bg-primary/90 flex flex-1 items-center justify-center gap-2.5 rounded-2xl py-3.5 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98]"
-              >
-                <Instagram className="size-5" />
-                Instagram
-              </a>
-            ) : (
-              <VisitIntentButton placeId={place.id} />
-            )}
+            <div className="flex flex-1 gap-2">
+              <VisitIntentButton placeId={place.id} className="flex-1" />
+
+              {isStay && place.phone ? (
+                <WhatsAppButton
+                  phone={place.phone}
+                  className="shrink-0"
+                  label="WhatsApp"
+                />
+              ) : null}
+
+              {isStay && place.website ? (
+                <a
+                  href={place.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-primary shadow-primary/30 hover:bg-primary/90 flex shrink-0 items-center justify-center gap-2.5 rounded-2xl px-4 py-3.5 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98]"
+                >
+                  <Globe className="size-5" />
+                  Site
+                </a>
+              ) : null}
+
+              {isStay && place.instagram ? (
+                <a
+                  href={`https://instagram.com/${place.instagram.replace(/^@/, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-primary shadow-primary/30 hover:bg-primary/90 flex shrink-0 items-center justify-center gap-2.5 rounded-2xl px-4 py-3.5 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98]"
+                >
+                  <Instagram className="size-5" />
+                  Instagram
+                </a>
+              ) : null}
+            </div>
 
             {place.latitude && place.longitude && (
               <a

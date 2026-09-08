@@ -19,7 +19,7 @@ export function LargeSearchBox({
 }: LargeSearchBoxProps) {
   return (
     <form
-      action="/search"
+      action="/discover"
       method="GET"
       className={cn(
         CONTROL_HEIGHT,

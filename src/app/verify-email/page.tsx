@@ -25,7 +25,7 @@ function VerifyEmailContent() {
 
   useEffect(() => {
     if (user) {
-      router.replace("/home");
+      router.replace("/discover");
     }
   }, [user, router]);
 

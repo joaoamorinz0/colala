@@ -63,7 +63,7 @@ export function FavoritePlaces() {
         description="Salve seus lugares favoritos tocando no coração de um lugar e encontre tudo aqui."
         action={
           <Button asChild>
-            <Link href="/search">
+            <Link href="/discover">
               <Compass className="size-4" />
               Explorar lugares
             </Link>

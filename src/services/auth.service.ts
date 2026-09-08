@@ -58,10 +58,22 @@ export async function signInWithEmail(
   return data;
 }
 
+/**
+ * Inicia o login com Google via OAuth.
+ *
+ * A URL de redirect é montada aqui, de forma centralizada, usando
+ * `window.location.origin` para garantir um endereço absoluto e correto
+ * (ex.: https://usecolala.com.br/auth/callback?next=...). Isso evita que
+ * seja passada uma URL relativa ou que o domínio do Supabase se misture
+ * com o do site sem o protocolo https://.
+ */
 export async function signInWithGoogle(
   client: SupabaseBrowserClient,
-  redirectTo: string,
+  nextPath = "/discover",
 ) {
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const redirectTo = `${origin}/auth/callback?next=${encodeURIComponent(nextPath)}`;
+
   const { error } = await client.auth.signInWithOAuth({
     provider: "google",
     options: {

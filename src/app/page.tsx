@@ -11,7 +11,7 @@ export default async function IndexPage() {
     } = await supabase.auth.getSession();
 
     if (session) {
-      redirect("/home");
+      redirect("/discover");
     }
   }
 

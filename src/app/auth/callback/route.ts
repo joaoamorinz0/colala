@@ -5,11 +5,11 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const type = searchParams.get("type");
-  const next = searchParams.get("next") ?? "/home";
+  const next = searchParams.get("next") ?? "/discover";
 
   // Fluxo de recuperação de senha: garante que o usuário seja levado
   // à página de definição de nova senha (cria sessão temporária via code).
-  if (type === "recovery" && next === "/home") {
+  if (type === "recovery" && next === "/discover") {
     const recoveryCode = code ?? "";
     const recoveryUrl = new URL("/auth/callback", origin);
     recoveryUrl.searchParams.set("code", recoveryCode);

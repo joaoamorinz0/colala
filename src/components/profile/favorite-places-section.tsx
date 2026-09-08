@@ -45,7 +45,7 @@ export function FavoritePlacesSection() {
           description="Marque lugares com coração para encontrá-los aqui quando quiser."
           action={
             <Button asChild>
-              <Link href="/search">
+              <Link href="/discover">
                 <Compass className="size-4" />
                 Explorar lugares
               </Link>

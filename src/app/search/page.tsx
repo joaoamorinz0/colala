@@ -1,16 +1,5 @@
-import { SearchClient } from "@/components/search/search-client";
+import { redirect } from "next/navigation";
 
-type SearchPageProps = {
-  searchParams: Promise<{
-    q?: string;
-    category?: string;
-  }>;
-};
-
-export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const { q, category } = await searchParams;
-
-  return (
-    <SearchClient initialQuery={q ?? ""} initialCategoryId={category ?? null} />
-  );
+export default function SearchPage() {
+  redirect("/discover");
 }

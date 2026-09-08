@@ -46,12 +46,12 @@ export function Navbar({ className }: NavbarProps) {
         )}
         aria-label="Primary navigation"
       >
-        <ul className="grid grid-cols-5 gap-0.5">
+        <ul className="grid grid-cols-4 gap-0.5">
           {MAIN_NAVIGATION_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive =
               pathname === item.href ||
-              (item.href === "/home" && pathname === "/");
+              (item.href === "/discover" && pathname === "/");
 
             const isProfileTab = item.href === "/profile";
 

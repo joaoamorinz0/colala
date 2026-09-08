@@ -43,7 +43,7 @@ export function PlannedPlaces() {
         description='Toque em "Quero ir" na página de um lugar para adicioná-lo aos seus planos.'
         action={
           <Button asChild>
-            <Link href="/search">
+            <Link href="/discover">
               <Compass className="size-4" />
               Explorar lugares
             </Link>

@@ -47,7 +47,7 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const redirectTo = searchParams.get("redirectTo") ?? "/home";
+  const redirectTo = searchParams.get("redirectTo") ?? "/discover";
 
   useEffect(() => {
     if (user) {
@@ -97,8 +97,9 @@ function LoginForm() {
 
     try {
       if (!client) throw new Error("Supabase não configurado");
-      const callbackUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`;
-      await signInWithGoogle(client, callbackUrl);
+      // A URL absoluta de callback é montada dentro de signInWithGoogle
+      // para garantir um redirectTo correto (https://...), evitando o 404.
+      await signInWithGoogle(client, redirectTo);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro no login com Google");
     } finally {

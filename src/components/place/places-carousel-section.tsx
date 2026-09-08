@@ -43,7 +43,11 @@ export function PlacesCarouselSection({
     <section className={cn(SECTION_GAP, className)}>
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          {icon ? <span className="shrink-0">{icon}</span> : null}
+          {icon ? (
+            <span className="bg-primary/10 text-primary inline-flex shrink-0 items-center justify-center rounded-full p-2">
+              {icon}
+            </span>
+          ) : null}
           <h2 className="text-foreground text-xl font-extrabold tracking-tight">
             {title}
           </h2>

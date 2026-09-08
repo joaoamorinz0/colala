@@ -58,10 +58,7 @@ export function HeroCard({ place, className }: HeroCardProps) {
       </div>
 
       <div className="space-y-stack-sm p-card absolute inset-x-0 bottom-0 z-10 text-white">
-        <div className="inline-flex items-center gap-1 rounded-full bg-black/40 px-2.5 py-1 text-xs font-medium backdrop-blur-sm">
-          <span>📍</span>
-          {place.city ?? "Local"}
-        </div>
+        {/* City is shown in the top-left badge; avoid duplicating it here */}
 
         <h2 className="line-clamp-2 text-2xl leading-tight font-extrabold tracking-tight">
           {place.name}
