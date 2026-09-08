@@ -553,39 +553,23 @@ export default async function PlacePage({ params }: PlacePageProps) {
         <div className={cn(APP_SHELL, "pointer-events-auto")}>
           <div className="flex items-stretch gap-3 px-5 pt-3 pb-6">
             <div className="flex flex-1 gap-2">
-              <VisitIntentButton placeId={place.id} className="flex-1" />
-
-              {isStay && place.phone ? (
-                <WhatsAppButton
-                  phone={place.phone}
-                  className="shrink-0"
-                  label="WhatsApp"
-                />
-              ) : null}
-
-              {isStay && place.website ? (
-                <a
-                  href={place.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-primary shadow-primary/30 hover:bg-primary/90 flex shrink-0 items-center justify-center gap-2.5 rounded-2xl px-4 py-3.5 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98]"
-                >
-                  <Globe className="size-5" />
-                  Site
-                </a>
-              ) : null}
-
-              {isStay && place.instagram ? (
-                <a
-                  href={`https://instagram.com/${place.instagram.replace(/^@/, "")}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-primary shadow-primary/30 hover:bg-primary/90 flex shrink-0 items-center justify-center gap-2.5 rounded-2xl px-4 py-3.5 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98]"
-                >
-                  <Instagram className="size-5" />
-                  Instagram
-                </a>
-              ) : null}
+              {isStay ? (
+                place.instagram ? (
+                  <a
+                    href={`https://instagram.com/${place.instagram.replace(/^@/, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-primary shadow-primary/30 hover:bg-primary/90 flex flex-1 items-center justify-center gap-2.5 rounded-2xl px-4 py-3.5 text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98]"
+                  >
+                    <Instagram className="size-5" />
+                    Instagram
+                  </a>
+                ) : (
+                  <div className="flex-1" />
+                )
+              ) : (
+                <VisitIntentButton placeId={place.id} className="flex-1" />
+              )}
             </div>
 
             {place.latitude && place.longitude && (
