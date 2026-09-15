@@ -1,72 +1,82 @@
+import { type EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get("code");
-  const type = searchParams.get("type");
-  const next = searchParams.get("next") ?? "/discover";
+function safeNext(value: string | null) {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
+    return "/discover";
+  }
+  return value;
+}
 
-  // Fluxo de recuperação de senha: garante que o usuário seja levado
-  // à página de definição de nova senha (cria sessão temporária via code).
-  if (type === "recovery" && next === "/discover") {
-    const recoveryCode = code ?? "";
-    const recoveryUrl = new URL("/auth/callback", origin);
-    recoveryUrl.searchParams.set("code", recoveryCode);
-    recoveryUrl.searchParams.set("next", "/update-password");
-    return NextResponse.redirect(recoveryUrl);
+function getSupabaseConfig() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_KEY;
+
+  return url && key ? { url, key } : null;
+}
+
+export async function GET(request: Request) {
+  const requestUrl = new URL(request.url);
+  const origin = requestUrl.origin;
+  const code = requestUrl.searchParams.get("code");
+  const tokenHash = requestUrl.searchParams.get("token_hash");
+  const type = requestUrl.searchParams.get("type") as EmailOtpType | null;
+  const next = safeNext(requestUrl.searchParams.get("next"));
+
+  const config = getSupabaseConfig();
+  if (!config) {
+    return NextResponse.redirect(
+      new URL("/login?error=auth-config", origin),
+    );
   }
 
+  const response = NextResponse.redirect(new URL(next, origin));
+
+  const supabase = createServerClient(config.url, config.key, {
+    cookies: {
+      getAll() {
+        return request.headers
+          .get("cookie")
+          ?.split(";")
+          .map((cookie) => {
+            const [name, ...rest] = cookie.split("=");
+            return { name: name.trim(), value: rest.join("=").trim() };
+          })
+          .filter((cookie) => cookie.name) ?? [];
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          response.cookies.set(name, value, options);
+        });
+      },
+    },
+  });
+
+  // PKCE callback: used by Supabase's default confirmation URL and OAuth.
   if (code) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey =
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-      process.env.NEXT_PUBLIC_SUPABASE_KEY;
-
-    if (supabaseUrl && supabaseKey) {
-      const cookies = new Map<string, string>();
-      const response = NextResponse.redirect(`${origin}${next}`);
-
-      // Parse cookies from the request header
-      const cookieHeader = (request as Request).headers.get("cookie") ?? "";
-      for (const cookie of cookieHeader.split(";")) {
-        const [name, ...rest] = cookie.split("=");
-        if (name?.trim()) {
-          cookies.set(name.trim(), rest.join("=").trim());
-        }
-      }
-
-      const supabase = createServerClient(supabaseUrl, supabaseKey, {
-        cookies: {
-          getAll() {
-            return Array.from(cookies.entries()).map(([name, value]) => ({
-              name,
-              value,
-            }));
-          },
-          setAll(
-            cookiesToSet: { name: string; value: string; options?: unknown }[],
-          ) {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookies.set(name, value);
-              response.cookies.set(
-                name,
-                value,
-                options as Parameters<typeof response.cookies.set>[2],
-              );
-            });
-          },
-        },
-      });
-
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (!error) {
-        return response;
-      }
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
+      return response;
     }
   }
 
-  // Redirect to login on error
-  return NextResponse.redirect(`${origin}/login?error=auth-callback-failed`);
+  // Server-side email confirmation: supports templates using {{ .TokenHash }}.
+  if (tokenHash && type) {
+    const { error } = await supabase.auth.verifyOtp({
+      token_hash: tokenHash,
+      type,
+    });
+
+    if (!error) {
+      return response;
+    }
+  }
+
+  return NextResponse.redirect(
+    new URL("/login?error=auth-callback-failed", origin),
+  );
 }
