@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { AppProviders } from "@/providers";
 import "@/styles/globals.css";
+import PwaInstallPopup from "@/components/ui/pwa-install-popup";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://colala-amber.vercel.app"),
@@ -103,6 +104,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="pt-BR" suppressHydrationWarning>
       <body>
         <AppProviders>{children}</AppProviders>
+        <PwaInstallPopup />
       </body>
     </html>
   );

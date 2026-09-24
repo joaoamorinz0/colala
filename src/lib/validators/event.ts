@@ -19,6 +19,7 @@ export const eventSchema = z
       .or(z.literal("")),
     category_id: z.string().uuid("Selecione uma categoria."),
     place_id: z.string().uuid().optional().nullable().or(z.literal("")),
+    collaborator_id: z.string().uuid().optional().nullable().or(z.literal("")),
     location_name: z.string().trim().optional().nullable(),
     address: z.string().trim().optional().nullable(),
     city: z.string().trim().optional().nullable(),

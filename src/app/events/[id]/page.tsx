@@ -24,6 +24,7 @@ import {
   getEventPriceLabel,
 } from "@/lib/event-format";
 import { fetchEventById } from "@/services/events.service";
+import { EventCuratorSection } from "@/components/events/event-curator-section";
 
 type EventPageProps = {
   params: Promise<{ id: string }>;
@@ -236,6 +237,22 @@ export default async function EventPage({ params }: EventPageProps) {
                 />
               )}
             </section>
+            <div className="h-px bg-gray-100" />
+          </>
+        )}
+
+        {((event.collaborator && event.collaborator?.id) ||
+          (event.curators && event.curators.length > 0)) && (
+          <>
+            <EventCuratorSection
+              curators={
+                event.curators && event.curators.length > 0
+                  ? event.curators
+                  : event.collaborator
+                    ? [event.collaborator]
+                    : []
+              }
+            />
             <div className="h-px bg-gray-100" />
           </>
         )}
