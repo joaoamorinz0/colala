@@ -10,6 +10,16 @@ const WEEKDAY_NAMES = [
   "sábado",
 ] as const;
 
+const WEEKDAY_ARTICLES: Record<string, "Toda" | "Todo"> = {
+  domingo: "Todo",
+  "segunda-feira": "Toda",
+  "terça-feira": "Toda",
+  "quarta-feira": "Toda",
+  "quinta-feira": "Toda",
+  "sexta-feira": "Toda",
+  sábado: "Todo",
+};
+
 const MONTH_SHORT = [
   "JAN",
   "FEV",
@@ -97,10 +107,12 @@ export function formatRecurrenceLabel(event: Event): string {
   if (!event.is_recurring) return "";
 
   switch (event.recurrence_frequency) {
-    case "weekly":
-      return event.recurrence_day_of_week !== null
-        ? `Toda ${WEEKDAY_NAMES[event.recurrence_day_of_week]}`
-        : "Semanal";
+    case "weekly": {
+      if (event.recurrence_day_of_week === null) return "Semanal";
+      const weekday = WEEKDAY_NAMES[event.recurrence_day_of_week];
+      const article = WEEKDAY_ARTICLES[weekday] ?? "Toda";
+      return `${article} ${weekday}`;
+    }
     case "biweekly":
       return event.recurrence_day_of_week !== null
         ? `Quinzenal (${WEEKDAY_NAMES[event.recurrence_day_of_week]})`

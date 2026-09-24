@@ -205,6 +205,22 @@ export default async function EventPage({ params }: EventPageProps) {
 
         <div className="h-px bg-gray-100" />
 
+        {((event.collaborator && event.collaborator?.id) ||
+          (event.curators && event.curators.length > 0)) && (
+          <>
+            <EventCuratorSection
+              curators={
+                event.curators && event.curators.length > 0
+                  ? event.curators
+                  : event.collaborator
+                    ? [event.collaborator]
+                    : []
+              }
+            />
+            <div className="h-px bg-gray-100" />
+          </>
+        )}
+
         {/* Descrição */}
         {event.description && (
           <>
@@ -237,22 +253,6 @@ export default async function EventPage({ params }: EventPageProps) {
                 />
               )}
             </section>
-            <div className="h-px bg-gray-100" />
-          </>
-        )}
-
-        {((event.collaborator && event.collaborator?.id) ||
-          (event.curators && event.curators.length > 0)) && (
-          <>
-            <EventCuratorSection
-              curators={
-                event.curators && event.curators.length > 0
-                  ? event.curators
-                  : event.collaborator
-                    ? [event.collaborator]
-                    : []
-              }
-            />
             <div className="h-px bg-gray-100" />
           </>
         )}
