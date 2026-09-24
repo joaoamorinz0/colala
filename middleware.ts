@@ -11,7 +11,26 @@ function isProtectedRoute(pathname: string): boolean {
     return pathname === "/profile/edit";
   }
 
-  return PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
+  return PROTECTED_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+}
+
+function isAdminRoute(pathname: string): boolean {
+  return pathname === "/admin" || pathname.startsWith("/admin/");
+}
+
+function redirectWithSessionCookies(
+  url: URL,
+  sessionResponse: NextResponse,
+): NextResponse {
+  const redirectResponse = NextResponse.redirect(url);
+
+  sessionResponse.cookies.getAll().forEach((cookie) => {
+    redirectResponse.cookies.set(cookie);
+  });
+
+  return redirectResponse;
 }
 
 export async function middleware(request: NextRequest) {
@@ -35,6 +54,14 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
+    // Falha fechada para o painel: sem uma configuração válida não há como
+    // confirmar a sessão ou a autorização do usuário.
+    if (isAdminRoute(pathname)) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("redirectTo", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
     return response;
   }
 
@@ -68,7 +95,18 @@ export async function middleware(request: NextRequest) {
   if (!user) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirectTo", pathname);
-    return NextResponse.redirect(loginUrl);
+    return redirectWithSessionCookies(loginUrl, response);
+  }
+
+  // A autenticação não é suficiente para o painel. A função existente usa
+  // auth.uid() no banco, portanto a decisão é vinculada ao token validado e
+  // à tabela public.admins — nunca a estado/localStorage do navegador.
+  if (isAdminRoute(pathname)) {
+    const { data: isAdmin, error } = await supabase.rpc("is_admin");
+
+    if (error || !isAdmin) {
+      return redirectWithSessionCookies(new URL("/", request.url), response);
+    }
   }
 
   return response;

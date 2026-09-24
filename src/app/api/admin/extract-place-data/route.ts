@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAdminAccess } from "@/lib/admin-auth";
 
 type PlaceDetail = {
   name: string;
@@ -451,6 +452,23 @@ function extractCityStateFromAddress(address: string): {
 // ─── Main handler ───────────────────────────────────────────────────────
 
 export async function POST(request: Request) {
+  const access = await getAdminAccess();
+
+  if (access.status === "unauthenticated") {
+    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
+  }
+
+  if (access.status === "forbidden") {
+    return NextResponse.json({ error: "Acesso negado." }, { status: 403 });
+  }
+
+  if (access.status === "unavailable") {
+    return NextResponse.json(
+      { error: "Não foi possível validar a autorização." },
+      { status: 503 },
+    );
+  }
+
   try {
     const body = (await request.json()) as { url?: string };
     const { url } = body;
