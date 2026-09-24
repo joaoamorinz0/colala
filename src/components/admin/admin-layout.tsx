@@ -41,6 +41,11 @@ const adminMenuItems = [
     icon: Tags,
   },
   {
+    label: "Colaboradores",
+    href: "/admin/collaborators",
+    icon: Star,
+  },
+  {
     label: "Avaliações",
     href: "/admin/reviews",
     icon: Star,

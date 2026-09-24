@@ -9,6 +9,7 @@ import {
   uploadImage,
   getAllCategories,
   getAllPlaces,
+  getAllCollaborators,
 } from "@/services/admin.service";
 import { eventSchema } from "@/lib/validators/event";
 import type { Event } from "@/types/event";
@@ -33,6 +34,7 @@ type EventFormState = {
   category_id: string;
   locationMode: LocationMode;
   place_id: string;
+  collaborator_id: string;
   location_name: string;
   address: string;
   city: string;
@@ -73,6 +75,7 @@ function buildInitialState(event?: Event | null): EventFormState {
     category_id: event?.category_id ?? "",
     locationMode: hasPlace ? "place" : "free",
     place_id: event?.place_id ?? "",
+    collaborator_id: event?.collaborator_id ?? "",
     location_name: event?.location_name ?? "",
     address: event?.address ?? "",
     city: event?.city ?? "",
@@ -111,6 +114,7 @@ export type EventFormSubmitPayload = {
   cover_image: string | null;
   category_id: string;
   place_id: string | null;
+  collaborator_id: string | null;
   location_name: string | null;
   address: string | null;
   city: string | null;
@@ -155,6 +159,9 @@ export function EventForm({
   );
   const [categories, setCategories] = useState<Category[]>([]);
   const [places, setPlaces] = useState<{ id: string; name: string }[]>([]);
+  const [collaborators, setCollaborators] = useState<
+    { id: string; nome: string }[]
+  >([]);
   const [selectedParentId, setSelectedParentId] = useState<string>("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -168,14 +175,21 @@ export function EventForm({
         const client = createSupabaseBrowserClient();
         if (!client) throw new Error("Supabase não configurado");
 
-        const [categoryData, placeData] = await Promise.all([
+        const [categoryData, placeData, collaboratorData] = await Promise.all([
           getAllCategories(client),
           getAllPlaces(client),
+          getAllCollaborators(client),
         ]);
 
         setCategories(categoryData);
         setPlaces(
           placeData.map((place) => ({ id: place.id, name: place.name })),
+        );
+        setCollaborators(
+          collaboratorData.map((collaborator) => ({
+            id: collaborator.id,
+            nome: collaborator.nome,
+          })),
         );
       } catch (err) {
         console.error("Erro ao carregar dados do formulário:", err);
@@ -322,6 +336,7 @@ export function EventForm({
         cover_image: coverImageUrl || null,
         category_id: formData.category_id,
         place_id: isPlaceMode ? formData.place_id : null,
+        collaborator_id: formData.collaborator_id || null,
         location_name: isPlaceMode
           ? null
           : formData.location_name.trim() || null,
@@ -725,6 +740,29 @@ export function EventForm({
               />
             </div>
           )}
+        </div>
+
+        {/* Colaborador / Curadoria */}
+        <div className="border-border mt-6 mb-4 border-t pt-4">
+          <label className="text-foreground block text-sm font-medium">
+            Colaborador / Curadoria
+          </label>
+          <select
+            name="collaborator_id"
+            value={formData.collaborator_id}
+            onChange={handleChange}
+            className={`${inputClassName} mt-2`}
+          >
+            <option value="">Nenhum</option>
+            {collaborators.map((collaborator) => (
+              <option key={collaborator.id} value={collaborator.id}>
+                {collaborator.nome}
+              </option>
+            ))}
+          </select>
+          <p className="text-muted-foreground mt-1 text-xs">
+            Opcional — exibe a curadoria do evento na página pública.
+          </p>
         </div>
 
         {/* Organizador */}

@@ -10,6 +10,7 @@ const EVENT_COLUMNS = `
   cover_image,
   category_id,
   place_id,
+  collaborator_id,
   location_name,
   address,
   city,
@@ -34,7 +35,24 @@ const EVENT_COLUMNS = `
   created_at,
   updated_at,
   category:categories(id, name, icon),
-  place:places!left(id, name)
+  place:places!left(id, name),
+  collaborator:collaborators!left(
+    id,
+    nome,
+    name,
+    slug,
+    instagram,
+    instagram_url,
+    website_url,
+    avatar_url,
+    logo_url,
+    short_description,
+    cor_primaria,
+    cor_secundaria,
+    fonte,
+    font_family,
+    is_active
+  )
 `;
 
 function toIsoDate(date: Date): string {
@@ -153,6 +171,7 @@ export type AdminEventPayload = {
   cover_image: string | null;
   category_id: string;
   place_id: string | null;
+  collaborator_id: string | null;
   location_name: string | null;
   address: string | null;
   city: string | null;

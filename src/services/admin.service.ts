@@ -2,6 +2,7 @@ import type { createSupabaseBrowserClient } from "@/lib/supabase";
 import type { Place } from "@/types/place";
 import type { Category } from "@/types/category";
 import type { Review } from "@/types/review";
+import type { Collaborator } from "@/types/collaborator";
 
 type SupabaseBrowserClient = NonNullable<
   ReturnType<typeof createSupabaseBrowserClient>
@@ -288,6 +289,91 @@ export async function deleteImage(
 
   if (error) {
     throw new Error(`Erro ao deletar imagem: ${error.message}`);
+  }
+}
+
+// COLLABORATORS MANAGEMENT
+const COLLABORATORS_TABLE = "collaborators";
+
+export async function getAllCollaborators(
+  client: SupabaseBrowserClient,
+): Promise<Collaborator[]> {
+  const { data, error } = await client
+    .from(COLLABORATORS_TABLE)
+    .select("*")
+    .order("nome", { ascending: true });
+
+  if (error) {
+    throw new Error(`Erro ao buscar colaboradores: ${error.message}`);
+  }
+
+  return (data ?? []) as Collaborator[];
+}
+
+export async function getCollaboratorById(
+  client: SupabaseBrowserClient,
+  id: string,
+): Promise<Collaborator> {
+  const { data, error } = await client
+    .from(COLLABORATORS_TABLE)
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    throw new Error(`Erro ao buscar colaborador: ${error.message}`);
+  }
+
+  return data as Collaborator;
+}
+
+export async function createCollaborator(
+  client: SupabaseBrowserClient,
+  collaborator: Omit<Collaborator, "id" | "created_at" | "updated_at">,
+): Promise<Collaborator> {
+  const { data, error } = await client
+    .from(COLLABORATORS_TABLE)
+    .insert([collaborator])
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Erro ao criar colaborador: ${error.message}`);
+  }
+
+  return data as Collaborator;
+}
+
+export async function updateCollaborator(
+  client: SupabaseBrowserClient,
+  id: string,
+  collaborator: Partial<Omit<Collaborator, "id" | "created_at" | "updated_at">>,
+): Promise<Collaborator> {
+  const { data, error } = await client
+    .from(COLLABORATORS_TABLE)
+    .update({ ...collaborator, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) {
+    throw new Error(`Erro ao atualizar colaborador: ${error.message}`);
+  }
+
+  return data as Collaborator;
+}
+
+export async function deleteCollaborator(
+  client: SupabaseBrowserClient,
+  id: string,
+): Promise<void> {
+  const { error } = await client
+    .from(COLLABORATORS_TABLE)
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(`Erro ao deletar colaborador: ${error.message}`);
   }
 }
 
