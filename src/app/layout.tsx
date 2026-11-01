@@ -5,7 +5,7 @@ import "@/styles/globals.css";
 import PwaInstallPopup from "@/components/ui/pwa-install-popup";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://colala-amber.vercel.app"),
+  metadataBase: new URL("https://usecolala.com.br"),
 
   title: {
     default: "Colalá",
@@ -19,13 +19,13 @@ export const metadata: Metadata = {
     title: "Colalá — Descubra lugares pelas pessoas, não pelo algoritmo",
     description:
       "Encontre experiências incríveis perto de você e compartilhe suas descobertas.",
-    url: "https://colala-amber.vercel.app",
+    url: "https://usecolala.com.br",
     siteName: "Colalá",
     locale: "pt_BR",
     type: "website",
     images: [
       {
-        url: "https://colala-amber.vercel.app/icons/icon-512.png",
+        url: "https://usecolala.com.br/icons/icon-512.png",
         width: 512,
         height: 512,
         alt: "Colalá",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     title: "Colalá — Descubra lugares pelas pessoas, não pelo algoritmo",
     description:
       "Encontre experiências incríveis perto de você e compartilhe suas descobertas.",
-    images: ["https://colala-amber.vercel.app/icons/icon-512.png"],
+    images: ["https://usecolala.com.br/icons/icon-512.png"],
   },
 
   applicationName: "Colalá",
