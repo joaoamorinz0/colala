@@ -157,16 +157,18 @@ export function DiscoverClient() {
     <AuthLayout>
       <div className={SECTION_STACK}>
         {/* Cabeçalho fixo acima da busca (aparece apenas no estado padrão) */}
-        <div className="-mx-page-x bg-background/90 px-page-x pt-page-y sticky top-0 z-20 backdrop-blur-xl">
+        <div className="-mx-page-x bg-background/90 px-page-x sticky top-0 z-20 pt-3 pb-2 backdrop-blur-xl">
           {!hasActiveSearch ? (
             <div className="pb-2">
-              <p className="text-muted-foreground text-sm">{getGreeting()}</p>
+              <p className="text-muted-foreground text-[0.72rem] font-medium tracking-[0.02em]">
+                {getGreeting()}
+              </p>
 
-              <h1 className="text-foreground mt-1 text-2xl font-extrabold">
+              <h1 className="text-foreground mt-1 text-[1.7rem] leading-[1.08] font-black tracking-[-0.06em]">
                 Pra onde vamos hoje?
               </h1>
 
-              <p className="text-muted-foreground mt-1 text-sm">
+              <p className="text-muted-foreground mt-1.5 max-w-[22rem] text-[0.78rem] leading-5">
                 O Google Maps mostra como chegar. O Colalá mostra onde vale a
                 pena ir.
               </p>
@@ -174,7 +176,7 @@ export function DiscoverClient() {
           ) : null}
 
           {/* Barra de busca fixa no topo */}
-          <div className="border-border/60 pb-stack-sm border-b pt-2">
+          <div className="border-border/50 border-b pt-1.5 pb-2">
             <div className="flex items-center gap-2">
               <div className="flex-1">
                 <SearchBar
@@ -183,14 +185,14 @@ export function DiscoverClient() {
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Buscar lugares..."
-                  className="shadow-sm"
+                  className="focus-visible:ring-primary/40 h-14 shadow-[0_4px_16px_rgba(34,34,34,0.04)]"
                 />
               </div>
               <button
                 type="button"
                 onClick={() => setSheetOpen(true)}
                 className={cn(
-                  "relative flex size-11 shrink-0 items-center justify-center rounded-xl border shadow-sm transition-colors",
+                  "focus-visible:ring-primary/40 relative flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border shadow-[0_4px_16px_rgba(34,34,34,0.04)] transition-colors focus-visible:ring-2 focus-visible:outline-none",
                   hasFilter
                     ? "border-primary/60 bg-primary/10 text-primary"
                     : "border-border bg-card text-card-foreground hover:bg-muted",
