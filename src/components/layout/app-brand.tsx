@@ -16,7 +16,7 @@ export function AppBrand({ className, compact = false }: AppBrandProps) {
         )}
       >
         <Image
-          src="/icons/logo.png"
+          src="/icons/icon-512.png"
           alt="Colalá"
           width={compact ? 56 : 112}
           height={compact ? 56 : 112}
