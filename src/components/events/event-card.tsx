@@ -25,7 +25,7 @@ export function EventCard({ event, className }: EventCardProps) {
   const priceLabel = getEventPriceLabel(event);
 
   return (
-    <Link href={`/events/${event.id}`} className={cn("block", className)}>
+    <Link href={`/experiencias/${event.id}`} className={cn("block", className)}>
       <article
         className={cn(
           CARD_SURFACE,

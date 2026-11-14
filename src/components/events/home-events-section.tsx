@@ -33,7 +33,7 @@ export function HomeEventsSection() {
           </h2>
         </div>
         <Link
-          href="/events"
+          href="/experiencias"
           className="text-primary hover:text-primary/80 flex shrink-0 items-center gap-0.5 text-sm font-semibold transition-colors"
         >
           Ver todos
