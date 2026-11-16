@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <LegalLayout title="Termos de Uso" updatedAt="16 de agosto de 2026">
+    <LegalLayout title="Termos de Uso" updatedAt="15 de Novembro de 2026">
       <section>
         <h2 className="text-foreground text-xl font-bold tracking-tight">
           1. Sobre o Colalá

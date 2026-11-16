@@ -18,7 +18,7 @@ export default function PrivacyPage() {
   return (
     <LegalLayout
       title="Política de Privacidade"
-      updatedAt="16 de agosto de 2026"
+      updatedAt="15 de Novembro de 2026"
     >
       <section>
         <p>
