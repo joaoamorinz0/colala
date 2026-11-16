@@ -191,7 +191,7 @@ export default function PrivacyPage() {
         <p>
           Para exercer seus direitos, entre em contato conosco. O canal de
           contato será informado quando disponível.{" "}
-          <strong>seucolala@gmail.com @usecolala (instagram)</strong>
+          <strong>seucolala@gmail.com @usecolala - Instagram</strong>
         </p>
       </section>
 
