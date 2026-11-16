@@ -16,8 +16,8 @@ export default function TermsPage() {
         <p>
           O Colalá é uma plataforma de descoberta de lugares e experiências.
           Usuários podem criar um perfil público, favoritar estabelecimentos,
-          marcar lugares como “Quero ir”, deixar avaliações e personalizar suas
-          informações.
+          explorar eventos com curadoria, registrar visitas (check-ins) e
+          organizar planos, deixar avaliações e personalizar suas informações.
         </p>
         <p>
           O Colalá possui perfis e avaliações públicas. Ele não tem como
@@ -73,6 +73,13 @@ export default function TermsPage() {
         <p>
           Sempre que possível, confirme as informações diretamente com o
           estabelecimento antes de se deslocar.
+        </p>
+        <p>
+          As recomendações e listas assinadas por curadores parceiros refletem
+          opiniões e experiências pessoais de cada curador. Caso algum
+          estabelecimento ou organizador de evento deseje atualizar informações
+          ou solicitar a remoção de imagens de divulgação publicadas na
+          plataforma, basta entrar em contato pelo nosso canal oficial.
         </p>
       </section>
 

@@ -191,11 +191,7 @@ export default function PrivacyPage() {
         <p>
           Para exercer seus direitos, entre em contato conosco. O canal de
           contato será informado quando disponível.{" "}
-          <strong>
-            Atualmente o Colalá ainda não possui um canal específico para
-            solicitações de privacidade; recomendamos criá-lo antes do
-            lançamento.
-          </strong>
+          <strong>seucolala@gmail.com @usecolala (instagram)</strong>
         </p>
       </section>
 
